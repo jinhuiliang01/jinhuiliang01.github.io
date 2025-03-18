@@ -1,6 +1,8 @@
 h1 {
   color: aqua;
   font-size: 2rem;
+  text-align: center;
+  text-transform: uppercase;
   font-family: "Big Shoulders Stencil", sans-serif;
   font-optical-sizing: auto;
   font-weight: 500;
@@ -14,6 +16,10 @@ h2 {
 p {
   color: cadetblue;
   font-weight: bold;
+  font-family: "Big Shoulders Stencil", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 200;
+  font-style: normal;
 }
 
 li {
