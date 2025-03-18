@@ -1,0 +1,34 @@
+h1 {
+  color: aqua;
+}
+
+h2 {
+  color: bisque;
+}
+
+p {
+  color: cadetblue;
+  font-weight: bold;
+}
+
+li {
+  color: rgb(95, 229, 126);
+}
+
+h3 {
+  color: violet;
+}
+
+.blue-color {
+  color: blue;
+}
+/*
+curly braces{ }
+parentheses< >
+square brackets[ ]
+round brackets ( )
+colon :
+semicolom ;
+syntax: rules of the lang
+
+*/
