@@ -1,0 +1,9 @@
+h1 {
+  text-align: center;
+  font-size: 3rem;
+  font-family: "Big Shoulders Stencil", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  border: 1px solid blue;
+}
