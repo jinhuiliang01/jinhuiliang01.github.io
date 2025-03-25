@@ -21,4 +21,5 @@ p {
   padding: 20px 30px 40px 50px;
   /* top right bottom left */
   margin-bottom: 20px;
+  border-bottom: 2px dashed gray;
 }

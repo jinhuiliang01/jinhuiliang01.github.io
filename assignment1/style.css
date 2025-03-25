@@ -19,10 +19,13 @@ h1 {
 
 p {
   font-size: medium;
+  border-bottom: 2px dashed rgb(232, 161, 30);
+  padding-bottom: 20px;
 }
 
 body {
   background-color: bisque;
+  margin: 0 auto;
 }
 
 li {
