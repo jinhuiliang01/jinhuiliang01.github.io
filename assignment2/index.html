@@ -3,23 +3,91 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Assignment 2</title>
+    <title>My Music Album</title>
     <link rel="stylesheet" href="style.css" />
     <script src="script.js" defer></script>
   </head>
   <body>
-    <h1>Music Album</h1>
-    <audio src="intro_Light.mp3" controls id="intro_Light"></audio>
-    <audio src="memory.mp3" controls id="memory"></audio>
-    <audio src="MIke Dean.mp3" controls id="mikeDean"></audio>
-    <audio
-      src="Best memory with you.mp3"
-      controls
-      id="bestMemoryWithYou"
-    ></audio>
-    <audio src="chance.mp3" controls id="chance"></audio>
-    <audio src="Heart to Hide.mp3" controls id="heartToHide"></audio>
-    <button id="play-button">Play audio</button>
-    <button id="pause-button">Pause audio</button>
+    <div class="album-header">
+      <h1>My Music Album</h1>
+    </div>
+
+    <div class="track-list">
+      <!-- Track 1 -->
+      <div class="track-item" data-audio="intro_Light.mp3">
+        <div class="track-number">1</div>
+        <div class="track-info">
+          <div class="track-title">Light (intro)</div>
+          <div class="track-artist">Artist Name</div>
+        </div>
+        <div class="track-duration">2:09</div>
+      </div>
+
+      <!-- Track 2 -->
+      <div class="track-item" data-audio="memory.mp3">
+        <div class="track-number">2</div>
+        <div class="track-info">
+          <div class="track-title">Memory</div>
+          <div class="track-artist">Artist Name</div>
+        </div>
+        <div class="track-duration">4:00</div>
+      </div>
+
+      <!-- Track 3 -->
+      <div class="track-item" data-audio="Mike_Dean.mp3">
+        <div class="track-number">3</div>
+        <div class="track-info">
+          <div class="track-title">Mike Dean</div>
+          <div class="track-artist">Artist Name</div>
+        </div>
+        <div class="track-duration">3:19</div>
+      </div>
+
+      <!-- Track 4 -->
+      <div class="track-item" data-audio="Best memory with you.mp3">
+        <div class="track-number">4</div>
+        <div class="track-info">
+          <div class="track-title">Best memory with you</div>
+          <div class="track-artist">Artist Name</div>
+        </div>
+        <div class="track-duration">3:09</div>
+      </div>
+
+      <!-- Track 5 -->
+      <div class="track-item" data-audio="chance.mp3">
+        <div class="track-number">5</div>
+        <div class="track-info">
+          <div class="track-title">Chance</div>
+          <div class="track-artist">Artist Name</div>
+        </div>
+        <div class="track-duration">3:21</div>
+      </div>
+
+      <!-- Track 6 -->
+      <div class="track-item" data-audio="Heart to Hide.mp3">
+        <div class="track-number">6</div>
+        <div class="track-info">
+          <div class="track-title">Heart to hide</div>
+          <div class="track-artist">Artist Name</div>
+        </div>
+        <div class="track-duration">3:18</div>
+      </div>
+
+      <!-- Add remaining tracks following same pattern -->
+    </div>
+
+    <div class="player-controls">
+      <div class="progress-container">
+        <input type="range" id="progress-bar" min="0" max="100" value="0" />
+        <div class="time-display">
+          <span id="current-time">0:00</span>
+          <span id="duration">0:00</span>
+        </div>
+      </div>
+      <div class="control-buttons">
+        <button id="play-button">▶</button>
+        <button id="pause-button">⏸</button>
+      </div>
+    </div>
   </body>
 </html>
