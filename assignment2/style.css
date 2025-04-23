@@ -1,9 +1,9 @@
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background-color: #1a1a1a;
   color: #fff;
   margin: 0;
   padding: 20px;
+  padding-bottom: 200px;
 }
 
 img {
@@ -15,6 +15,9 @@ img {
 .album-header {
   text-align: center;
   margin-bottom: 40px;
+  font-family: "Permanent Marker", cursive;
+  font-weight: 400;
+  font-style: normal;
 }
 
 .track-list {
