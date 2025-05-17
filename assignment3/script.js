@@ -16,17 +16,17 @@ const ALBUMS = [
   },
   {
     title: "Light",
-    cover: "images/album4.jpg",
+    cover: "/assignment3/images/cover4.jpg",
     audio: "/assignment3/audio/intro_Light.mp3",
   },
   {
     title: "Memory",
-    cover: "images/album5.jpg",
+    cover: "/assignment3/images/cover5.jpg",
     audio: "/assignment3/audio/memory.mp3",
   },
   {
     title: "Heart To Hide",
-    cover: "images/album6.jpg",
+    cover: "/assignment3/images/cover6.jpg",
     audio: "/assignment3/audio/Heart to Hide.mp3",
   },
 ];
