@@ -1,13 +1,13 @@
 const ALBUMS = [
   {
-    title: "Song 1",
-    cover: "/assignment3/images/cover1.jpg",
-    audio: "/assignment3/audio/chance.mp3",
+    title: "Dancing with the silence",
+    cover: "/assignment3/images/cover2.png",
+    audio: "/assignment3/audio/dancing with the silence.wav",
   },
   {
-    title: "Song 2",
-    cover: "images/album2.jpg",
-    audio: "audio/song2.mp3",
+    title: "Luv u",
+    cover: "/assignment3/images/cover3.png",
+    audio: "/assignment3/audio/Luv u.wav",
   },
   {
     title: "Song 3",
@@ -52,19 +52,17 @@ class MusicPlayer {
 
     this.currentAngle = 0;
     window.addEventListener("wheel", (e) => {
-      this.currentAngle += e.deltaY * 0.2;
+      this.currentAngle += e.deltaY * 0.05;
       this.carousel.style.transform = `rotateY(${this.currentAngle}deg)`;
     });
   }
 
   setAlbumPosition(el, index) {
-    const angle = (index * 60) % 360;
-    const scale = 1 - Math.abs(angle - 180) / 300;
+    const angle = (index * 60) % 360; // Adjust angle spacing as needed
     el.style.transform = `
-                rotateY(${angle}deg)
-                translateZ(400px)
-                scale(${scale})
-            `;
+      rotateY(${angle}deg)
+      translateZ(500px)
+    `;
   }
 
   showVinyl(album) {

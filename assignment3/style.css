@@ -8,7 +8,7 @@ body {
 
 /* 3D Carousel */
 .scene {
-  perspective: 1000px;
+  perspective: 1500px;
   height: 100vh;
 }
 
@@ -26,15 +26,16 @@ body {
   width: 500px;
   height: 500px;
   background-size: cover;
-  border: 2px solid transparent;
-  transition: all 0.3s;
-  cursor: pointer;
-  transform-origin: center center;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 2px solid transparent; /* default border */
+  transition: transform 0.4s ease, border-color 0.4s ease;
+  box-sizing: border-box;
 }
 
 .album:hover {
-  border-color: white !important;
   transform: scale(1.1);
+  border-color: white;
   z-index: 10;
 }
 
