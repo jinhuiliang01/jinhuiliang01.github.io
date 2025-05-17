@@ -1,0 +1,192 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  color: white;
+  background: linear-gradient(45deg, #1a1a1a, #2d2d2d);
+}
+
+/* 3D Carousel */
+.scene {
+  perspective: 1000px;
+  height: 100vh;
+}
+
+.carousel {
+  transform-style: preserve-3d;
+  transition: transform 0.5s;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.album {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background-size: cover;
+  border: 2px solid transparent;
+  transition: all 0.3s;
+  cursor: pointer;
+  transform-origin: center center;
+}
+
+.album:hover {
+  border-color: white !important;
+  transform: scale(1.1);
+  z-index: 10;
+}
+
+/* Vinyl Page */
+.vinyl-page {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+}
+
+.vinyl {
+  position: absolute;
+  left: -300px;
+  width: 300px;
+  height: 300px;
+  transition: transform 0.5s;
+  background: url("images/vinyl.png") no-repeat center;
+  background-size: contain;
+}
+
+.handle {
+  position: absolute;
+  right: 50px;
+  top: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: grab;
+  transition: transform 0.3s;
+  background: url("images/handle.png") no-repeat center;
+  background-size: contain;
+}
+
+.playing .handle {
+  transform: rotate(30deg);
+}
+
+/* Corners */
+.corners {
+  z-index: 2000;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.corners a {
+  position: absolute;
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 400;
+  pointer-events: auto;
+  padding: 10px;
+}
+
+.corners a:hover {
+  color: #ccc;
+}
+
+#socialsdescr {
+  left: 0;
+  top: 0;
+}
+
+#contact {
+  right: 0;
+  top: 0;
+  text-align: right;
+}
+
+#scroll-hint {
+  left: 0;
+  bottom: 0;
+}
+
+#bio {
+  right: 0;
+  bottom: 0;
+  text-align: right;
+}
+
+#playerUI {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#playerUI img {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+#playerUI h2 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+#playerUI button {
+  font-size: 1.5rem;
+  padding: 10px 20px;
+  margin: 0 10px;
+  border: none;
+  border-radius: 5px;
+  background: #333;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#playerUI button {
+  font-size: 1.5rem;
+  padding: 10px 20px;
+  margin: 0 10px;
+  border: none;
+  border-radius: 5px;
+  background: #333;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#playerUI button:hover {
+  background: #555;
+}
+
+#progressBar {
+  width: 80%;
+  margin: 20px 0;
+  height: 5px;
+  background: #444;
+  border-radius: 5px;
+}
+
+#progressBar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 2px #000;
+}
