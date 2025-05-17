@@ -10,24 +10,24 @@ const ALBUMS = [
     audio: "/assignment3/audio/Luv u.wav",
   },
   {
-    title: "Song 3",
-    cover: "images/album3.jpg",
-    audio: "audio/song3.mp3",
+    title: "Best Memory With You",
+    cover: "/assignment3/images/cover1.png",
+    audio: "/assignment3/audio/Best memory with you.mp3",
   },
   {
-    title: "Song 4",
+    title: "Light",
     cover: "images/album4.jpg",
-    audio: "audio/song4.mp3",
+    audio: "/assignment3/audio/intro_Light.mp3",
   },
   {
-    title: "Song 5",
+    title: "Memory",
     cover: "images/album5.jpg",
-    audio: "audio/song5.mp3",
+    audio: "/assignment3/audio/memory.mp3",
   },
   {
-    title: "Song 6",
+    title: "Heart To Hide",
     cover: "images/album6.jpg",
-    audio: "audio/song6.mp3",
+    audio: "/assignment3/audio/Heart to Hide.mp3",
   },
 ];
 
