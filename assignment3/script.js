@@ -44,7 +44,7 @@ class MusicPlayer {
       const angle = (360 / ALBUMS.length) * i;
       const albumEl = document.createElement("div");
       albumEl.className = "album";
-      albumEl.style.transform = `rotateY(${angle}deg) translateZ(600px)`; // <-- place in circle
+      albumEl.style.transform = `rotateY(${angle}deg) translateZ(600px)`;
 
       const inner = document.createElement("div");
       inner.className = "album-inner";
