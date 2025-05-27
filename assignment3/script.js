@@ -39,6 +39,13 @@ class MusicPlayer {
     this.initCarousel();
   }
 
+  formatTime(seconds) {
+    if (isNaN(seconds)) return "0:00";
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+  }
+
   initCarousel() {
     ALBUMS.forEach((album, i) => {
       const angle = (360 / ALBUMS.length) * i;
@@ -61,17 +68,37 @@ class MusicPlayer {
       const title = document.createElement("h2");
       title.textContent = album.title;
 
+      // Create progress container
+      const progressContainer = document.createElement("div");
+      progressContainer.className = "progress-container";
+
       const progress = document.createElement("input");
       progress.type = "range";
       progress.min = 0;
       progress.step = 1;
 
+      // Create timeline display
+      const timeline = document.createElement("div");
+      timeline.className = "timeline";
+
+      const currentTime = document.createElement("span");
+      currentTime.textContent = "0:00";
+
+      const totalTime = document.createElement("span");
+      totalTime.textContent = "0:00";
+
+      timeline.appendChild(currentTime);
+      timeline.appendChild(totalTime);
+
+      progressContainer.appendChild(progress);
+      progressContainer.appendChild(timeline);
+
       const playPause = document.createElement("button");
-      playPause.textContent = "Play";
+      playPause.innerHTML = "▶"; // Play icon
 
       back.appendChild(img);
       back.appendChild(title);
-      back.appendChild(progress);
+      back.appendChild(progressContainer);
       back.appendChild(playPause);
 
       inner.appendChild(front);
@@ -83,7 +110,9 @@ class MusicPlayer {
         this.player.src = album.audio;
         this.player.pause();
         progress.value = 0;
-        playPause.textContent = "Play";
+        playPause.innerHTML = "▶"; // Play icon
+        currentTime.textContent = "0:00";
+        totalTime.textContent = "0:00";
       });
 
       playPause.addEventListener("click", () => {
@@ -93,17 +122,26 @@ class MusicPlayer {
 
         if (this.player.paused) {
           this.player.play();
-          playPause.textContent = "Pause";
+          playPause.innerHTML = "⏸"; // Pause icon
           this.currentlyPlaying = this.player;
         } else {
           this.player.pause();
-          playPause.textContent = "Play";
+          playPause.innerHTML = "▶"; // Play icon
         }
       });
 
       this.player.addEventListener("timeupdate", () => {
         progress.max = this.player.duration || 0;
         progress.value = this.player.currentTime;
+
+        // Update timeline display
+        currentTime.textContent = this.formatTime(this.player.currentTime);
+        totalTime.textContent = this.formatTime(this.player.duration);
+      });
+
+      this.player.addEventListener("loadedmetadata", () => {
+        // Update total time when metadata is loaded
+        totalTime.textContent = this.formatTime(this.player.duration);
       });
 
       progress.addEventListener("input", (e) => {
