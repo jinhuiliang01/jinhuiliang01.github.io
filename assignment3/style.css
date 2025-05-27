@@ -1,190 +1,215 @@
+/* BODY STYLES - Sets up the basic look of the entire webpage */
 body {
-  margin: 0;
-  overflow: hidden;
-  font-family: Arial, sans-serif;
-  color: white;
+  margin: 0; /* Remove default spacing around the edges of the page */
+  overflow: hidden; /* Hide scrollbars (we use mouse wheel for carousel instead) */
+  font-family: Arial, sans-serif; /* Set the font for all text on the page */
+  color: white; /* Make all text white by default */
+  /* Create a diagonal gradient background from dark gray to lighter gray */
   background: linear-gradient(45deg, #1a1a1a, #2d2d2d);
 }
 
-/* Corners */
+/* CORNER NAVIGATION - The text links in the corners of the screen */
 .corners {
-  z-index: 2000;
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+  z-index: 2000; /* Put this on top of everything else (higher numbers = more on top) */
+  position: fixed; /* Stay in the same place even if page scrolls */
+  width: 100%; /* Take up the full width of the screen */
+  height: 100%; /* Take up the full height of the screen */
+  pointer-events: none; /* Don't block clicks on this container itself */
 }
 
+/* Style for all the corner links (name, contact, scroll hint) */
 .corners a {
-  position: absolute;
-  color: white;
-  text-decoration: none;
-  font-size: 1rem;
-  font-weight: 400;
-  pointer-events: auto;
-  padding: 10px;
+  position: absolute; /* Position precisely using top/left/right/bottom */
+  color: white; /* Make link text white */
+  text-decoration: none; /* Remove the default underline from links */
+  font-size: 1rem; /* Set text size (1rem = normal size) */
+  font-weight: 400; /* Normal font thickness (not bold) */
+  pointer-events: auto; /* Allow these specific links to be clicked */
+  padding: 10px; /* Add space around the text for easier clicking */
 }
 
+/* When user hovers over corner links, make them slightly gray */
 .corners a:hover {
-  color: #ccc;
+  color: #ccc; /* Light gray color */
 }
 
+/* Position the social/description link in top-left corner */
 #socialsdescr {
-  left: 0;
-  top: 0;
+  left: 0; /* Stick to left edge */
+  top: 0; /* Stick to top edge */
 }
 
+/* Position the contact link in top-right corner */
 #contact {
-  right: 0;
-  top: 0;
-  text-align: right;
+  right: 0; /* Stick to right edge */
+  top: 0; /* Stick to top edge */
+  text-align: right; /* Align text to the right */
 }
 
+/* Position the scroll hint in bottom-left corner */
 #scroll-hint {
-  left: 0;
-  bottom: 0;
+  left: 0; /* Stick to left edge */
+  bottom: 0; /* Stick to bottom edge */
 }
 
-/* 3D Carousel */
+/* 3D SCENE SETUP - Creates the 3D space for our carousel */
 .scene {
-  perspective: 2000px;
-  height: 100vh;
+  perspective: 2000px; /* Set how "deep" the 3D space looks (bigger = less dramatic 3D) */
+  height: 100vh; /* Take up the full height of the viewport (screen) */
 }
 
+/* THE CAROUSEL CONTAINER - Holds all the album covers in a circle */
 .carousel {
-  transform-style: preserve-3d;
-  transition: transform 0.5s;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  transform-style: preserve-3d; /* Enable 3D transformations for child elements */
+  transition: transform 0.5s; /* Smooth animation when rotating (takes 0.5 seconds) */
+  height: 100vh; /* Full viewport height */
+  display: flex; /* Use flexbox for centering */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
 }
 
+/* INDIVIDUAL ALBUM STYLING - Each album cover in the carousel */
 .album {
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  perspective: 1000px;
-  cursor: pointer;
+  position: absolute; /* Remove from normal document flow for 3D positioning */
+  width: 500px; /* Set album width */
+  height: 500px; /* Set album height (square) */
+  perspective: 1000px; /* 3D perspective for the flip effect */
+  cursor: pointer; /* Show hand cursor when hovering (indicates it's interactive) */
 }
 
+/* ALBUM FLIP CONTAINER - Enables the front/back flip effect */
 .album-inner {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  transition: transform 0.8s;
-  transform-style: preserve-3d;
+  width: 100%; /* Take up full width of parent album */
+  height: 100%; /* Take up full height of parent album */
+  position: relative; /* Needed for positioning front/back faces */
+  transition: transform 0.8s; /* Smooth flip animation (0.8 seconds) */
+  transform-style: preserve-3d; /* Enable 3D for front/back faces */
 }
 
+/* FLIP TRIGGER - When you hover over an album, flip it around */
 .album:hover .album-inner {
-  transform: rotateY(180deg);
+  transform: rotateY(
+    180deg
+  ); /* Rotate 180 degrees around Y-axis (vertical flip) */
 }
 
+/* SHARED STYLES for both front and back faces of albums */
 .album-front,
 .album-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  border: 2px solid transparent;
-  box-sizing: border-box;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  position: absolute; /* Position both faces in the same spot */
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  backface-visibility: hidden; /* Hide the back face when it's flipped away from us */
+  border: 2px solid transparent; /* Invisible border (can become visible on hover) */
+  box-sizing: border-box; /* Include border in width/height calculations */
+  background-size: cover; /* Make background image cover the entire area */
+  background-position: center; /* Center the background image */
+  background-repeat: no-repeat; /* Don't repeat the background image */
 }
 
+/* FRONT FACE HOVER EFFECT - Add white border when hovering over album cover */
 .album-front:hover {
-  border-color: white;
-  z-index: 10;
+  border-color: white; /* Make the border visible and white */
+  z-index: 10; /* Bring to front */
 }
 
+/* BACK FACE STYLING - The side with music controls */
 .album-back {
-  background: #1d1b1b;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transform: rotateY(180deg);
-  padding: 20px;
+  background: #1d1b1b; /* Dark background color */
+  display: flex; /* Use flexbox for arranging child elements */
+  flex-direction: column; /* Stack children vertically (top to bottom) */
+  align-items: center; /* Center children horizontally */
+  justify-content: center; /* Center children vertically */
+  transform: rotateY(
+    180deg
+  ); /* Start rotated 180 degrees (so it's hidden initially) */
+  padding: 20px; /* Add space around the content */
 }
 
+/* SMALL ALBUM IMAGE on the back face */
 .album-back img {
-  width: 200px;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 10px;
-  margin-bottom: 20px;
+  width: 200px; /* Set image width */
+  height: 200px; /* Set image height (square) */
+  object-fit: cover; /* Crop image to fit without distortion */
+  border-radius: 10px; /* Round the corners */
+  margin-bottom: 20px; /* Add space below the image */
 }
 
+/* SONG TITLE on the back face */
 .album-back h2 {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-  color: white;
-  text-align: center;
+  font-size: 1.5rem; /* Make title text bigger than normal */
+  margin-bottom: 10px; /* Add space below the title */
+  color: white; /* White text */
+  text-align: center; /* Center the text */
 }
 
+/* PROGRESS CONTAINER - Holds the progress bar and timeline */
 .album-back .progress-container {
-  width: 80%;
-  margin: 10px 0;
+  width: 80%; /* Take up 80% of the available width */
+  margin: 10px 0; /* Add vertical spacing above and below */
 }
 
+/* PROGRESS BAR SLIDER - The draggable bar showing song progress */
 .album-back input[type="range"] {
-  width: 100%;
-  margin: 5px 0;
-  height: 5px;
-  background: #444;
-  border-radius: 5px;
-  -webkit-appearance: none;
-  appearance: none;
+  width: 100%; /* Full width of its container */
+  margin: 5px 0; /* Small vertical spacing */
+  height: 5px; /* Make the slider track thin */
+  background: #444; /* Dark gray track color */
+  border-radius: 5px; /* Round the track ends */
+  -webkit-appearance: none; /* Remove default browser styling (WebKit browsers) */
+  appearance: none; /* Remove default browser styling (other browsers) */
 }
 
+/* TIMELINE DISPLAY - Shows current time and total time */
 .album-back .timeline {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.8rem;
-  color: #ccc;
-  margin-top: 5px;
+  display: flex; /* Use flexbox for layout */
+  justify-content: space-between; /* Put current time on left, total time on right */
+  font-size: 0.8rem; /* Smaller text than normal */
+  color: #ccc; /* Light gray text */
+  margin-top: 5px; /* Small space above timeline */
 }
 
-/* Webkit browsers (Chrome, Safari, Edge) */
+/* SLIDER THUMB - The draggable circle on the progress bar (WebKit browsers like Chrome, Safari) */
 .album-back input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 15px;
-  height: 15px;
-  background: black;
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 0 2px #000;
+  -webkit-appearance: none; /* Remove default styling */
+  width: 15px; /* Circle width */
+  height: 15px; /* Circle height */
+  background: black; /* Black color */
+  border-radius: 50%; /* Make it perfectly round */
+  cursor: pointer; /* Show hand cursor when hovering */
+  box-shadow: 0 0 2px #000; /* Add subtle shadow around the circle */
 }
 
-/* Firefox */
+/* SLIDER THUMB - Same as above but for Firefox browser */
 .album-back input[type="range"]::-moz-range-thumb {
-  width: 15px;
-  height: 15px;
-  background: black;
-  border-radius: 50%;
-  cursor: pointer;
-  border: none;
-  box-shadow: 0 0 2px #000;
+  width: 15px; /* Circle width */
+  height: 15px; /* Circle height */
+  background: black; /* Black color */
+  border-radius: 50%; /* Make it perfectly round */
+  cursor: pointer; /* Show hand cursor when hovering */
+  border: none; /* Remove default border */
+  box-shadow: 0 0 2px #000; /* Add subtle shadow around the circle */
 }
 
+/* PLAY/PAUSE BUTTON - The circular button with play/pause icons */
 .album-back button {
-  font-size: 1.5rem;
-  padding: 12px;
-  margin-top: 10px;
-  border: none;
-  border-radius: 50%;
-  background: #333;
-  color: white;
-  cursor: pointer;
-  transition: background 0.3s;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 1.5rem; /* Make the icon bigger */
+  padding: 12px; /* Add space inside the button */
+  margin-top: 10px; /* Add space above the button */
+  border: none; /* Remove default button border */
+  border-radius: 50%; /* Make the button perfectly round */
+  background: #333; /* Dark gray background */
+  color: white; /* White icon color */
+  cursor: pointer; /* Show hand cursor when hovering */
+  transition: background 0.3s; /* Smooth color change when hovering */
+  width: 50px; /* Set button width */
+  height: 50px; /* Set button height (makes it a perfect circle) */
+  display: flex; /* Use flexbox for centering the icon */
+  align-items: center; /* Center icon vertically */
+  justify-content: center; /* Center icon horizontally */
 }
 
+/* BUTTON HOVER EFFECT - Make button lighter when hovering */
 .album-back button:hover {
-  background: #555;
+  background: #555; /* Lighter gray background */
 }
