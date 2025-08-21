@@ -19,7 +19,7 @@
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         color: #fff;
         min-height: 100vh;
-        overflow: hidden;
+        overflow-x: hidden;
       }
 
       .container {
@@ -57,6 +57,7 @@
         flex: 1;
         gap: 30px;
         z-index: 10;
+        margin-bottom: 30px;
       }
 
       .mood-selector {
@@ -66,6 +67,7 @@
         padding: 25px;
         backdrop-filter: blur(10px);
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        max-height: 600px;
       }
 
       .visualization {
@@ -74,6 +76,7 @@
         overflow: hidden;
         position: relative;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        min-height: 500px;
       }
 
       .section-title {
@@ -366,43 +369,63 @@
     </div>
 
     <script>
-      // Mood to music mapping
+      // Mood to music mapping with enhanced visualization parameters
       const moodMusic = {
         happy: {
-          title: "Upbeat Pop",
+          title: "Upbeat Pop - 'Sunshine Day'",
           color: [255, 200, 100],
           energy: 0.8,
+          particles: 80,
+          particleSize: [3, 10],
+          effects: ["bounce", "sparkle"],
         },
         sad: {
-          title: "Melancholic Melodies",
+          title: "Melancholic Melodies - 'Rainy Nights'",
           color: [100, 150, 255],
           energy: 0.3,
+          particles: 40,
+          particleSize: [2, 6],
+          effects: ["slowFall", "fade"],
         },
         calm: {
-          title: "Ambient Relaxation",
+          title: "Ambient Relaxation - 'Tranquil Waters'",
           color: [100, 220, 200],
           energy: 0.4,
+          particles: 60,
+          particleSize: [4, 8],
+          effects: ["float", "pulse"],
         },
         energetic: {
-          title: "High Energy Dance",
+          title: "High Energy Dance - 'Electric Pulse'",
           color: [255, 100, 100],
           energy: 0.9,
+          particles: 100,
+          particleSize: [2, 12],
+          effects: ["explode", "vibrate"],
         },
         romantic: {
-          title: "Romantic Instrumentals",
+          title: "Romantic Instrumentals - 'Hearts Entwined'",
           color: [255, 100, 200],
           energy: 0.6,
+          particles: 70,
+          particleSize: [3, 9],
+          effects: ["swirl", "glow"],
         },
         focused: {
-          title: "Deep Focus",
+          title: "Deep Focus - 'Concentration Zone'",
           color: [150, 200, 255],
           energy: 0.5,
+          particles: 50,
+          particleSize: [2, 7],
+          effects: ["orbit", "pulse"],
         },
       };
 
       // Current state
       let currentMood = null;
       let isPlaying = false;
+      let progressInterval;
+      let particles = [];
 
       // Initialize Tone.js
       const player = new Tone.Player().toDestination();
@@ -421,9 +444,37 @@
       // Setup p5.js canvas
       let canvas;
       function setup() {
-        canvas = createCanvas(800, 500);
+        const canvasContainer = select(".visualization");
+        const width = canvasContainer.width;
+        const height = canvasContainer.height;
+
+        canvas = createCanvas(width, height);
         canvas.parent("visual-canvas");
         colorMode(RGB);
+
+        // Initialize particles
+        initParticles();
+      }
+
+      function windowResized() {
+        const canvasContainer = select(".visualization");
+        const width = canvasContainer.width;
+        const height = canvasContainer.height;
+        resizeCanvas(width, height);
+      }
+
+      function initParticles() {
+        particles = [];
+        for (let i = 0; i < 100; i++) {
+          particles.push({
+            x: random(width),
+            y: random(height),
+            size: random(2, 6),
+            speedX: random(-1, 1),
+            speedY: random(-1, 1),
+            color: [random(100, 255), random(100, 255), random(100, 255)],
+          });
+        }
       }
 
       function draw() {
@@ -432,55 +483,206 @@
 
         if (currentMood) {
           const moodData = moodMusic[currentMood];
-          drawVisualization(moodData);
+          drawMoodVisualization(moodData);
         } else {
           drawIdleVisualization();
         }
       }
 
-      function drawVisualization(moodData) {
-        // Create mood-specific visualization
+      function drawMoodVisualization(moodData) {
         const [r, g, b] = moodData.color;
         const energy = moodData.energy;
 
-        // Base particles
-        for (let i = 0; i < 50 * energy; i++) {
-          const size = random(2, 8 + 20 * energy);
-          const x = random(width);
-          const y = random(height);
-          const alpha = random(100, 200);
+        // Update and draw particles
+        for (let i = 0; i < particles.length; i++) {
+          let p = particles[i];
 
-          fill(r, g, b, alpha);
+          // Move particles based on mood energy
+          p.x += p.speedX * energy;
+          p.y += p.speedY * energy;
+
+          // Wrap around edges
+          if (p.x > width) p.x = 0;
+          if (p.x < 0) p.x = width;
+          if (p.y > height) p.y = 0;
+          if (p.y < 0) p.y = height;
+
+          // Draw particle
+          fill(p.color[0], p.color[1], p.color[2], 200);
+          noStroke();
+          ellipse(p.x, p.y, p.size);
+        }
+
+        // Draw mood-specific elements
+        if (currentMood === "happy") {
+          drawHappyElements(r, g, b, energy);
+        } else if (currentMood === "sad") {
+          drawSadElements(r, g, b, energy);
+        } else if (currentMood === "calm") {
+          drawCalmElements(r, g, b, energy);
+        } else if (currentMood === "energetic") {
+          drawEnergeticElements(r, g, b, energy);
+        } else if (currentMood === "romantic") {
+          drawRomanticElements(r, g, b, energy);
+        } else if (currentMood === "focused") {
+          drawFocusedElements(r, g, b, energy);
+        }
+      }
+
+      function drawHappyElements(r, g, b, energy) {
+        // Smiley faces
+        for (let i = 0; i < 5; i++) {
+          let x = map(sin(frameCount / 30 + i), -1, 1, 50, width - 50);
+          let y = map(cos(frameCount / 40 + i), -1, 1, 50, height - 50);
+
+          // Face
+          fill(255, 220, 0);
+          ellipse(x, y, 40);
+
+          // Eyes
+          fill(0);
+          ellipse(x - 10, y - 5, 5);
+          ellipse(x + 10, y - 5, 5);
+
+          // Smile
+          noFill();
+          stroke(0);
+          strokeWeight(2);
+          arc(x, y + 5, 20, 15, 0, PI);
+        }
+      }
+
+      function drawSadElements(r, g, b, energy) {
+        // Rain droplets
+        for (let i = 0; i < 20; i++) {
+          let x = random(width);
+          let y = (frameCount * 2 + i * 20) % height;
+
+          fill(r, g, b);
+          noStroke();
+          ellipse(x, y, 3, 10);
+        }
+
+        // Sad faces
+        for (let i = 0; i < 3; i++) {
+          let x = width / 4 + (i * width) / 2;
+          let y = height / 2;
+
+          // Face
+          fill(200, 200, 200);
+          ellipse(x, y, 50);
+
+          // Eyes
+          fill(0);
+          ellipse(x - 10, y - 5, 5);
+          ellipse(x + 10, y - 5, 5);
+
+          // Frown
+          noFill();
+          stroke(0);
+          strokeWeight(2);
+          arc(x, y + 10, 20, 15, PI, TWO_PI);
+        }
+      }
+
+      function drawCalmElements(r, g, b, energy) {
+        // Gentle waves
+        noFill();
+        stroke(r, g, b, 150);
+        strokeWeight(2);
+
+        for (let i = 0; i < 3; i++) {
+          beginShape();
+          for (let x = 0; x < width; x += 20) {
+            let y = height / 2 + sin(x / 100 + frameCount / 50 + i) * 20;
+            vertex(x, y);
+          }
+          endShape();
+        }
+
+        // Floating circles
+        for (let i = 0; i < 10; i++) {
+          let x = width / 2 + sin(frameCount / 30 + i) * 100;
+          let y = height / 2 + cos(frameCount / 40 + i) * 100;
+          let size = map(sin(frameCount / 20 + i), -1, 1, 5, 20);
+
+          fill(r, g, b, 100);
           noStroke();
           ellipse(x, y, size);
         }
+      }
 
-        // Add energy lines for high energy moods
-        if (energy > 0.7) {
-          stroke(r, g, b, 100);
-          strokeWeight(1);
-          for (let i = 0; i < 20 * energy; i++) {
-            const x1 = random(width);
-            const y1 = random(height);
-            const length = random(20, 100);
-            line(x1, y1, x1 + length, y1 + random(-20, 20));
-          }
+      function drawEnergeticElements(r, g, b, energy) {
+        // Dynamic lines
+        stroke(r, g, b);
+        strokeWeight(2);
+
+        for (let i = 0; i < 20; i++) {
+          let x1 = random(width);
+          let y1 = random(height);
+          let angle = random(TWO_PI);
+          let length = random(20, 100);
+          let x2 = x1 + cos(angle) * length;
+          let y2 = y1 + sin(angle) * length;
+
+          line(x1, y1, x2, y2);
         }
 
-        // Add gentle waves for calm moods
-        if (energy < 0.5) {
-          noFill();
-          stroke(r, g, b, 100);
-          strokeWeight(2);
-          for (let i = 0; i < 5; i++) {
-            beginShape();
-            for (let x = 0; x < width; x += 10) {
-              const y = height / 2 + sin(x / 50 + frameCount / 50 + i) * 30;
-              vertex(x, y);
-            }
-            endShape();
-          }
+        // Pulsing center
+        let pulseSize = map(sin(frameCount / 5), -1, 1, 50, 100);
+        fill(r, g, b, 100);
+        noStroke();
+        ellipse(width / 2, height / 2, pulseSize);
+      }
+
+      function drawRomanticElements(r, g, b, energy) {
+        // Hearts
+        for (let i = 0; i < 10; i++) {
+          let x = map(sin(frameCount / 30 + i), -1, 1, 50, width - 50);
+          let y = map(cos(frameCount / 40 + i), -1, 1, 50, height - 50);
+
+          drawHeart(x, y, 15, r, g, b);
         }
+      }
+
+      function drawFocusedElements(r, g, b, energy) {
+        // Concentric circles
+        noFill();
+        stroke(r, g, b);
+        strokeWeight(1);
+
+        for (let i = 0; i < 10; i++) {
+          let size = i * 30 + sin(frameCount / 20) * 5;
+          ellipse(width / 2, height / 2, size);
+        }
+
+        // Beams to center
+        for (let i = 0; i < 8; i++) {
+          let angle = (i / 8) * TWO_PI;
+          let x1 = width / 2 + cos(angle) * 150;
+          let y1 = height / 2 + sin(angle) * 150;
+
+          stroke(r, g, b, 150);
+          line(x1, y1, width / 2, height / 2);
+        }
+      }
+
+      function drawHeart(x, y, size, r, g, b) {
+        fill(r, g, b);
+        noStroke();
+
+        beginShape();
+        vertex(x, y);
+        bezierVertex(
+          x - size,
+          y - size,
+          x - size * 2,
+          y + size,
+          x,
+          y + size * 2
+        );
+        bezierVertex(x + size * 2, y + size, x + size, y - size, x, y);
+        endShape(CLOSE);
       }
 
       function drawIdleVisualization() {
@@ -499,14 +701,23 @@
         }
 
         // Floating particles
-        for (let i = 0; i < 20; i++) {
-          const x = random(width);
-          const y = random(height);
-          const size = random(2, 5);
-          const alpha = random(50, 150);
-          fill(255, 255, 255, alpha);
+        for (let i = 0; i < particles.length; i++) {
+          let p = particles[i];
+
+          // Move particles
+          p.x += p.speedX;
+          p.y += p.speedY;
+
+          // Wrap around edges
+          if (p.x > width) p.x = 0;
+          if (p.x < 0) p.x = width;
+          if (p.y > height) p.y = 0;
+          if (p.y < 0) p.y = height;
+
+          // Draw particle
+          fill(p.color[0], p.color[1], p.color[2], 200);
           noStroke();
-          ellipse(x, y, size);
+          ellipse(p.x, p.y, p.size);
         }
       }
 
@@ -540,9 +751,12 @@
         const moodData = moodMusic[mood];
 
         // Update UI
-        document.querySelector(".mood-text").textContent = mood;
+        document.querySelector(".mood-text").textContent =
+          mood.charAt(0).toUpperCase() + mood.slice(1);
         document.querySelector(".song-title").textContent = moodData.title;
-        document.querySelector(".mood-indicator").textContent = `Mood: ${mood}`;
+        document.querySelector(".mood-indicator").textContent = `Mood: ${
+          mood.charAt(0).toUpperCase() + mood.slice(1)
+        }`;
 
         // Change background gradient based on mood
         const [r, g, b] = moodData.color;
@@ -551,6 +765,9 @@
                 rgba(${r}, ${g}, ${b}, 0.2) 0%, 
                 #16213e 100%)
             `;
+
+        // Initialize particles for the new mood
+        initParticles();
 
         // Simulate loading a track for this mood
         simulateLoadTrack(mood);
@@ -580,6 +797,9 @@
         // Update play button to show we're ready
         isPlaying = false;
         document.querySelector(".play-btn").textContent = "▶";
+
+        // Reset progress bar
+        document.querySelector(".progress-bar").style.width = "0%";
       }
 
       function togglePlayback() {
@@ -595,16 +815,22 @@
         } else {
           document.querySelector(".play-btn").textContent = "▶";
           console.log("Playback paused");
+
+          // Clear the progress interval
+          clearInterval(progressInterval);
         }
       }
 
       function simulatePlayback() {
+        // Clear any existing interval
+        clearInterval(progressInterval);
+
         // Simple progress bar animation for demo purposes
         let width = 0;
         const progressBar = document.querySelector(".progress-bar");
-        const interval = setInterval(() => {
+        progressInterval = setInterval(() => {
           if (!isPlaying) {
-            clearInterval(interval);
+            clearInterval(progressInterval);
             return;
           }
 
