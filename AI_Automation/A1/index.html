@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MoodTune - Emotion-Based Music Player</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sentiment/5.0.2/sentiment.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        color: #fff;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      header {
+        text-align: center;
+        padding: 20px 0;
+        z-index: 10;
+      }
+
+      h1 {
+        font-size: 3.5rem;
+        background: linear-gradient(45deg, #e94584, #0ff0fc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 10px;
+        text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .tagline {
+        font-size: 1.2rem;
+        color: #a1a8c9;
+        margin-bottom: 30px;
+      }
+
+      .main-content {
+        display: flex;
+        flex: 1;
+        gap: 30px;
+        z-index: 10;
+        margin-bottom: 30px;
+      }
+
+      .mood-selector {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 25px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        max-height: 600px;
+      }
+
+      .visualization {
+        flex: 2;
+        border-radius: 20px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        min-height: 500px;
+        background: rgba(0, 0, 0, 0.2);
+      }
+
+      .section-title {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: #6e88ff;
+      }
+
+      .mood-buttons {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin-bottom: 30px;
+      }
+
+      .mood-btn {
+        padding: 15px;
+        border: none;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .mood-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .mood-btn.active {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .mood-btn.happy {
+        background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+        color: #333;
+      }
+      .mood-btn.sad {
+        background: linear-gradient(45deg, #4facfe, #00f2fe);
+      }
+      .mood-btn.calm {
+        background: linear-gradient(45deg, #6a11cb, #2575fc);
+      }
+      .mood-btn.energetic {
+        background: linear-gradient(45deg, #f83600, #f9d423);
+        color: #333;
+      }
+      .mood-btn.romantic {
+        background: linear-gradient(45deg, #ff057c, #8d0b93);
+      }
+      .mood-btn.focused {
+        background: linear-gradient(45deg, #0ba360, #3cba92);
+      }
+
+      .text-input {
+        margin-top: 25px;
+      }
+
+      textarea {
+        width: 100%;
+        height: 120px;
+        background: rgba(255, 255, 255, 0.07);
+        border: none;
+        border-radius: 12px;
+        padding: 15px;
+        color: #fff;
+        font-size: 1rem;
+        margin-bottom: 15px;
+        resize: none;
+      }
+
+      textarea::placeholder {
+        color: #a1a8c9;
+      }
+
+      textarea:focus {
+        outline: 2px solid #6e88ff;
+      }
+
+      .analyze-btn {
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 12px;
+        background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .analyze-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+      }
+
+      .player-controls {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 25px;
+        margin-top: 30px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+      }
+
+      .song-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .album-art {
+        width: 80px;
+        height: 80px;
+        border-radius: 12px;
+        background: linear-gradient(45deg, #8e2de2, #4a00e0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+      }
+
+      .song-details {
+        flex: 1;
+      }
+
+      .song-title {
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+      }
+
+      .mood-indicator {
+        font-size: 0.9rem;
+        color: #a1a8c9;
+      }
+
+      .progress-container {
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        margin: 15px 0;
+        cursor: pointer;
+      }
+
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #6e88ff, #ff6b6b);
+        border-radius: 3px;
+        transition: width 0.1s linear;
+      }
+
+      .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+      }
+
+      .control-btn {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .control-btn:hover {
+        color: #6e88ff;
+        transform: scale(1.1);
+      }
+
+      .play-btn {
+        background: linear-gradient(45deg, #6e88ff, #ff6b6b);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        box-shadow: 0 5px 15px rgba(110, 136, 255, 0.4);
+      }
+
+      .visual-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .mood-display {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-size: 1.2rem;
+        z-index: 11;
+      }
+
+      .mood-text {
+        color: #ff6b6b;
+        font-weight: bold;
+      }
+
+      footer {
+        text-align: center;
+        padding: 20px 0;
+        color: #a1a8c9;
+        font-size: 0.9rem;
+        z-index: 10;
+      }
+
+      @media (max-width: 900px) {
+        .main-content {
+          flex-direction: column;
+        }
+
+        h1 {
+          font-size: 2.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>MoodTune</h1>
+        <p class="tagline">Your emotion-based music experience</p>
+      </header>
+
+      <div class="main-content">
+        <div class="mood-selector">
+          <h2 class="section-title">Select Your Mood</h2>
+          <div class="mood-buttons">
+            <button class="mood-btn happy" data-mood="happy">😊 Happy</button>
+            <button class="mood-btn sad" data-mood="sad">😢 Sad</button>
+            <button class="mood-btn calm" data-mood="calm">😌 Calm</button>
+            <button class="mood-btn energetic" data-mood="energetic">
+              ⚡ Energetic
+            </button>
+            <button class="mood-btn romantic" data-mood="romantic">
+              ❤️ Romantic
+            </button>
+            <button class="mood-btn focused" data-mood="focused">
+              🎯 Focused
+            </button>
+          </div>
+
+          <div class="text-input">
+            <h2 class="section-title">Or Describe Your Mood</h2>
+            <textarea
+              id="mood-text"
+              placeholder="Type how you're feeling today..."
+            ></textarea>
+            <button class="analyze-btn" id="analyze-btn">
+              Analyze My Text
+            </button>
+          </div>
+        </div>
+
+        <div class="visualization">
+          <div id="visual-canvas" class="visual-canvas"></div>
+          <div class="mood-display">
+            Current Mood:
+            <span class="mood-text" id="current-mood-display">None</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="player-controls">
+        <div class="song-info">
+          <div class="album-art">🎵</div>
+          <div class="song-details">
+            <div class="song-title" id="song-title">
+              Select a mood to start playing
+            </div>
+            <div class="mood-indicator" id="mood-indicator">Mood: None</div>
+          </div>
+        </div>
+
+        <div class="progress-container">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div class="controls">
+          <button class="control-btn">🔁</button>
+          <button class="control-btn">⏮</button>
+          <button class="play-btn control-btn" id="play-btn">▶</button>
+          <button class="control-btn">⏭</button>
+          <button class="control-btn">🔀</button>
+        </div>
+      </div>
+
+      <footer>
+        <p>MoodTune © JinhuiLiang | Emotion-Based Music Player</p>
+      </footer>
+    </div>
+
+    <script>
+      // Global variables
+      let currentMood = null;
+      let isPlaying = false;
+      let progressInterval;
+      let animationTime = 0;
+      let currentAudio = null;
+      let audioContext = null;
+
+      // Mood to music mapping
+      const moodMusic = {
+        happy: {
+          title: "Upbeat Pop - 'Sunshine Day'",
+          color: [255, 223, 100],
+          energy: 0.8,
+          audioFile: null, // TODO: Replace with your MP3 file path, e.g., "audio/happy.mp3"
+        },
+        sad: {
+          title: "Melancholic Melodies - 'Rainy Nights'",
+          color: [100, 150, 255],
+          energy: 0.3,
+          audioFile: null, // TODO: Replace with your MP3 file path, e.g., "audio/sad.mp3"
+        },
+        calm: {
+          title: "Ambient Relaxation - 'Tranquil Waters'",
+          color: [100, 220, 200],
+          energy: 0.4,
+          audioFile: null, // TODO: Replace with your MP3 file path, e.g., "audio/calm.mp3"
+        },
+        energetic: {
+          title: "High Energy Dance - 'Electric Pulse'",
+          color: [255, 100, 100],
+          energy: 0.9,
+          audioFile: null, // TODO: Replace with your MP3 file path, e.g., "audio/energetic.mp3"
+        },
+        romantic: {
+          title: "Romantic Instrumentals - 'Hearts Entwined'",
+          color: [255, 100, 200],
+          energy: 0.6,
+          audioFile: null, // TODO: Replace with your MP3 file path, e.g., "audio/romantic.mp3"
+        },
+        focused: {
+          title: "Deep Focus - 'Concentration Zone'",
+          color: [150, 200, 255],
+          energy: 0.5,
+          audioFile: null, // TODO: Replace with your MP3 file path, e.g., "audio/focused.mp3"
+        },
+      };
+
+      // P5.js sketch
+      function setup() {
+        const canvasContainer = document.getElementById("visual-canvas");
+        if (canvasContainer) {
+          const rect = canvasContainer.getBoundingClientRect();
+          const canvas = createCanvas(rect.width, rect.height);
+          canvas.parent("visual-canvas");
+          colorMode(RGB);
+        }
+      }
+
+      function draw() {
+        // Clear background
+        background(26, 26, 46, 100);
+
+        animationTime += 0.02;
+
+        if (currentMood && moodMusic[currentMood]) {
+          drawMoodVisualization();
+        } else {
+          drawDefaultVisualization();
+        }
+      }
+
+      function drawMoodVisualization() {
+        const moodData = moodMusic[currentMood];
+        const [r, g, b] = moodData.color;
+
+        switch (currentMood) {
+          case "happy":
+            drawHappyAnimation(r, g, b);
+            break;
+          case "sad":
+            drawSadAnimation(r, g, b);
+            break;
+          case "calm":
+            drawCalmAnimation(r, g, b);
+            break;
+          case "energetic":
+            drawEnergeticAnimation(r, g, b);
+            break;
+          case "romantic":
+            drawRomanticAnimation(r, g, b);
+            break;
+          case "focused":
+            drawFocusedAnimation(r, g, b);
+            break;
+        }
+      }
+
+      function drawHappyAnimation(r, g, b) {
+        // Bouncing circles
+        for (let i = 0; i < 8; i++) {
+          let x = width / 2 + cos(animationTime * 2 + i * 0.8) * 120;
+          let y = height / 2 + sin(animationTime * 2 + i * 0.8) * 120;
+          let size = 30 + sin(animationTime * 3 + i) * 15;
+
+          fill(r, g, b, 150);
+          noStroke();
+          ellipse(x, y, size);
+
+          // Inner glow
+          fill(255, 255, 255, 100);
+          ellipse(x, y, size * 0.5);
+        }
+
+        // Smiley faces
+        for (let i = 0; i < 3; i++) {
+          let x = map(sin(animationTime + i * 2), -1, 1, 100, width - 100);
+          let y = map(
+            cos(animationTime * 0.8 + i * 2),
+            -1,
+            1,
+            100,
+            height - 100
+          );
+
+          // Face
+          fill(255, 220, 100);
+          ellipse(x, y, 40);
+
+          // Eyes
+          fill(50);
+          ellipse(x - 8, y - 5, 4);
+          ellipse(x + 8, y - 5, 4);
+
+          // Smile
+          noFill();
+          stroke(50);
+          strokeWeight(2);
+          arc(x, y + 3, 20, 12, 0, PI);
+          noStroke();
+        }
+      }
+
+      function drawSadAnimation(r, g, b) {
+        // Rain drops
+        for (let i = 0; i < 50; i++) {
+          let x = (i * 15 + animationTime * 100) % width;
+          let y = (animationTime * 150 + i * 30) % height;
+
+          stroke(r, g, b, 120);
+          strokeWeight(2);
+          line(x, y, x, y + 12);
+        }
+
+        // Sad teardrops
+        noStroke();
+        for (let i = 0; i < 6; i++) {
+          let x = (width / 6) * i + width / 12;
+          let y = height / 2 + sin(animationTime + i) * 40;
+
+          fill(r, g, b, 180);
+          beginShape();
+          vertex(x, y - 10);
+          bezierVertex(x - 6, y - 2, x - 6, y + 6, x, y + 12);
+          bezierVertex(x + 6, y + 6, x + 6, y - 2, x, y - 10);
+          endShape(CLOSE);
+        }
+      }
+
+      function drawCalmAnimation(r, g, b) {
+        // Gentle waves
+        noFill();
+        strokeWeight(3);
+        for (let i = 0; i < 4; i++) {
+          stroke(r, g, b, 100 + i * 30);
+          beginShape();
+          for (let x = 0; x <= width; x += 10) {
+            let y = height / 2 + sin(x / 80 + animationTime + i) * (20 + i * 8);
+            vertex(x, y);
+          }
+          endShape();
+        }
+
+        // Floating bubbles
+        noStroke();
+        for (let i = 0; i < 10; i++) {
+          let x = width / 2 + sin(animationTime * 0.5 + i) * 140;
+          let y = height / 2 + cos(animationTime * 0.3 + i) * 100;
+          let size = map(sin(animationTime + i), -1, 1, 12, 25);
+
+          fill(r, g, b, 100);
+          ellipse(x, y, size);
+        }
+      }
+
+      function drawEnergeticAnimation(r, g, b) {
+        // Lightning bolts
+        stroke(255, 255, 100, 200);
+        strokeWeight(3);
+        for (let i = 0; i < 10; i++) {
+          if (int(animationTime * 10) % 15 < 8) {
+            let x1 = random(width);
+            let y1 = random(height);
+            let x2 = x1 + random(-50, 50);
+            let y2 = y1 + random(30, 80);
+
+            line(x1, y1, x2, y2);
+
+            // Add branches
+            let x3 = x2 + random(-30, 30);
+            let y3 = y2 + random(20, 40);
+            line(x2, y2, x3, y3);
+          }
+        }
+
+        // Pulsing stars
+        noStroke();
+        for (let i = 0; i < 12; i++) {
+          let x = random(width);
+          let y = random(height);
+          let pulse = sin(animationTime * 4 + i) * 0.5 + 0.5;
+
+          fill(r, g, b, 150 * pulse);
+          drawStar(x, y, 5, 15 * pulse, 8 * pulse);
+        }
+      }
+
+      function drawRomanticAnimation(r, g, b) {
+        // Floating hearts
+        noStroke();
+        for (let i = 0; i < 8; i++) {
+          let x = map(sin(animationTime * 0.6 + i), -1, 1, 80, width - 80);
+          let y = map(cos(animationTime * 0.4 + i), -1, 1, 80, height - 80);
+          let size = 12 + sin(animationTime + i) * 4;
+
+          fill(255, 100, 150, 180);
+          drawHeart(x, y, size);
+        }
+
+        // Romantic glow
+        for (let i = 0; i < 6; i++) {
+          let x = width / 2 + cos(animationTime + i) * 100;
+          let y = height / 2 + sin(animationTime + i) * 80;
+          let alpha = map(sin(animationTime * 2 + i), -1, 1, 30, 80);
+
+          fill(r, g, b, alpha);
+          ellipse(x, y, 40);
+        }
+      }
+
+      function drawFocusedAnimation(r, g, b) {
+        // Geometric grid
+        stroke(r, g, b, 120);
+        strokeWeight(2);
+        noFill();
+
+        let gridSize = 60;
+        for (let x = gridSize; x < width; x += gridSize) {
+          for (let y = gridSize; y < height; y += gridSize) {
+            let rotation = animationTime + x * 0.01 + y * 0.01;
+
+            push();
+            translate(x, y);
+            rotate(rotation);
+            rect(-15, -15, 30, 30);
+            pop();
+          }
+        }
+
+        // Orbiting elements
+        noStroke();
+        for (let i = 0; i < 5; i++) {
+          let angle = animationTime + i * (TWO_PI / 5);
+          let radius = 80 + i * 20;
+          let x = width / 2 + cos(angle) * radius;
+          let y = height / 2 + sin(angle) * radius;
+
+          fill(r, g, b, 150);
+          rect(x - 8, y - 8, 16, 16);
+        }
+      }
+
+      function drawDefaultVisualization() {
+        // Default idle animation
+        noFill();
+        stroke(110, 136, 255, 100);
+        strokeWeight(2);
+
+        for (let i = 0; i < 5; i++) {
+          let size = 60 + i * 30 + sin(animationTime) * 10;
+          ellipse(width / 2, height / 2, size);
+        }
+      }
+
+      function drawStar(x, y, npoints, radius1, radius2) {
+        let angle = TWO_PI / npoints;
+        let halfAngle = angle / 2.0;
+        beginShape();
+        for (let a = 0; a < TWO_PI; a += angle) {
+          let sx = x + cos(a) * radius2;
+          let sy = y + sin(a) * radius2;
+          vertex(sx, sy);
+          sx = x + cos(a + halfAngle) * radius1;
+          sy = y + sin(a + halfAngle) * radius1;
+          vertex(sx, sy);
+        }
+        endShape(CLOSE);
+      }
+
+      function drawHeart(x, y, size) {
+        beginShape();
+        vertex(x, y);
+        bezierVertex(
+          x - size / 2,
+          y - size / 2,
+          x - size,
+          y + size / 3,
+          x,
+          y + size
+        );
+        bezierVertex(x + size, y + size / 3, x + size / 2, y - size / 2, x, y);
+        endShape(CLOSE);
+      }
+
+      // Audio functions
+      function initializeAudio() {
+        // Initialize audio context for better browser compatibility
+        if (!audioContext) {
+          audioContext = new (window.AudioContext ||
+            window.webkitAudioContext)();
+        }
+      }
+
+      function loadAudioForMood(mood) {
+        const moodData = moodMusic[mood];
+
+        // Stop and cleanup current audio
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+          currentAudio = null;
+        }
+
+        // Load new audio if file path is provided
+        if (moodData.audioFile) {
+          try {
+            currentAudio = new Audio(moodData.audioFile);
+            currentAudio.loop = true; // Loop the track
+
+            // Audio event listeners
+            currentAudio.addEventListener("loadstart", () => {
+              console.log(`Loading audio for ${mood}...`);
+            });
+
+            currentAudio.addEventListener("canplaythrough", () => {
+              console.log(`Audio for ${mood} is ready to play`);
+            });
+
+            currentAudio.addEventListener("error", (e) => {
+              console.error(`Error loading audio for ${mood}:`, e);
+              showAudioError(mood);
+            });
+
+            currentAudio.addEventListener("timeupdate", () => {
+              updateProgressBar();
+            });
+
+            currentAudio.addEventListener("ended", () => {
+              // Reset playback state when track ends (if not looping)
+              isPlaying = false;
+              document.getElementById("play-btn").textContent = "▶";
+              document.getElementById("progress-bar").style.width = "0%";
+            });
+          } catch (error) {
+            console.error(`Failed to create audio for ${mood}:`, error);
+            showAudioError(mood);
+          }
+        } else {
+          console.log(`No audio file specified for ${mood} mood`);
+        }
+      }
+
+      function showAudioError(mood) {
+        // Visual feedback for audio loading errors
+        const songTitle = document.getElementById("song-title");
+        songTitle.textContent = `${moodMusic[mood].title} (Audio not available)`;
+        songTitle.style.color = "#ff6b6b";
+
+        setTimeout(() => {
+          songTitle.style.color = "#fff";
+        }, 3000);
+      }
+
+      function updateProgressBar() {
+        if (currentAudio && currentAudio.duration) {
+          const progress =
+            (currentAudio.currentTime / currentAudio.duration) * 100;
+          document.getElementById("progress-bar").style.width = `${progress}%`;
+        }
+      }
+
+      function windowResized() {
+        const canvasContainer = document.getElementById("visual-canvas");
+        if (canvasContainer) {
+          const rect = canvasContainer.getBoundingClientRect();
+          resizeCanvas(rect.width, rect.height);
+        }
+      }
+
+      // Event handlers
+      function setMood(mood) {
+        currentMood = mood;
+        const moodData = moodMusic[mood];
+
+        // Update all UI elements
+        document.getElementById("current-mood-display").textContent =
+          mood.charAt(0).toUpperCase() + mood.slice(1);
+        document.getElementById("song-title").textContent = moodData.title;
+        document.getElementById("mood-indicator").textContent = `Mood: ${
+          mood.charAt(0).toUpperCase() + mood.slice(1)
+        }`;
+
+        // Change background gradient
+        const [r, g, b] = moodData.color;
+        document.body.style.background = `
+          linear-gradient(135deg, 
+          rgba(${r}, ${g}, ${b}, 0.15) 0%, 
+          #16213e 100%)
+        `;
+
+        // Load audio for this mood
+        loadAudioForMood(mood);
+
+        // Reset playback state
+        isPlaying = false;
+        document.getElementById("play-btn").textContent = "▶";
+        document.getElementById("progress-bar").style.width = "0%";
+        clearInterval(progressInterval);
+
+        console.log(`Mood set to: ${mood}`);
+      }
+
+      function analyzeText(text) {
+        // Simple keyword-based sentiment analysis as fallback
+        function performSentimentAnalysis(text) {
+          const lowerText = text.toLowerCase();
+
+          // Define mood keywords
+          const moodKeywords = {
+            happy: [
+              "happy",
+              "joy",
+              "excited",
+              "great",
+              "awesome",
+              "fantastic",
+              "wonderful",
+              "amazing",
+              "cheerful",
+              "delighted",
+              "thrilled",
+              "ecstatic",
+              "elated",
+              "upbeat",
+              "positive",
+              "good",
+              "excellent",
+              "brilliant",
+              "superb",
+              "marvelous",
+            ],
+            sad: [
+              "sad",
+              "depressed",
+              "down",
+              "unhappy",
+              "miserable",
+              "melancholy",
+              "blue",
+              "gloomy",
+              "sorrowful",
+              "dejected",
+              "downhearted",
+              "disheartened",
+              "despondent",
+              "mournful",
+              "grief",
+              "crying",
+              "tears",
+              "heartbroken",
+              "devastated",
+            ],
+            energetic: [
+              "energetic",
+              "pumped",
+              "hyper",
+              "active",
+              "dynamic",
+              "vigorous",
+              "lively",
+              "animated",
+              "spirited",
+              "bouncy",
+              "zippy",
+              "peppy",
+              "enthusiastic",
+              "motivated",
+              "charged",
+              "fired up",
+              "ready",
+              "go",
+            ],
+            calm: [
+              "calm",
+              "peaceful",
+              "relaxed",
+              "serene",
+              "tranquil",
+              "quiet",
+              "still",
+              "zen",
+              "meditative",
+              "restful",
+              "soothing",
+              "gentle",
+              "mild",
+              "soft",
+              "placid",
+              "composed",
+              "balanced",
+              "centered",
+            ],
+            romantic: [
+              "love",
+              "romance",
+              "romantic",
+              "heart",
+              "valentine",
+              "kiss",
+              "affection",
+              "tender",
+              "intimate",
+              "passion",
+              "adore",
+              "cherish",
+              "sweetheart",
+              "darling",
+              "beloved",
+              "crush",
+              "dating",
+              "relationship",
+            ],
+            focused: [
+              "focused",
+              "concentrate",
+              "work",
+              "study",
+              "productive",
+              "determined",
+              "goal",
+              "target",
+              "organized",
+              "disciplined",
+              "serious",
+              "committed",
+              "dedicated",
+              "intense",
+              "deep",
+              "analytical",
+              "thinking",
+              "planning",
+            ],
+          };
+
+          // Count keyword matches for each mood
+          const moodScores = {};
+          for (const [mood, keywords] of Object.entries(moodKeywords)) {
+            moodScores[mood] = 0;
+            keywords.forEach((keyword) => {
+              if (lowerText.includes(keyword)) {
+                moodScores[mood]++;
+              }
+            });
+          }
+
+          // Find the mood with the highest score
+          let bestMood = "calm"; // default
+          let highestScore = 0;
+          for (const [mood, score] of Object.entries(moodScores)) {
+            if (score > highestScore) {
+              highestScore = score;
+              bestMood = mood;
+            }
+          }
+
+          // If no keywords match, analyze general sentiment
+          if (highestScore === 0) {
+            const positiveWords = [
+              "good",
+              "nice",
+              "ok",
+              "okay",
+              "fine",
+              "well",
+              "better",
+              "best",
+              "great",
+              "excellent",
+            ];
+            const negativeWords = [
+              "bad",
+              "terrible",
+              "awful",
+              "horrible",
+              "worst",
+              "hate",
+              "angry",
+              "mad",
+              "frustrated",
+              "annoyed",
+            ];
+
+            const positiveCount = positiveWords.filter((word) =>
+              lowerText.includes(word)
+            ).length;
+            const negativeCount = negativeWords.filter((word) =>
+              lowerText.includes(word)
+            ).length;
+
+            if (positiveCount > negativeCount) {
+              bestMood = "happy";
+            } else if (negativeCount > positiveCount) {
+              bestMood = "sad";
+            } else {
+              bestMood = "calm";
+            }
+          }
+
+          return bestMood;
+        }
+
+        // Try to use Sentiment.js if available, otherwise use keyword analysis
+        let mood;
+
+        if (typeof Sentiment !== "undefined") {
+          try {
+            const sentiment = new Sentiment();
+            const result = sentiment.analyze(text);
+
+            // Determine mood based on sentiment score
+            if (result.score > 3) {
+              mood = "happy";
+            } else if (result.score > 1) {
+              mood = "energetic";
+            } else if (result.score > -1) {
+              mood = "calm";
+            } else if (result.score > -3) {
+              mood = "focused";
+            } else {
+              mood = "sad";
+            }
+
+            // Check for romantic keywords
+            const romanticWords = [
+              "love",
+              "heart",
+              "romance",
+              "romantic",
+              "valentine",
+            ];
+            if (
+              romanticWords.some((word) => text.toLowerCase().includes(word))
+            ) {
+              mood = "romantic";
+            }
+
+            console.log("Using Sentiment.js analysis:", result);
+          } catch (error) {
+            console.log("Sentiment.js error, using keyword analysis");
+            mood = performSentimentAnalysis(text);
+          }
+        } else {
+          console.log("Sentiment.js not available, using keyword analysis");
+          mood = performSentimentAnalysis(text);
+        }
+
+        console.log(`Analyzed text: "${text}" -> Mood: ${mood}`);
+        setMood(mood);
+
+        // Update active button
+        document
+          .querySelectorAll(".mood-btn")
+          .forEach((btn) => btn.classList.remove("active"));
+        const moodButton = document.querySelector(`[data-mood="${mood}"]`);
+        if (moodButton) {
+          moodButton.classList.add("active");
+        }
+
+        // Clear the text area
+        document.getElementById("mood-text").value = "";
+      }
+
+      function togglePlayback() {
+        // Initialize audio context on first user interaction
+        initializeAudio();
+
+        if (!currentMood) {
+          alert("Please select a mood first!");
+          return;
+        }
+
+        // If no audio file is loaded, fall back to simulation
+        if (!currentAudio) {
+          console.log("No audio file loaded, using simulation mode");
+          simulatePlayback();
+          return;
+        }
+
+        isPlaying = !isPlaying;
+
+        if (isPlaying) {
+          document.getElementById("play-btn").textContent = "⏸";
+
+          // Resume audio context if suspended
+          if (audioContext && audioContext.state === "suspended") {
+            audioContext.resume();
+          }
+
+          // Play actual audio
+          currentAudio
+            .play()
+            .then(() => {
+              console.log(`Playing audio for ${currentMood}`);
+            })
+            .catch((error) => {
+              console.error("Audio playback failed:", error);
+              // Fall back to simulation if audio fails
+              simulatePlayback();
+            });
+        } else {
+          document.getElementById("play-btn").textContent = "▶";
+
+          // Pause actual audio
+          if (currentAudio) {
+            currentAudio.pause();
+          }
+
+          clearInterval(progressInterval);
+        }
+      }
+
+      function simulatePlayback() {
+        // Fallback simulation when no audio files are provided
+        isPlaying = !isPlaying;
+
+        if (isPlaying) {
+          document.getElementById("play-btn").textContent = "⏸";
+          console.log(`Simulating playback for ${currentMood} track`);
+
+          // Simple progress bar animation for demo purposes
+          clearInterval(progressInterval);
+          let progress = 0;
+          const progressBar = document.getElementById("progress-bar");
+
+          progressInterval = setInterval(() => {
+            if (!isPlaying) {
+              clearInterval(progressInterval);
+              return;
+            }
+
+            progress += 0.5;
+            if (progress > 100) progress = 0;
+            progressBar.style.width = `${progress}%`;
+          }, 100);
+        } else {
+          document.getElementById("play-btn").textContent = "▶";
+          clearInterval(progressInterval);
+        }
+      }
+
+      // Initialize when DOM is loaded
+      document.addEventListener("DOMContentLoaded", function () {
+        // Initialize p5.js
+        new p5();
+
+        // Initialize audio context on first user interaction
+        document.addEventListener("click", initializeAudio, { once: true });
+
+        // Mood button handlers
+        document.querySelectorAll(".mood-btn").forEach((button) => {
+          button.addEventListener("click", (e) => {
+            const mood = button.getAttribute("data-mood");
+            setMood(mood);
+
+            // Update button states
+            document
+              .querySelectorAll(".mood-btn")
+              .forEach((btn) => btn.classList.remove("active"));
+            button.classList.add("active");
+          });
+        });
+
+        // Text analysis handler
+        document.getElementById("analyze-btn").addEventListener("click", () => {
+          const text = document.getElementById("mood-text").value.trim();
+          if (text) {
+            analyzeText(text);
+          }
+        });
+
+        // Play button handler
+        document
+          .getElementById("play-btn")
+          .addEventListener("click", togglePlayback);
+
+        // Progress bar click handler for seeking (when audio files are loaded)
+        document
+          .querySelector(".progress-container")
+          .addEventListener("click", (e) => {
+            if (currentAudio && currentAudio.duration) {
+              const rect = e.target.getBoundingClientRect();
+              const clickPosition = (e.clientX - rect.left) / rect.width;
+              const newTime = clickPosition * currentAudio.duration;
+              currentAudio.currentTime = newTime;
+            }
+          });
+      });
+    </script>
+  </body>
+</html>
