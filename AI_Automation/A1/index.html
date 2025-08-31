@@ -1959,8 +1959,25 @@
           } else {
             visualizationContainer.classList.add("fullscreen");
             isFullscreen = true;
-            fullscreenBtn.innerHTML = "⛷";
+            fullscreenBtn.innerHTML = "⛶";
             fullscreenBtn.title = "Exit Fullscreen";
+            setTimeout(() => resizeCanvas(), 100);
+          }
+        } else {
+          // Exit fullscreen logic
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+          } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+          } else {
+            visualizationContainer.classList.remove("fullscreen");
+            isFullscreen = false;
+            fullscreenBtn.innerHTML = "⛶";
+            fullscreenBtn.title = "Toggle Fullscreen";
             setTimeout(() => resizeCanvas(), 100);
           }
         }
