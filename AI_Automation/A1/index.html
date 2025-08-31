@@ -607,6 +607,7 @@
       let currentAudio = null;
       let audioContext = null;
       let isFullscreen = false;
+      let userInteracted = false; // Track user interaction for autoplay
 
       // Canvas variables
       let canvas, ctx;
@@ -619,54 +620,52 @@
       let romanticParticleInterval;
       let romanticHeartInterval;
 
-      // Mood to music mapping (unchanged)
+      // Mood to music mapping - Update these paths to your MP3 files
       const moodMusic = {
         happy: {
           title: "Upbeat Pop - 'Sunshine Day'",
           color: [255, 223, 100],
           energy: 0.8,
-          audioFile: "/AI_Automation/A1/audio/happy.mp3",
+          audioFile: "audio/happy.mp3", // Place your MP3 file here
         },
         sad: {
           title: "Melancholic Melodies - 'Rainy Nights'",
           color: [100, 150, 255],
           energy: 0.3,
-          audioFile: "/AI_Automation/A1/audio/sad.mp3",
+          audioFile: "audio/sad.mp3", // Place your MP3 file here
         },
         calm: {
           title: "Ambient Relaxation - 'Tranquil Waters'",
           color: [100, 220, 200],
           energy: 0.4,
-          audioFile: "/AI_Automation/A1/audio/calm.mp3",
+          audioFile: "audio/calm.mp3", // Place your MP3 file here
         },
         energetic: {
           title: "High Energy Dance - 'Electric Pulse'",
           color: [255, 100, 100],
           energy: 0.9,
-          audioFile: "/AI_Automation/A1/audio/energetic.mp3",
+          audioFile: "audio/energetic.mp3", // Place your MP3 file here
         },
         romantic: {
           title: "Romantic Instrumentals - 'Hearts Entwined'",
           color: [255, 100, 200],
           energy: 0.6,
-          audioFile: "/AI_Automation/A1/audio/romantic.mp3",
+          audioFile: "audio/romantic.mp3", // Place your MP3 file here
         },
         focused: {
           title: "Deep Focus - 'Concentration Zone'",
           color: [150, 200, 255],
           energy: 0.5,
-          audioFile: "/AI_Automation/A1/audio/focused.mp3",
+          audioFile: "audio/focused.mp3", // Place your MP3 file here
         },
       };
 
       // Helper function to convert HSL to RGBA
       function hslToRgba(hslColor) {
-        // Extract h, s, l values from HSL string like "hsl(320, 70%, 65%)"
         const hslMatch = hslColor.match(
           /hsl\((\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?)%?,\s*(\d+(?:\.\d+)?)%?\)/
         );
         if (!hslMatch) {
-          // Fallback to pink if parsing fails
           return { r: 255, g: 100, b: 200 };
         }
 
@@ -685,7 +684,7 @@
 
         let r, g, b;
         if (s === 0) {
-          r = g = b = l; // achromatic
+          r = g = b = l;
         } else {
           const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
           const p = 2 * l - q;
@@ -713,16 +712,15 @@
         } else if (colorStr.startsWith("rgb(")) {
           return colorStr.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
         } else if (colorStr.startsWith("rgba(")) {
-          // Replace existing alpha
           return colorStr.replace(
             /rgba\(([^,]+,[^,]+,[^,]+),([^)]+)\)/,
             `rgba($1,${alpha})`
           );
         }
-        return colorStr; // fallback for other color formats
+        return colorStr;
       }
 
-      // Particle and element classes
+      // Particle class
       class Particle {
         constructor(x, y, vx, vy, color, size, life, type = "normal") {
           this.x = x;
@@ -746,7 +744,6 @@
           this.alpha = this.life / this.maxLife;
           this.rotation += this.rotationSpeed;
 
-          // Add slight wind effect for romantic petals
           if (this.type === "leaf" || this.type === "heart") {
             this.vx += Math.sin(time * 0.01 + this.x * 0.01) * 0.1;
           }
@@ -794,7 +791,6 @@
           ctx.arc(0, 0, this.size, 0, Math.PI * 2);
           ctx.fill();
 
-          // Highlight
           ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
           ctx.beginPath();
           ctx.arc(
@@ -847,7 +843,6 @@
           ctx.closePath();
           ctx.fill();
 
-          // Add a subtle glow effect
           ctx.shadowBlur = 10;
           ctx.shadowColor = this.color;
           ctx.fill();
@@ -893,7 +888,6 @@
         particles = [];
         moodElements = [];
 
-        // Create flowing rainbow streams
         for (let i = 0; i < 8; i++) {
           moodElements.push({
             type: "rainbow_stream",
@@ -910,7 +904,6 @@
           });
         }
 
-        // Sparkling joy particles
         setInterval(() => {
           if (currentMood !== "happy") return;
           for (let i = 0; i < 5; i++) {
@@ -934,13 +927,11 @@
         particles = [];
         moodElements = [];
 
-        // Create melancholic water drops
         moodElements.push({
           type: "rain_system",
           drops: [],
         });
 
-        // Misty atmosphere
         for (let i = 0; i < 15; i++) {
           moodElements.push({
             type: "mist_cloud",
@@ -952,7 +943,6 @@
           });
         }
 
-        // Gentle tears
         setInterval(() => {
           if (currentMood !== "sad") return;
           particles.push(
@@ -973,13 +963,11 @@
         particles = [];
         moodElements = [];
 
-        // Zen garden ripples
         moodElements.push({
           type: "zen_garden",
           ripples: [],
         });
 
-        // Floating meditation orbs
         for (let i = 0; i < 12; i++) {
           moodElements.push({
             type: "meditation_orb",
@@ -992,7 +980,6 @@
           });
         }
 
-        // Gentle breathing particles
         setInterval(() => {
           if (currentMood !== "calm") return;
           particles.push(
@@ -1014,7 +1001,6 @@
         particles = [];
         moodElements = [];
 
-        // Electric energy streams
         for (let i = 0; i < 6; i++) {
           moodElements.push({
             type: "energy_bolt",
@@ -1025,7 +1011,6 @@
           });
         }
 
-        // Pulsing energy core
         moodElements.push({
           type: "energy_core",
           x: canvas.width / 2,
@@ -1034,7 +1019,6 @@
           pulsePhase: 0,
         });
 
-        // High-energy particles
         setInterval(() => {
           if (currentMood !== "energetic") return;
           for (let i = 0; i < 8; i++) {
@@ -1056,13 +1040,10 @@
       }
 
       function createRomanticAnimation() {
-        // Clear any existing romantic intervals first
         clearRomanticIntervals();
-
         particles = [];
         moodElements = [];
 
-        // Romantic atmosphere with soft glows
         for (let i = 0; i < 20; i++) {
           moodElements.push({
             type: "romantic_glow",
@@ -1074,14 +1055,12 @@
           });
         }
 
-        // Rose petals falling - using interval stored in global variable
         romanticParticleInterval = setInterval(() => {
           if (currentMood !== "romantic") {
             clearRomanticIntervals();
             return;
           }
 
-          // Create multiple petals at once for better visual effect
           for (let i = 0; i < 2; i++) {
             particles.push(
               new Particle(
@@ -1096,9 +1075,8 @@
               )
             );
           }
-        }, 150); // More frequent generation
+        }, 150);
 
-        // Floating hearts - using interval stored in global variable
         romanticHeartInterval = setInterval(() => {
           if (currentMood !== "romantic") {
             clearRomanticIntervals();
@@ -1124,14 +1102,12 @@
         particles = [];
         moodElements = [];
 
-        // Neural network visualization
         moodElements.push({
           type: "neural_network",
           nodes: [],
           connections: [],
         });
 
-        // Initialize neural network
         const network = moodElements[0];
         for (let i = 0; i < 25; i++) {
           network.nodes.push({
@@ -1143,7 +1119,6 @@
           });
         }
 
-        // Create connections
         network.nodes.forEach((node, i) => {
           for (let j = i + 1; j < network.nodes.length; j++) {
             const other = network.nodes[j];
@@ -1159,7 +1134,6 @@
           }
         });
 
-        // Data flow particles
         setInterval(() => {
           if (currentMood !== "focused") return;
           const connection =
@@ -1203,7 +1177,6 @@
         animationFrame = requestAnimationFrame(animate);
         time++;
 
-        // Clear canvas with fade effect
         ctx.fillStyle = "rgba(10, 10, 21, 0.1)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -1248,7 +1221,6 @@
               element.x = Math.random() * canvas.width;
             }
 
-            // Draw flowing rainbow stream
             ctx.save();
             const gradient = ctx.createLinearGradient(
               0,
@@ -1285,7 +1257,6 @@
               element.x = -element.size;
             }
 
-            // Draw misty clouds
             ctx.save();
             ctx.globalAlpha = element.opacity;
             const gradient = ctx.createRadialGradient(
@@ -1317,7 +1288,6 @@
             element.y =
               element.baseY + Math.sin(time * 0.01 + element.phase) * 20;
 
-            // Draw meditation orb with soft glow
             ctx.save();
             const gradient = ctx.createRadialGradient(
               element.x,
@@ -1336,14 +1306,12 @@
             ctx.arc(element.x, element.y, element.size * 2, 0, Math.PI * 2);
             ctx.fill();
 
-            // Inner orb
             ctx.fillStyle = adjustColorAlpha(element.color, 0.8);
             ctx.beginPath();
             ctx.arc(element.x, element.y, element.size * 0.5, 0, Math.PI * 2);
             ctx.fill();
             ctx.restore();
           } else if (element.type === "zen_garden") {
-            // Create ripples occasionally
             if (Math.random() < 0.02) {
               element.ripples.push({
                 x: Math.random() * canvas.width,
@@ -1354,7 +1322,6 @@
               });
             }
 
-            // Update and draw ripples
             element.ripples = element.ripples.filter((ripple) => {
               ripple.radius += ripple.maxRadius / ripple.life;
               ripple.life--;
@@ -1381,7 +1348,6 @@
           if (element.type === "energy_bolt") {
             element.life--;
             if (element.life <= 0 || element.points.length === 0) {
-              // Generate new lightning bolt
               element.points = [];
               element.life = 30 + Math.random() * 20;
 
@@ -1391,7 +1357,6 @@
               const endY =
                 canvas.height * 0.7 + Math.random() * canvas.height * 0.3;
 
-              // Create jagged path
               const segments = 8 + Math.random() * 8;
               for (let i = 0; i <= segments; i++) {
                 const t = i / segments;
@@ -1403,10 +1368,9 @@
               }
             }
 
-            // Draw lightning bolt
             if (element.points.length > 1) {
               ctx.save();
-              ctx.globalAlpha = Math.random() > 0.3 ? 0.8 : 0.3; // Flickering effect
+              ctx.globalAlpha = Math.random() > 0.3 ? 0.8 : 0.3;
               ctx.strokeStyle = element.color;
               ctx.lineWidth = element.width;
               ctx.lineCap = "round";
@@ -1419,7 +1383,6 @@
               });
               ctx.stroke();
 
-              // Glow effect
               ctx.shadowBlur = 20;
               ctx.shadowColor = element.color;
               ctx.stroke();
@@ -1429,7 +1392,6 @@
             element.pulsePhase += 0.1;
             const pulseSize = element.size + Math.sin(element.pulsePhase) * 20;
 
-            // Draw pulsing energy core
             ctx.save();
             const gradient = ctx.createRadialGradient(
               element.x,
@@ -1458,11 +1420,9 @@
             element.pulse += 0.03;
             const glowSize = element.size + Math.sin(element.pulse) * 15;
 
-            // Draw romantic glow with enhanced visibility
             ctx.save();
             ctx.globalAlpha = 0.4 + Math.sin(element.pulse) * 0.3;
 
-            // Convert HSL to RGBA for proper alpha blending
             const rgbaColor = hslToRgba(element.color);
 
             const gradient = ctx.createRadialGradient(
@@ -1499,12 +1459,10 @@
       function updateFocusedAnimation() {
         moodElements.forEach((element) => {
           if (element.type === "neural_network") {
-            // Update node pulses
             element.nodes.forEach((node) => {
               node.pulse += 0.05;
             });
 
-            // Draw connections
             ctx.save();
             element.connections.forEach((conn) => {
               conn.pulse += 0.1;
@@ -1522,7 +1480,6 @@
               ctx.stroke();
             });
 
-            // Draw nodes
             element.nodes.forEach((node) => {
               const nodeSize = node.size + Math.sin(node.pulse) * 3;
 
@@ -1534,7 +1491,6 @@
               ctx.arc(node.x, node.y, nodeSize, 0, Math.PI * 2);
               ctx.fill();
 
-              // Node glow
               ctx.globalAlpha = 0.3;
               ctx.fillStyle = `hsl(${
                 220 + Math.sin(node.pulse) * 10
@@ -1557,7 +1513,6 @@
       }
 
       function drawDefaultVisualization() {
-        // Gentle ambient animation when no mood is selected
         ctx.save();
         ctx.globalAlpha = 0.5;
 
@@ -1578,7 +1533,7 @@
         ctx.restore();
       }
 
-      // Audio functions (unchanged from original)
+      // Audio functions
       function initializeAudio() {
         if (!audioContext) {
           audioContext = new (window.AudioContext ||
@@ -1589,63 +1544,399 @@
       function loadAudioForMood(mood) {
         const moodData = moodMusic[mood];
 
+        // Stop and clean up previous audio
         if (currentAudio) {
           currentAudio.pause();
           currentAudio.currentTime = 0;
+          currentAudio.removeEventListener("loadstart", handleLoadStart);
+          currentAudio.removeEventListener(
+            "canplaythrough",
+            handleCanPlayThrough
+          );
+          currentAudio.removeEventListener("error", handleAudioError);
+          currentAudio.removeEventListener("timeupdate", updateProgressBar);
+          currentAudio.removeEventListener("ended", handleAudioEnded);
           currentAudio = null;
         }
 
+        // Clear any existing progress interval
+        if (progressInterval) {
+          clearInterval(progressInterval);
+          progressInterval = null;
+        }
+
+        // Create new audio instance
         if (moodData.audioFile) {
           try {
             currentAudio = new Audio(moodData.audioFile);
             currentAudio.loop = true;
+            currentAudio.volume = 0.7; // Set comfortable volume
+            currentAudio.preload = "auto";
 
-            currentAudio.addEventListener("loadstart", () => {
-              console.log(`Loading audio for ${mood}...`);
-            });
+            // Add event listeners
+            currentAudio.addEventListener("loadstart", handleLoadStart);
+            currentAudio.addEventListener(
+              "canplaythrough",
+              handleCanPlayThrough
+            );
+            currentAudio.addEventListener("error", handleAudioError);
+            currentAudio.addEventListener("timeupdate", updateProgressBar);
+            currentAudio.addEventListener("ended", handleAudioEnded);
 
-            currentAudio.addEventListener("canplaythrough", () => {
-              console.log(`Audio for ${mood} is ready to play`);
-            });
+            console.log(`Loading audio: ${moodData.audioFile}`);
 
-            currentAudio.addEventListener("error", (e) => {
-              console.error(`Error loading audio for ${mood}:`, e);
-              showAudioError(mood);
-            });
-
-            currentAudio.addEventListener("timeupdate", () => {
-              updateProgressBar();
-            });
-
-            currentAudio.addEventListener("ended", () => {
-              isPlaying = false;
-              document.getElementById("play-btn").textContent = "▶";
-              document.getElementById("progress-bar").style.width = "0%";
-            });
+            // Load the audio
+            currentAudio.load();
           } catch (error) {
             console.error(`Failed to create audio for ${mood}:`, error);
             showAudioError(mood);
+            fallbackToSimulation();
           }
         } else {
           console.log(`No audio file specified for ${mood} mood`);
+          fallbackToSimulation();
         }
+      }
+
+      // Audio event handlers
+      function handleLoadStart() {
+        console.log("Audio loading started...");
+        document.getElementById("song-title").style.color = "#a1a8c9";
+      }
+
+      function handleCanPlayThrough() {
+        console.log("Audio ready to play");
+        document.getElementById("song-title").style.color = "#fff";
+      }
+
+      function handleAudioError(e) {
+        console.error("Audio loading error:", e);
+        console.error("Error details:", {
+          error: currentAudio ? currentAudio.error : "Unknown",
+          networkState: currentAudio ? currentAudio.networkState : "Unknown",
+          readyState: currentAudio ? currentAudio.readyState : "Unknown",
+        });
+
+        showAudioError(currentMood);
+        fallbackToSimulation();
+      }
+
+      function handleAudioEnded() {
+        // This shouldn't happen with loop=true, but just in case
+        if (isPlaying) {
+          currentAudio.currentTime = 0;
+          currentAudio.play().catch(handlePlayError);
+        }
+      }
+
+      function handlePlayError(error) {
+        console.error("Play error:", error);
+        showAudioError(currentMood);
+        fallbackToSimulation();
       }
 
       function showAudioError(mood) {
         const songTitle = document.getElementById("song-title");
-        songTitle.textContent = `${moodMusic[mood].title} (Audio not available)`;
+        songTitle.textContent = `${moodMusic[mood].title} (Audio unavailable - check file path)`;
         songTitle.style.color = "#ff6b6b";
 
         setTimeout(() => {
           songTitle.style.color = "#fff";
-        }, 3000);
+        }, 4000);
+      }
+
+      function fallbackToSimulation() {
+        console.log("Falling back to simulation mode");
+        simulatePlayback();
+      }
+
+      function simulatePlayback() {
+        isPlaying = true;
+        document.getElementById("play-btn").textContent = "⏸";
+
+        let progress = 0;
+        progressInterval = setInterval(() => {
+          if (!isPlaying) {
+            clearInterval(progressInterval);
+            progressInterval = null;
+            return;
+          }
+
+          progress += 0.3; // Slower progress for realistic feel
+          if (progress >= 100) {
+            progress = 0; // Loop
+          }
+
+          document.getElementById("progress-bar").style.width = `${progress}%`;
+        }, 100);
       }
 
       function updateProgressBar() {
-        if (currentAudio && currentAudio.duration) {
+        if (
+          currentAudio &&
+          currentAudio.duration &&
+          !isNaN(currentAudio.duration)
+        ) {
           const progress =
             (currentAudio.currentTime / currentAudio.duration) * 100;
           document.getElementById("progress-bar").style.width = `${progress}%`;
+        }
+      }
+
+      function autoPlayMood() {
+        if (!userInteracted) {
+          console.log("Cannot autoplay - no user interaction yet");
+          return;
+        }
+
+        initializeAudio();
+
+        if (!currentAudio) {
+          console.log("No audio file loaded, using simulation mode");
+          simulatePlayback();
+          return;
+        }
+
+        // Wait a moment for audio to load before attempting to play
+        setTimeout(() => {
+          if (currentAudio && currentAudio.readyState >= 3) {
+            // HAVE_FUTURE_DATA
+            playAudio();
+          } else if (currentAudio) {
+            // Audio not ready yet, wait for canplaythrough event
+            currentAudio.addEventListener("canplaythrough", playAudio, {
+              once: true,
+            });
+
+            // Fallback timeout in case audio doesn't load
+            setTimeout(() => {
+              if (!isPlaying) {
+                console.log("Audio load timeout, falling back to simulation");
+                fallbackToSimulation();
+              }
+            }, 3000);
+          } else {
+            fallbackToSimulation();
+          }
+        }, 100);
+      }
+
+      function playAudio() {
+        if (!currentAudio) {
+          fallbackToSimulation();
+          return;
+        }
+
+        isPlaying = true;
+        document.getElementById("play-btn").textContent = "⏸";
+
+        if (audioContext && audioContext.state === "suspended") {
+          audioContext.resume();
+        }
+
+        currentAudio
+          .play()
+          .then(() => {
+            console.log(`Successfully playing audio for ${currentMood}`);
+          })
+          .catch((error) => {
+            console.error("Audio play failed:", error);
+            handlePlayError(error);
+          });
+      }
+
+      // Mood selection function
+      function selectMood(mood) {
+        userInteracted = true;
+
+        // Clear previous mood
+        if (currentMood) {
+          clearRomanticIntervals();
+          particles = [];
+          moodElements = [];
+        }
+
+        currentMood = mood;
+        const moodData = moodMusic[mood];
+
+        // Update UI
+        document.querySelectorAll(".mood-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        document.querySelector(`[data-mood="${mood}"]`).classList.add("active");
+
+        document.getElementById("current-mood-display").textContent =
+          mood.charAt(0).toUpperCase() + mood.slice(1);
+        document.getElementById("song-title").textContent = moodData.title;
+        document.getElementById("mood-indicator").textContent = `Mood: ${
+          mood.charAt(0).toUpperCase() + mood.slice(1)
+        }`;
+
+        // Start animation
+        switch (mood) {
+          case "happy":
+            createHappyAnimation();
+            break;
+          case "sad":
+            createSadAnimation();
+            break;
+          case "calm":
+            createCalmAnimation();
+            break;
+          case "energetic":
+            createEnergeticAnimation();
+            break;
+          case "romantic":
+            createRomanticAnimation();
+            break;
+          case "focused":
+            createFocusedAnimation();
+            break;
+        }
+
+        loadAudioForMood(mood);
+        autoPlayMood();
+      }
+
+      // Text analysis function
+      function analyzeText() {
+        const text = document.getElementById("mood-text").value.trim();
+        if (!text) return;
+
+        userInteracted = true;
+
+        // Simple keyword-based mood detection (since Sentiment.js may not be available)
+        const moodKeywords = {
+          happy: [
+            "happy",
+            "joy",
+            "excited",
+            "great",
+            "awesome",
+            "wonderful",
+            "amazing",
+            "fantastic",
+            "good",
+            "cheerful",
+            "bright",
+          ],
+          sad: [
+            "sad",
+            "down",
+            "depressed",
+            "blue",
+            "upset",
+            "hurt",
+            "cry",
+            "tears",
+            "lonely",
+            "empty",
+          ],
+          calm: [
+            "calm",
+            "peaceful",
+            "relaxed",
+            "zen",
+            "tranquil",
+            "serene",
+            "quiet",
+            "still",
+            "centered",
+          ],
+          energetic: [
+            "energy",
+            "pumped",
+            "hyped",
+            "active",
+            "dynamic",
+            "powerful",
+            "intense",
+            "charged",
+            "electric",
+          ],
+          romantic: [
+            "love",
+            "romance",
+            "heart",
+            "romantic",
+            "intimate",
+            "passion",
+            "sweet",
+            "tender",
+            "affection",
+          ],
+          focused: [
+            "focus",
+            "concentrate",
+            "work",
+            "study",
+            "productive",
+            "clear",
+            "sharp",
+            "determined",
+            "mindful",
+          ],
+        };
+
+        const lowerText = text.toLowerCase();
+        let detectedMood = "calm"; // default
+        let maxScore = 0;
+
+        Object.entries(moodKeywords).forEach(([mood, keywords]) => {
+          const score = keywords.reduce((count, keyword) => {
+            return count + (lowerText.includes(keyword) ? 1 : 0);
+          }, 0);
+
+          if (score > maxScore) {
+            maxScore = score;
+            detectedMood = mood;
+          }
+        });
+
+        selectMood(detectedMood);
+      }
+
+      // Play/pause toggle
+      function togglePlayPause() {
+        userInteracted = true;
+
+        if (!currentMood) {
+          selectMood("happy"); // Default mood
+          return;
+        }
+
+        if (isPlaying) {
+          pauseAudio();
+        } else {
+          resumeAudio();
+        }
+      }
+
+      function pauseAudio() {
+        isPlaying = false;
+        document.getElementById("play-btn").textContent = "▶";
+
+        if (progressInterval) {
+          clearInterval(progressInterval);
+          progressInterval = null;
+        }
+
+        if (currentAudio) {
+          currentAudio.pause();
+        }
+      }
+
+      function resumeAudio() {
+        if (currentAudio && currentAudio.readyState >= 3) {
+          playAudio();
+        } else if (currentAudio) {
+          // Audio still loading, wait for it
+          currentAudio.addEventListener("canplaythrough", playAudio, {
+            once: true,
+          });
+        } else {
+          // No audio loaded, start simulation
+          simulatePlayback();
         }
       }
 
@@ -1670,22 +1961,6 @@
             isFullscreen = true;
             fullscreenBtn.innerHTML = "⛷";
             fullscreenBtn.title = "Exit Fullscreen";
-            setTimeout(() => resizeCanvas(), 100);
-          }
-        } else {
-          if (document.exitFullscreen) {
-            document.exitFullscreen();
-          } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-          } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-          } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-          } else {
-            visualizationContainer.classList.remove("fullscreen");
-            isFullscreen = false;
-            fullscreenBtn.innerHTML = "⛶";
-            fullscreenBtn.title = "Toggle Fullscreen";
             setTimeout(() => resizeCanvas(), 100);
           }
         }
@@ -1719,391 +1994,32 @@
         }
       }
 
-      // Event handlers
-      function setMood(mood) {
-        // Clear any existing romantic intervals when changing moods
-        clearRomanticIntervals();
+      // Event listeners
+      function initEventListeners() {
+        // Mood buttons
+        document.querySelectorAll(".mood-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const mood = btn.getAttribute("data-mood");
+            selectMood(mood);
+          });
+        });
 
-        currentMood = mood;
-        const moodData = moodMusic[mood];
-
-        document.getElementById("current-mood-display").textContent =
-          mood.charAt(0).toUpperCase() + mood.slice(1);
-        document.getElementById("song-title").textContent = moodData.title;
-        document.getElementById("mood-indicator").textContent = `Mood: ${
-          mood.charAt(0).toUpperCase() + mood.slice(1)
-        }`;
-
-        const [r, g, b] = moodData.color;
-        document.body.style.background = `
-          linear-gradient(135deg, 
-          rgba(${r}, ${g}, ${b}, 0.15) 0%, 
-          #0a0a15 50%,
-          #16213e 100%)
-        `;
-
-        // Create artistic visualization for mood
-        switch (mood) {
-          case "happy":
-            createHappyAnimation();
-            break;
-          case "sad":
-            createSadAnimation();
-            break;
-          case "calm":
-            createCalmAnimation();
-            break;
-          case "energetic":
-            createEnergeticAnimation();
-            break;
-          case "romantic":
-            createRomanticAnimation();
-            break;
-          case "focused":
-            createFocusedAnimation();
-            break;
-        }
-
-        loadAudioForMood(mood);
-
-        isPlaying = false;
-        document.getElementById("play-btn").textContent = "▶";
-        document.getElementById("progress-bar").style.width = "0%";
-        clearInterval(progressInterval);
-
-        console.log(`Mood set to: ${mood} with artistic visualization`);
-      }
-
-      function analyzeText(text) {
-        function performSentimentAnalysis(text) {
-          const lowerText = text.toLowerCase();
-
-          const moodKeywords = {
-            happy: [
-              "happy",
-              "joy",
-              "excited",
-              "great",
-              "awesome",
-              "fantastic",
-              "wonderful",
-              "amazing",
-              "cheerful",
-              "delighted",
-              "thrilled",
-              "ecstatic",
-              "elated",
-              "upbeat",
-              "positive",
-              "good",
-              "excellent",
-              "brilliant",
-              "superb",
-              "marvelous",
-            ],
-            sad: [
-              "sad",
-              "depressed",
-              "down",
-              "unhappy",
-              "miserable",
-              "melancholy",
-              "blue",
-              "gloomy",
-              "sorrowful",
-              "dejected",
-              "downhearted",
-              "disheartened",
-              "despondent",
-              "mournful",
-              "grief",
-              "crying",
-              "tears",
-              "heartbroken",
-              "devastated",
-            ],
-            energetic: [
-              "energetic",
-              "pumped",
-              "hyper",
-              "active",
-              "dynamic",
-              "vigorous",
-              "lively",
-              "animated",
-              "spirited",
-              "bouncy",
-              "zippy",
-              "peppy",
-              "enthusiastic",
-              "motivated",
-              "charged",
-              "fired up",
-              "ready",
-              "go",
-            ],
-            calm: [
-              "calm",
-              "peaceful",
-              "relaxed",
-              "serene",
-              "tranquil",
-              "quiet",
-              "still",
-              "zen",
-              "meditative",
-              "restful",
-              "soothing",
-              "gentle",
-              "mild",
-              "soft",
-              "placid",
-              "composed",
-              "balanced",
-              "centered",
-            ],
-            romantic: [
-              "love",
-              "romance",
-              "romantic",
-              "heart",
-              "valentine",
-              "kiss",
-              "affection",
-              "tender",
-              "intimate",
-              "passion",
-              "adore",
-              "cherish",
-              "sweetheart",
-              "darling",
-              "beloved",
-              "crush",
-              "dating",
-              "relationship",
-            ],
-            focused: [
-              "focused",
-              "concentrate",
-              "work",
-              "study",
-              "productive",
-              "determined",
-              "goal",
-              "target",
-              "organized",
-              "disciplined",
-              "serious",
-              "committed",
-              "dedicated",
-              "intense",
-              "deep",
-              "analytical",
-              "thinking",
-              "planning",
-            ],
-          };
-
-          const moodScores = {};
-          for (const [mood, keywords] of Object.entries(moodKeywords)) {
-            moodScores[mood] = 0;
-            keywords.forEach((keyword) => {
-              if (lowerText.includes(keyword)) {
-                moodScores[mood]++;
-              }
-            });
-          }
-
-          let bestMood = "calm";
-          let highestScore = 0;
-          for (const [mood, score] of Object.entries(moodScores)) {
-            if (score > highestScore) {
-              highestScore = score;
-              bestMood = mood;
-            }
-          }
-
-          if (highestScore === 0) {
-            const positiveWords = [
-              "good",
-              "nice",
-              "ok",
-              "okay",
-              "fine",
-              "well",
-              "better",
-              "best",
-              "great",
-              "excellent",
-            ];
-            const negativeWords = [
-              "bad",
-              "terrible",
-              "awful",
-              "horrible",
-              "worst",
-              "hate",
-              "angry",
-              "mad",
-              "frustrated",
-              "annoyed",
-            ];
-
-            const positiveCount = positiveWords.filter((word) =>
-              lowerText.includes(word)
-            ).length;
-            const negativeCount = negativeWords.filter((word) =>
-              lowerText.includes(word)
-            ).length;
-
-            if (positiveCount > negativeCount) {
-              bestMood = "happy";
-            } else if (negativeCount > positiveCount) {
-              bestMood = "sad";
-            } else {
-              bestMood = "calm";
-            }
-          }
-
-          return bestMood;
-        }
-
-        let mood;
-
-        if (typeof Sentiment !== "undefined") {
-          try {
-            const sentiment = new Sentiment();
-            const result = sentiment.analyze(text);
-
-            if (result.score > 3) {
-              mood = "happy";
-            } else if (result.score > 1) {
-              mood = "energetic";
-            } else if (result.score > -1) {
-              mood = "calm";
-            } else if (result.score > -3) {
-              mood = "focused";
-            } else {
-              mood = "sad";
-            }
-
-            const romanticWords = [
-              "love",
-              "heart",
-              "romance",
-              "romantic",
-              "valentine",
-            ];
-            if (
-              romanticWords.some((word) => text.toLowerCase().includes(word))
-            ) {
-              mood = "romantic";
-            }
-
-            console.log("Using Sentiment.js analysis:", result);
-          } catch (error) {
-            console.log("Sentiment.js error, using keyword analysis");
-            mood = performSentimentAnalysis(text);
-          }
-        } else {
-          console.log("Sentiment.js not available, using keyword analysis");
-          mood = performSentimentAnalysis(text);
-        }
-
-        console.log(`Analyzed text: "${text}" -> Mood: ${mood}`);
-        setMood(mood);
-
+        // Text analysis
         document
-          .querySelectorAll(".mood-btn")
-          .forEach((btn) => btn.classList.remove("active"));
-        const moodButton = document.querySelector(`[data-mood="${mood}"]`);
-        if (moodButton) {
-          moodButton.classList.add("active");
-        }
+          .getElementById("analyze-btn")
+          .addEventListener("click", analyzeText);
 
-        document.getElementById("mood-text").value = "";
-      }
+        // Play/pause button
+        document
+          .getElementById("play-btn")
+          .addEventListener("click", togglePlayPause);
 
-      function togglePlayback() {
-        initializeAudio();
+        // Fullscreen button
+        document
+          .getElementById("fullscreen-btn")
+          .addEventListener("click", toggleFullscreen);
 
-        if (!currentMood) {
-          alert("Please select a mood first!");
-          return;
-        }
-
-        if (!currentAudio) {
-          console.log("No audio file loaded, using simulation mode");
-          simulatePlayback();
-          return;
-        }
-
-        isPlaying = !isPlaying;
-
-        if (isPlaying) {
-          document.getElementById("play-btn").textContent = "⏸";
-
-          if (audioContext && audioContext.state === "suspended") {
-            audioContext.resume();
-          }
-
-          currentAudio
-            .play()
-            .then(() => {
-              console.log(`Playing audio for ${currentMood}`);
-            })
-            .catch((error) => {
-              console.error("Audio playback failed:", error);
-              simulatePlayback();
-            });
-        } else {
-          document.getElementById("play-btn").textContent = "▶";
-
-          if (currentAudio) {
-            currentAudio.pause();
-          }
-
-          clearInterval(progressInterval);
-        }
-      }
-
-      function simulatePlayback() {
-        isPlaying = !isPlaying;
-
-        if (isPlaying) {
-          document.getElementById("play-btn").textContent = "⏸";
-          console.log(`Simulating playback for ${currentMood} track`);
-
-          clearInterval(progressInterval);
-          let progress = 0;
-          const progressBar = document.getElementById("progress-bar");
-
-          progressInterval = setInterval(() => {
-            if (!isPlaying) {
-              clearInterval(progressInterval);
-              return;
-            }
-
-            progress += 0.5;
-            if (progress > 100) progress = 0;
-            progressBar.style.width = `${progress}%`;
-          }, 100);
-        } else {
-          document.getElementById("play-btn").textContent = "▶";
-          clearInterval(progressInterval);
-        }
-      }
-
-      // Initialize when DOM is loaded
-      document.addEventListener("DOMContentLoaded", function () {
-        // Initialize Canvas
-        initCanvas();
-
-        // Window resize handler
-        window.addEventListener("resize", resizeCanvas);
-
-        document.addEventListener("click", initializeAudio, { once: true });
-
+        // Fullscreen change events
         document.addEventListener("fullscreenchange", handleFullscreenChange);
         document.addEventListener(
           "webkitfullscreenchange",
@@ -2113,77 +2029,119 @@
           "mozfullscreenchange",
           handleFullscreenChange
         );
-        document.addEventListener("MSFullscreenChange", handleFullscreenChange);
+        document.addEventListener("msfullscreenchange", handleFullscreenChange);
 
-        document
-          .getElementById("fullscreen-btn")
-          .addEventListener("click", (e) => {
-            e.stopPropagation();
-            toggleFullscreen();
-          });
-
-        document.addEventListener("keydown", (e) => {
-          if (e.key === "Escape" && isFullscreen) {
-            toggleFullscreen();
-          }
-        });
-
-        document.querySelectorAll(".mood-btn").forEach((button) => {
-          button.addEventListener("click", (e) => {
-            const mood = button.getAttribute("data-mood");
-            setMood(mood);
-
-            document
-              .querySelectorAll(".mood-btn")
-              .forEach((btn) => btn.classList.remove("active"));
-            button.classList.add("active");
-          });
-        });
-
-        document.getElementById("analyze-btn").addEventListener("click", () => {
-          const text = document.getElementById("mood-text").value.trim();
-          if (text) {
-            analyzeText(text);
-          }
-        });
-
-        document
-          .getElementById("play-btn")
-          .addEventListener("click", togglePlayback);
-
+        // Progress bar click to seek
         document
           .querySelector(".progress-container")
           .addEventListener("click", (e) => {
             if (currentAudio && currentAudio.duration) {
               const rect = e.target.getBoundingClientRect();
-              const clickPosition = (e.clientX - rect.left) / rect.width;
-              const newTime = clickPosition * currentAudio.duration;
+              const clickX = e.clientX - rect.left;
+              const percentage = clickX / rect.width;
+              const newTime = percentage * currentAudio.duration;
               currentAudio.currentTime = newTime;
             }
           });
-      });
 
-      // Cleanup function
-      function cleanup() {
-        if (animationFrame) {
-          cancelAnimationFrame(animationFrame);
-        }
+        // Volume control with mouse wheel on progress bar
+        document
+          .querySelector(".progress-container")
+          .addEventListener("wheel", (e) => {
+            e.preventDefault();
+            if (currentAudio) {
+              const volumeChange = e.deltaY > 0 ? -0.1 : 0.1;
+              currentAudio.volume = Math.max(
+                0,
+                Math.min(1, currentAudio.volume + volumeChange)
+              );
 
-        if (currentAudio) {
-          currentAudio.pause();
-          currentAudio = null;
-        }
+              // Visual feedback for volume change
+              const progressContainer = e.target.closest(".progress-container");
+              progressContainer.style.opacity = currentAudio.volume;
+              setTimeout(() => {
+                progressContainer.style.opacity = "1";
+              }, 200);
+            }
+          });
 
-        clearInterval(progressInterval);
-        clearRomanticIntervals();
+        // Keyboard shortcuts
+        document.addEventListener("keydown", (e) => {
+          if (e.target.tagName === "TEXTAREA") return; // Don't interfere with text input
 
-        // Clear particles and elements
-        particles = [];
-        moodElements = [];
+          switch (e.code) {
+            case "Space":
+              e.preventDefault();
+              togglePlayPause();
+              break;
+            case "KeyF":
+              e.preventDefault();
+              toggleFullscreen();
+              break;
+            case "ArrowUp":
+              e.preventDefault();
+              if (currentAudio) {
+                currentAudio.volume = Math.min(1, currentAudio.volume + 0.1);
+              }
+              break;
+            case "ArrowDown":
+              e.preventDefault();
+              if (currentAudio) {
+                currentAudio.volume = Math.max(0, currentAudio.volume - 0.1);
+              }
+              break;
+            case "ArrowLeft":
+              e.preventDefault();
+              if (currentAudio) {
+                currentAudio.currentTime = Math.max(
+                  0,
+                  currentAudio.currentTime - 10
+                );
+              }
+              break;
+            case "ArrowRight":
+              e.preventDefault();
+              if (currentAudio) {
+                currentAudio.currentTime = Math.min(
+                  currentAudio.duration || 0,
+                  currentAudio.currentTime + 10
+                );
+              }
+              break;
+          }
+        });
+
+        // Window resize
+        window.addEventListener("resize", () => {
+          if (!isFullscreen) {
+            resizeCanvas();
+          }
+        });
+
+        // Enter key for text analysis
+        document
+          .getElementById("mood-text")
+          .addEventListener("keypress", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              analyzeText();
+            }
+          });
       }
 
-      // Handle page unload
-      window.addEventListener("beforeunload", cleanup);
+      // Initialize everything when page loads
+      document.addEventListener("DOMContentLoaded", () => {
+        initCanvas();
+        initEventListeners();
+        console.log("MoodTune initialized successfully!");
+      });
     </script>
   </body>
 </html>
+(), 100); } } else { if (document.exitFullscreen) { document.exitFullscreen(); }
+else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
+else if (document.mozCancelFullScreen) { document.mozCancelFullScreen(); } else
+if (document.msExitFullscreen) { document.msExitFullscreen(); } else {
+visualizationContainer.classList.remove("fullscreen"); isFullscreen = false;
+fullscreenBtn.innerHTML = "⛶"; fullscreenBtn.title = "Toggle Fullscreen";
+setTimeout(() => resizeCanvas
