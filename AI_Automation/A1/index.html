@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MoodTune - Emotion-Based Music Player</title>
+    <title>MoodTune - AI-Enhanced Emotion-Based Music Player</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sentiment/5.0.2/sentiment.min.js"></script>
     <style>
@@ -2646,6 +2646,28 @@
         // Initialize chat functionality
         initChatEventListeners();
 
+        // Mood boost modal event listeners
+        const moodBoostYes = document.getElementById("mood-boost-yes");
+        const moodBoostNo = document.getElementById("mood-boost-no");
+        const moodBoostOverlay = document.getElementById("mood-boost-overlay");
+
+        if (moodBoostYes) {
+          moodBoostYes.addEventListener("click", handleMoodBoostYes);
+        }
+
+        if (moodBoostNo) {
+          moodBoostNo.addEventListener("click", handleMoodBoostNo);
+        }
+
+        // Close modal when clicking outside (optional)
+        if (moodBoostOverlay) {
+          moodBoostOverlay.addEventListener("click", (e) => {
+            if (e.target === e.currentTarget) {
+              handleMoodBoostNo(); // Treat clicking outside as "no"
+            }
+          });
+        }
+
         // Mood buttons
         document.querySelectorAll(".mood-btn").forEach((btn) => {
           btn.addEventListener("click", () => {
@@ -2758,6 +2780,17 @@
                 );
               }
               break;
+            case "Escape":
+              // Close mood boost modal with Escape key
+              if (
+                document
+                  .getElementById("mood-boost-overlay")
+                  .classList.contains("show")
+              ) {
+                e.preventDefault();
+                handleMoodBoostNo();
+              }
+              break;
           }
         });
 
@@ -2784,6 +2817,21 @@
         initCanvas();
         initEventListeners();
         console.log("MoodTune with AI Agent initialized successfully!");
+
+        // Simple test - add a debug message to confirm everything is loaded
+        setTimeout(() => {
+          console.log("Page fully loaded. You can now:");
+          console.log(
+            "1. Type 'testMoodBoostModal()' in console to test modal directly"
+          );
+          console.log(
+            "2. Click Sad mood and wait 6 seconds for automatic popup"
+          );
+          console.log(
+            "3. Check if modal HTML element exists:",
+            !!document.getElementById("mood-boost-overlay")
+          );
+        }, 1000);
       });
     </script>
   </body>
