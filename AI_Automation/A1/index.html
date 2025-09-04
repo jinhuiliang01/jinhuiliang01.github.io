@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MoodTune - Artistic Emotion-Based Music Player</title>
+    <title>MoodTune - AI-Enhanced Emotion-Based Music Player</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sentiment/5.0.2/sentiment.min.js"></script>
     <style>
@@ -81,15 +81,32 @@
         margin-bottom: 30px;
       }
 
-      .mood-selector {
+      .left-panel {
         flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .ai-chat {
         background: rgba(255, 255, 255, 0.08);
         border-radius: 25px;
         padding: 30px;
         backdrop-filter: blur(15px);
         box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        max-height: 650px;
+        min-height: 400px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .mood-selector {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 25px;
+        padding: 30px;
+        backdrop-filter: blur(15px);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
       }
 
       .visualization {
@@ -109,6 +126,202 @@
         color: #6e88ff;
         text-align: center;
         text-shadow: 0 2px 10px rgba(110, 136, 255, 0.3);
+      }
+
+      /* AI Chat Styles */
+      .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        margin-bottom: 20px;
+        padding-right: 10px;
+        max-height: 300px;
+      }
+
+      .message {
+        margin-bottom: 15px;
+        padding: 12px 18px;
+        border-radius: 16px;
+        max-width: 85%;
+        animation: fadeInUp 0.3s ease;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .message.ai {
+        background: linear-gradient(
+          135deg,
+          rgba(110, 136, 255, 0.2),
+          rgba(110, 136, 255, 0.1)
+        );
+        border-left: 3px solid #6e88ff;
+        align-self: flex-start;
+      }
+
+      .message.user {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 107, 107, 0.2),
+          rgba(255, 107, 107, 0.1)
+        );
+        border-left: 3px solid #ff6b6b;
+        margin-left: auto;
+        align-self: flex-end;
+      }
+
+      .message-header {
+        font-size: 0.85rem;
+        color: #a1a8c9;
+        margin-bottom: 5px;
+        font-weight: 500;
+      }
+
+      .message-content {
+        line-height: 1.4;
+        color: #fff;
+      }
+
+      .chat-input {
+        display: flex;
+        gap: 12px;
+        align-items: flex-end;
+      }
+
+      .chat-input textarea {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 16px;
+        padding: 12px 16px;
+        color: #fff;
+        font-size: 0.95rem;
+        resize: none;
+        min-height: 45px;
+        max-height: 100px;
+        transition: all 0.3s ease;
+      }
+
+      .chat-input textarea::placeholder {
+        color: #a1a8c9;
+      }
+
+      .chat-input textarea:focus {
+        outline: none;
+        border: 2px solid #6e88ff;
+        box-shadow: 0 0 15px rgba(110, 136, 255, 0.2);
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      .send-btn {
+        background: linear-gradient(135deg, #6e88ff, #8b5aff);
+        border: none;
+        color: white;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+      }
+
+      .send-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(110, 136, 255, 0.4);
+      }
+
+      .send-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .typing-indicator {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 18px;
+        background: linear-gradient(
+          135deg,
+          rgba(110, 136, 255, 0.15),
+          rgba(110, 136, 255, 0.08)
+        );
+        border-radius: 16px;
+        border-left: 3px solid #6e88ff;
+        max-width: 85%;
+        margin-bottom: 15px;
+      }
+
+      .typing-dots {
+        display: flex;
+        gap: 4px;
+      }
+
+      .typing-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #6e88ff;
+        animation: typingBounce 1.4s infinite ease-in-out;
+      }
+
+      .typing-dot:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      .typing-dot:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+
+      @keyframes typingBounce {
+        0%,
+        80%,
+        100% {
+          transform: scale(0);
+        }
+        40% {
+          transform: scale(1);
+        }
+      }
+
+      .mood-suggestion {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 215, 0, 0.2),
+          rgba(255, 215, 0, 0.1)
+        );
+        border: 2px solid rgba(255, 215, 0, 0.3);
+        border-radius: 12px;
+        padding: 12px;
+        margin-top: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .mood-suggestion:hover {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 215, 0, 0.3),
+          rgba(255, 215, 0, 0.15)
+        );
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+      }
+
+      .mood-suggestion-text {
+        font-weight: 500;
+        color: #ffd700;
       }
 
       .mood-buttons {
@@ -472,9 +685,17 @@
         z-index: 10;
       }
 
-      @media (max-width: 1000px) {
+      @media (max-width: 1200px) {
         .main-content {
           flex-direction: column;
+        }
+
+        .left-panel {
+          flex-direction: row;
+        }
+
+        .ai-chat {
+          min-height: 350px;
         }
 
         h1 {
@@ -483,6 +704,12 @@
 
         .container {
           padding: 15px;
+        }
+      }
+
+      @media (max-width: 800px) {
+        .left-panel {
+          flex-direction: column;
         }
       }
 
@@ -515,42 +742,92 @@
           transform: rotate(360deg);
         }
       }
+
+      /* Custom scrollbar for chat */
+      .chat-messages::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .chat-messages::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 3px;
+      }
+
+      .chat-messages::-webkit-scrollbar-thumb {
+        background: rgba(110, 136, 255, 0.4);
+        border-radius: 3px;
+      }
+
+      .chat-messages::-webkit-scrollbar-thumb:hover {
+        background: rgba(110, 136, 255, 0.6);
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <header>
         <h1>MoodTune</h1>
-        <p class="tagline">Your artistic emotion-based music experience</p>
+        <p class="tagline">Your AI-enhanced emotion-based music experience</p>
       </header>
 
       <div class="main-content">
-        <div class="mood-selector">
-          <h2 class="section-title">Select Your Mood</h2>
-          <div class="mood-buttons">
-            <button class="mood-btn happy" data-mood="happy">😊 Happy</button>
-            <button class="mood-btn sad" data-mood="sad">😢 Sad</button>
-            <button class="mood-btn calm" data-mood="calm">😌 Calm</button>
-            <button class="mood-btn energetic" data-mood="energetic">
-              ⚡ Energetic
-            </button>
-            <button class="mood-btn romantic" data-mood="romantic">
-              ❤️ Romantic
-            </button>
-            <button class="mood-btn focused" data-mood="focused">
-              🎯 Focused
-            </button>
+        <div class="left-panel">
+          <div class="ai-chat">
+            <h2 class="section-title">Chat with MoodBot</h2>
+            <div class="chat-messages" id="chat-messages">
+              <div class="message ai">
+                <div class="message-header">MoodBot</div>
+                <div class="message-content">
+                  Hello! I'm here to help you find the perfect music for your
+                  mood. How are you feeling today? Tell me what's on your mind.
+                </div>
+              </div>
+            </div>
+            <div class="typing-indicator" id="typing-indicator">
+              <div class="message-header">MoodBot is thinking...</div>
+              <div class="typing-dots">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+              </div>
+            </div>
+            <div class="chat-input">
+              <textarea
+                id="chat-input"
+                placeholder="Tell me how you're feeling..."
+                rows="1"
+              ></textarea>
+              <button class="send-btn" id="send-btn">➤</button>
+            </div>
           </div>
 
-          <div class="text-input">
-            <h2 class="section-title">Or Describe Your Mood</h2>
-            <textarea
-              id="mood-text"
-              placeholder="Type how you're feeling today..."
-            ></textarea>
-            <button class="analyze-btn" id="analyze-btn">
-              Analyze My Text
-            </button>
+          <div class="mood-selector">
+            <h2 class="section-title">Quick Mood Select</h2>
+            <div class="mood-buttons">
+              <button class="mood-btn happy" data-mood="happy">😊 Happy</button>
+              <button class="mood-btn sad" data-mood="sad">😢 Sad</button>
+              <button class="mood-btn calm" data-mood="calm">😌 Calm</button>
+              <button class="mood-btn energetic" data-mood="energetic">
+                ⚡ Energetic
+              </button>
+              <button class="mood-btn romantic" data-mood="romantic">
+                ❤️ Romantic
+              </button>
+              <button class="mood-btn focused" data-mood="focused">
+                🎯 Focused
+              </button>
+            </div>
+
+            <div class="text-input">
+              <h2 class="section-title">Text Analysis</h2>
+              <textarea
+                id="mood-text"
+                placeholder="Type how you're feeling today..."
+              ></textarea>
+              <button class="analyze-btn" id="analyze-btn">
+                Analyze My Text
+              </button>
+            </div>
           </div>
         </div>
 
@@ -575,7 +852,7 @@
           <div class="album-art">🎵</div>
           <div class="song-details">
             <div class="song-title" id="song-title">
-              Select a mood to start playing
+              Chat with MoodBot to start your musical journey
             </div>
             <div class="mood-indicator" id="mood-indicator">Mood: None</div>
           </div>
@@ -595,7 +872,7 @@
       </div>
 
       <footer>
-        <p>MoodTune © JinhuiLiang | Artistic Emotion-Based Music Player</p>
+        <p>MoodTune © JinhuiLiang | AI-Enhanced Emotion-Based Music Player</p>
       </footer>
     </div>
 
@@ -607,7 +884,9 @@
       let currentAudio = null;
       let audioContext = null;
       let isFullscreen = false;
-      let userInteracted = false; // Track user interaction for autoplay
+      let userInteracted = false;
+      let chatHistory = [];
+      let isTyping = false;
 
       // Canvas variables
       let canvas, ctx;
@@ -620,45 +899,489 @@
       let romanticParticleInterval;
       let romanticHeartInterval;
 
-      // Mood to music mapping - Update these paths to your MP3 files
+      // Mood to music mapping
       const moodMusic = {
         happy: {
           title: "Upbeat Pop - 'Sunshine Day'",
           color: [255, 223, 100],
           energy: 0.8,
-          audioFile: "audio/happy.mp3", // Place your MP3 file here
+          audioFile: "audio/happy.mp3",
         },
         sad: {
           title: "Melancholic Melodies - 'Rainy Nights'",
           color: [100, 150, 255],
           energy: 0.3,
-          audioFile: "audio/sad.mp3", // Place your MP3 file here
+          audioFile: "audio/sad.mp3",
         },
         calm: {
           title: "Ambient Relaxation - 'Tranquil Waters'",
           color: [100, 220, 200],
           energy: 0.4,
-          audioFile: "audio/calm.mp3", // Place your MP3 file here
+          audioFile: "audio/calm.mp3",
         },
         energetic: {
           title: "High Energy Dance - 'Electric Pulse'",
           color: [255, 100, 100],
           energy: 0.9,
-          audioFile: "audio/energetic.mp3", // Place your MP3 file here
+          audioFile: "audio/energetic.mp3",
         },
         romantic: {
           title: "Romantic Instrumentals - 'Hearts Entwined'",
           color: [255, 100, 200],
           energy: 0.6,
-          audioFile: "audio/romantic.mp3", // Place your MP3 file here
+          audioFile: "audio/romantic.mp3",
         },
         focused: {
           title: "Deep Focus - 'Concentration Zone'",
           color: [150, 200, 255],
           energy: 0.5,
-          audioFile: "audio/focused.mp3", // Place your MP3 file here
+          audioFile: "audio/focused.mp3",
         },
       };
+
+      // AI Chat System
+      const moodKeywords = {
+        happy: {
+          keywords: [
+            "happy",
+            "joy",
+            "excited",
+            "great",
+            "awesome",
+            "wonderful",
+            "amazing",
+            "fantastic",
+            "good",
+            "cheerful",
+            "bright",
+            "celebrate",
+            "thrilled",
+            "upbeat",
+            "positive",
+          ],
+          responses: [
+            "That's wonderful to hear! Your positive energy is contagious. Let me set up some upbeat music to match your mood.",
+            "I love that enthusiasm! Happy vibes deserve happy music. Getting some sunshine sounds ready for you.",
+            "What a great mood you're in! Time for some energetic tunes to keep those good feelings flowing.",
+          ],
+        },
+        sad: {
+          keywords: [
+            "sad",
+            "down",
+            "depressed",
+            "blue",
+            "upset",
+            "hurt",
+            "cry",
+            "tears",
+            "lonely",
+            "empty",
+            "disappointed",
+            "heartbroken",
+            "grief",
+            "loss",
+            "melancholy",
+          ],
+          responses: [
+            "I understand you're going through a tough time. Sometimes melancholic music can be comforting and help process these feelings.",
+            "It's okay to feel sad sometimes. Let me find some gentle, contemplative music that might resonate with your current state.",
+            "Sadness is a valid emotion. Would some soothing, reflective music help you work through what you're feeling?",
+          ],
+        },
+        calm: {
+          keywords: [
+            "calm",
+            "peaceful",
+            "relaxed",
+            "zen",
+            "tranquil",
+            "serene",
+            "quiet",
+            "still",
+            "centered",
+            "meditative",
+            "chill",
+            "mellow",
+            "restful",
+            "soothing",
+          ],
+          responses: [
+            "A peaceful state of mind is beautiful. Let me create a tranquil soundscape to enhance your sense of calm.",
+            "Zen vibes detected! Time for some ambient, flowing music to complement your inner peace.",
+            "That sounds wonderfully serene. I'll set up some meditative tunes to maintain that peaceful energy.",
+          ],
+        },
+        energetic: {
+          keywords: [
+            "energy",
+            "pumped",
+            "hyped",
+            "active",
+            "dynamic",
+            "powerful",
+            "intense",
+            "charged",
+            "electric",
+            "motivated",
+            "driven",
+            "fired up",
+            "amped",
+            "vigorous",
+          ],
+          responses: [
+            "I can feel that energy! Time to channel it with some high-octane music that matches your intensity.",
+            "You're charged up and ready to go! Let me find some powerful beats to fuel that momentum.",
+            "That's the spirit! High-energy music coming right up to match your dynamic mood.",
+          ],
+        },
+        romantic: {
+          keywords: [
+            "love",
+            "romance",
+            "heart",
+            "romantic",
+            "intimate",
+            "passion",
+            "sweet",
+            "tender",
+            "affection",
+            "relationship",
+            "partner",
+            "date",
+            "valentine",
+            "crush",
+          ],
+          responses: [
+            "Love is in the air! Let me set a romantic atmosphere with some beautiful, heartfelt melodies.",
+            "Aww, that's sweet! Time for some tender, romantic music to complement those lovely feelings.",
+            "Romance calls for special music. I'll create the perfect soundtrack for your heart's desires.",
+          ],
+        },
+        focused: {
+          keywords: [
+            "focus",
+            "concentrate",
+            "work",
+            "study",
+            "productive",
+            "clear",
+            "sharp",
+            "determined",
+            "mindful",
+            "task",
+            "project",
+            "deadline",
+            "learning",
+            "analysis",
+          ],
+          responses: [
+            "Time to get in the zone! I'll set up some focused, concentration-enhancing music for maximum productivity.",
+            "Perfect mindset for deep work. Let me create an audio environment that supports your concentration.",
+            "That focused energy is powerful. Here's some music designed to enhance cognitive performance and maintain attention.",
+          ],
+        },
+      };
+
+      const conversationStarters = [
+        "What's been the highlight of your day so far?",
+        "Tell me about something that's been on your mind lately.",
+        "How would you describe your energy level right now?",
+        "What kind of atmosphere would make you feel most comfortable?",
+        "Are there any particular emotions you've been experiencing today?",
+      ];
+
+      const followUpQuestions = {
+        happy: [
+          "What's making you feel so positive today?",
+          "How would you like to celebrate this mood?",
+        ],
+        sad: [
+          "Would you like to talk about what's troubling you?",
+          "Sometimes music helps - shall we find something soothing?",
+        ],
+        calm: [
+          "What helps you maintain this peaceful state?",
+          "Are you looking to stay relaxed or perhaps energize yourself?",
+        ],
+        energetic: [
+          "What's fueling this amazing energy?",
+          "Ready to channel this into something creative or active?",
+        ],
+        romantic: [
+          "Is there someone special you're thinking about?",
+          "What kind of romantic atmosphere appeals to you?",
+        ],
+        focused: [
+          "What are you working on that requires this concentration?",
+          "How can I best support your productive mindset?",
+        ],
+      };
+
+      // AI Chat Functions
+      function addMessage(
+        content,
+        isUser = false,
+        hasSuggestion = false,
+        suggestedMood = null
+      ) {
+        const messagesContainer = document.getElementById("chat-messages");
+        const messageDiv = document.createElement("div");
+        messageDiv.className = `message ${isUser ? "user" : "ai"}`;
+
+        const headerDiv = document.createElement("div");
+        headerDiv.className = "message-header";
+        headerDiv.textContent = isUser ? "You" : "MoodBot";
+
+        const contentDiv = document.createElement("div");
+        contentDiv.className = "message-content";
+        contentDiv.textContent = content;
+
+        messageDiv.appendChild(headerDiv);
+        messageDiv.appendChild(contentDiv);
+
+        if (hasSuggestion && suggestedMood) {
+          const suggestionDiv = document.createElement("div");
+          suggestionDiv.className = "mood-suggestion";
+          suggestionDiv.onclick = () => selectMoodFromChat(suggestedMood);
+
+          const suggestionText = document.createElement("div");
+          suggestionText.className = "mood-suggestion-text";
+          suggestionText.textContent = `🎵 Switch to ${
+            suggestedMood.charAt(0).toUpperCase() + suggestedMood.slice(1)
+          } mood`;
+
+          suggestionDiv.appendChild(suggestionText);
+          messageDiv.appendChild(suggestionDiv);
+        }
+
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        // Store in chat history
+        chatHistory.push({
+          content: content,
+          isUser: isUser,
+          timestamp: Date.now(),
+          suggestedMood: suggestedMood,
+        });
+      }
+
+      function showTypingIndicator() {
+        const typingIndicator = document.getElementById("typing-indicator");
+        typingIndicator.style.display = "flex";
+        isTyping = true;
+
+        const messagesContainer = document.getElementById("chat-messages");
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+
+      function hideTypingIndicator() {
+        const typingIndicator = document.getElementById("typing-indicator");
+        typingIndicator.style.display = "none";
+        isTyping = false;
+      }
+
+      function analyzeMoodFromText(text) {
+        const lowerText = text.toLowerCase();
+        let detectedMood = null;
+        let maxScore = 0;
+        let matchedKeywords = [];
+
+        // Check for explicit music requests first
+        const musicTerms = [
+          "music",
+          "song",
+          "track",
+          "tune",
+          "sound",
+          "audio",
+          "play",
+          "listen",
+          "hear",
+        ];
+        const hasMusicRequest = musicTerms.some((term) =>
+          lowerText.includes(term)
+        );
+
+        Object.entries(moodKeywords).forEach(([mood, data]) => {
+          const score = data.keywords.reduce((count, keyword) => {
+            if (lowerText.includes(keyword)) {
+              matchedKeywords.push(keyword);
+              return count + 1;
+            }
+            return count;
+          }, 0);
+
+          if (score > maxScore) {
+            maxScore = score;
+            detectedMood = mood;
+          }
+        });
+
+        // Lower the confidence threshold if user explicitly mentions music
+        const confidenceMultiplier = hasMusicRequest ? 1.5 : 1;
+        const adjustedScore = maxScore * confidenceMultiplier;
+
+        return {
+          mood: detectedMood,
+          confidence: adjustedScore > 0 ? Math.min(adjustedScore * 0.25, 1) : 0,
+          keywords: matchedKeywords,
+          hasMusicRequest: hasMusicRequest,
+        };
+      }
+
+      function generateAIResponse(userMessage) {
+        const analysis = analyzeMoodFromText(userMessage);
+        let response = "";
+        let suggestedMood = null;
+
+        // Lower threshold for music requests
+        const confidenceThreshold = analysis.hasMusicRequest ? 0.2 : 0.3;
+
+        if (analysis.confidence > confidenceThreshold && analysis.mood) {
+          // High confidence mood detection
+          const moodData = moodKeywords[analysis.mood];
+          response =
+            moodData.responses[
+              Math.floor(Math.random() * moodData.responses.length)
+            ];
+          suggestedMood = analysis.mood;
+        } else if (analysis.confidence > 0.1 && analysis.mood) {
+          // Low confidence - ask follow-up questions
+          response = `I'm picking up on some ${
+            analysis.mood
+          } vibes from what you're saying. ${
+            followUpQuestions[analysis.mood][
+              Math.floor(
+                Math.random() * followUpQuestions[analysis.mood].length
+              )
+            ]
+          }`;
+        } else if (analysis.hasMusicRequest) {
+          // User wants music but no clear mood detected
+          response =
+            "I can tell you're looking for some music! To give you the perfect soundtrack, could you tell me more about your current mood or what kind of atmosphere you're going for?";
+        } else {
+          // No clear mood detected - use conversation starters
+          const responses = [
+            "I'd love to understand your mood better. " +
+              conversationStarters[
+                Math.floor(Math.random() * conversationStarters.length)
+              ],
+            "Tell me more about how you're feeling. Are you looking for something upbeat, calming, or perhaps energizing?",
+            "I'm here to help you find the perfect music for your state of mind. What's your emotional landscape like right now?",
+            "Every mood deserves the right soundtrack. Help me understand what you're going through so I can curate something special for you.",
+          ];
+          response = responses[Math.floor(Math.random() * responses.length)];
+        }
+
+        return {
+          response: response,
+          suggestedMood: suggestedMood,
+        };
+      }
+
+      function sendChatMessage() {
+        const chatInput = document.getElementById("chat-input");
+        const message = chatInput.value.trim();
+
+        if (!message || isTyping) return;
+
+        // Add user message
+        addMessage(message, true);
+        chatInput.value = "";
+        autoResizeTextarea(chatInput);
+
+        // Show typing indicator
+        showTypingIndicator();
+
+        // Generate AI response after a delay
+        setTimeout(() => {
+          hideTypingIndicator();
+
+          const aiResponse = generateAIResponse(message);
+          addMessage(
+            aiResponse.response,
+            false,
+            aiResponse.suggestedMood !== null,
+            aiResponse.suggestedMood
+          );
+        }, 1000 + Math.random() * 1000); // Random delay between 1-2 seconds
+      }
+
+      function selectMoodFromChat(mood, instantPlay = false) {
+        selectMood(mood);
+
+        // If instant play is requested, force play the music immediately
+        if (instantPlay) {
+          setTimeout(() => {
+            if (!isPlaying) {
+              togglePlayPause();
+            }
+          }, 500); // Small delay to ensure mood is fully loaded
+        }
+
+        // Add confirmation message
+        setTimeout(
+          () => {
+            const confirmationMessages = instantPlay
+              ? [
+                  `🎵 Perfect! Now playing ${mood} music and showing matching visuals. Enjoy the experience!`,
+                  `🎶 Excellent! Your ${mood} mood is now live with music and animations. Let the vibes flow!`,
+                  `✨ Amazing! ${
+                    mood.charAt(0).toUpperCase() + mood.slice(1)
+                  } mode activated with instant music playback!`,
+                ]
+              : [
+                  `Perfect! I've set the mood to ${mood}. Click play when you're ready to hear the music!`,
+                  `Great choice! ${
+                    mood.charAt(0).toUpperCase() + mood.slice(1)
+                  } mood is ready - just hit play to start the music.`,
+                  `Excellent! Your ${mood} mood is set up with matching visuals. Ready to play when you are!`,
+                ];
+
+            const confirmation =
+              confirmationMessages[
+                Math.floor(Math.random() * confirmationMessages.length)
+              ];
+            addMessage(confirmation, false);
+          },
+          instantPlay ? 1000 : 500
+        );
+      }
+
+      function autoResizeTextarea(textarea) {
+        textarea.style.height = "auto";
+        textarea.style.height = Math.min(textarea.scrollHeight, 100) + "px";
+      }
+
+      // Initialize chat functionality
+      function initChatEventListeners() {
+        const chatInput = document.getElementById("chat-input");
+        const sendBtn = document.getElementById("send-btn");
+
+        // Auto-resize textarea
+        chatInput.addEventListener("input", (e) => {
+          autoResizeTextarea(e.target);
+        });
+
+        // Send message on button click
+        sendBtn.addEventListener("click", sendChatMessage);
+
+        // Send message on Enter key (but allow Shift+Enter for new lines)
+        chatInput.addEventListener("keypress", (e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            sendChatMessage();
+          }
+        });
+
+        // Disable send button when typing
+        chatInput.addEventListener("input", () => {
+          sendBtn.disabled = isTyping;
+        });
+      }
 
       // Helper function to convert HSL to RGBA
       function hslToRgba(hslColor) {
@@ -1570,7 +2293,7 @@
           try {
             currentAudio = new Audio(moodData.audioFile);
             currentAudio.loop = true;
-            currentAudio.volume = 0.7; // Set comfortable volume
+            currentAudio.volume = 0.7;
             currentAudio.preload = "auto";
 
             // Add event listeners
@@ -1622,7 +2345,6 @@
       }
 
       function handleAudioEnded() {
-        // This shouldn't happen with loop=true, but just in case
         if (isPlaying) {
           currentAudio.currentTime = 0;
           currentAudio.play().catch(handlePlayError);
@@ -1662,9 +2384,9 @@
             return;
           }
 
-          progress += 0.3; // Slower progress for realistic feel
+          progress += 0.3;
           if (progress >= 100) {
-            progress = 0; // Loop
+            progress = 0;
           }
 
           document.getElementById("progress-bar").style.width = `${progress}%`;
@@ -1697,18 +2419,14 @@
           return;
         }
 
-        // Wait a moment for audio to load before attempting to play
         setTimeout(() => {
           if (currentAudio && currentAudio.readyState >= 3) {
-            // HAVE_FUTURE_DATA
             playAudio();
           } else if (currentAudio) {
-            // Audio not ready yet, wait for canplaythrough event
             currentAudio.addEventListener("canplaythrough", playAudio, {
               once: true,
             });
 
-            // Fallback timeout in case audio doesn't load
             setTimeout(() => {
               if (!isPlaying) {
                 console.log("Audio load timeout, falling back to simulation");
@@ -1805,93 +2523,8 @@
 
         userInteracted = true;
 
-        // Simple keyword-based mood detection (since Sentiment.js may not be available)
-        const moodKeywords = {
-          happy: [
-            "happy",
-            "joy",
-            "excited",
-            "great",
-            "awesome",
-            "wonderful",
-            "amazing",
-            "fantastic",
-            "good",
-            "cheerful",
-            "bright",
-          ],
-          sad: [
-            "sad",
-            "down",
-            "depressed",
-            "blue",
-            "upset",
-            "hurt",
-            "cry",
-            "tears",
-            "lonely",
-            "empty",
-          ],
-          calm: [
-            "calm",
-            "peaceful",
-            "relaxed",
-            "zen",
-            "tranquil",
-            "serene",
-            "quiet",
-            "still",
-            "centered",
-          ],
-          energetic: [
-            "energy",
-            "pumped",
-            "hyped",
-            "active",
-            "dynamic",
-            "powerful",
-            "intense",
-            "charged",
-            "electric",
-          ],
-          romantic: [
-            "love",
-            "romance",
-            "heart",
-            "romantic",
-            "intimate",
-            "passion",
-            "sweet",
-            "tender",
-            "affection",
-          ],
-          focused: [
-            "focus",
-            "concentrate",
-            "work",
-            "study",
-            "productive",
-            "clear",
-            "sharp",
-            "determined",
-            "mindful",
-          ],
-        };
-
-        const lowerText = text.toLowerCase();
-        let detectedMood = "calm"; // default
-        let maxScore = 0;
-
-        Object.entries(moodKeywords).forEach(([mood, keywords]) => {
-          const score = keywords.reduce((count, keyword) => {
-            return count + (lowerText.includes(keyword) ? 1 : 0);
-          }, 0);
-
-          if (score > maxScore) {
-            maxScore = score;
-            detectedMood = mood;
-          }
-        });
+        const analysis = analyzeMoodFromText(text);
+        let detectedMood = analysis.mood || "calm";
 
         selectMood(detectedMood);
       }
@@ -1901,7 +2534,7 @@
         userInteracted = true;
 
         if (!currentMood) {
-          selectMood("happy"); // Default mood
+          selectMood("happy");
           return;
         }
 
@@ -1930,12 +2563,10 @@
         if (currentAudio && currentAudio.readyState >= 3) {
           playAudio();
         } else if (currentAudio) {
-          // Audio still loading, wait for it
           currentAudio.addEventListener("canplaythrough", playAudio, {
             once: true,
           });
         } else {
-          // No audio loaded, start simulation
           simulatePlayback();
         }
       }
@@ -1964,7 +2595,6 @@
             setTimeout(() => resizeCanvas(), 100);
           }
         } else {
-          // Exit fullscreen logic
           if (document.exitFullscreen) {
             document.exitFullscreen();
           } else if (document.webkitExitFullscreen) {
@@ -2013,6 +2643,9 @@
 
       // Event listeners
       function initEventListeners() {
+        // Initialize chat functionality
+        initChatEventListeners();
+
         // Mood buttons
         document.querySelectorAll(".mood-btn").forEach((btn) => {
           btn.addEventListener("click", () => {
@@ -2084,7 +2717,7 @@
 
         // Keyboard shortcuts
         document.addEventListener("keydown", (e) => {
-          if (e.target.tagName === "TEXTAREA") return; // Don't interfere with text input
+          if (e.target.tagName === "TEXTAREA") return;
 
           switch (e.code) {
             case "Space":
@@ -2150,15 +2783,8 @@
       document.addEventListener("DOMContentLoaded", () => {
         initCanvas();
         initEventListeners();
-        console.log("MoodTune initialized successfully!");
+        console.log("MoodTune with AI Agent initialized successfully!");
       });
     </script>
   </body>
 </html>
-(), 100); } } else { if (document.exitFullscreen) { document.exitFullscreen(); }
-else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
-else if (document.mozCancelFullScreen) { document.mozCancelFullScreen(); } else
-if (document.msExitFullscreen) { document.msExitFullscreen(); } else {
-visualizationContainer.classList.remove("fullscreen"); isFullscreen = false;
-fullscreenBtn.innerHTML = "⛶"; fullscreenBtn.title = "Toggle Fullscreen";
-setTimeout(() => resizeCanvas
