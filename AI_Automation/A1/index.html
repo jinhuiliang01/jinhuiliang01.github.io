@@ -852,8 +852,8 @@
           tracks: [
             { title: "Sunshine Day - Upbeat Pop", file: "audio/happy.mp3" },
             { title: "Good Vibes Only - Feel Good", file: "audio/happy2.mp3" },
-            { title: "Dancing Colors - Joyful Beat", file: "audio/happy3.mp3" }
-          ]
+            { title: "Dancing Colors - Joyful Beat", file: "audio/happy3.mp3" },
+          ],
         },
         sad: {
           name: "Melancholic Moods",
@@ -862,8 +862,11 @@
           tracks: [
             { title: "Rainy Nights - Melancholic", file: "audio/sad.mp3" },
             { title: "Gentle Tears - Emotional", file: "audio/sad2.mp3" },
-            { title: "Blue Reflections - Contemplative", file: "audio/sad3.mp3" }
-          ]
+            {
+              title: "Blue Reflections - Contemplative",
+              file: "audio/sad3.mp3",
+            },
+          ],
         },
         calm: {
           name: "Peaceful Moments",
@@ -872,8 +875,8 @@
           tracks: [
             { title: "Tranquil Waters - Ambient", file: "audio/calm.mp3" },
             { title: "Serene Forest - Nature Sounds", file: "audio/calm2.mp3" },
-            { title: "Zen Garden - Meditation", file: "audio/calm3.mp3" }
-          ]
+            { title: "Zen Garden - Meditation", file: "audio/calm3.mp3" },
+          ],
         },
         energetic: {
           name: "High Energy",
@@ -882,8 +885,11 @@
           tracks: [
             { title: "Electric Pulse - Dance", file: "audio/energetic.mp3" },
             { title: "Power Drive - Electronic", file: "audio/energetic2.mp3" },
-            { title: "Adrenaline Rush - Intense", file: "audio/energetic3.mp3" }
-          ]
+            {
+              title: "Adrenaline Rush - Intense",
+              file: "audio/energetic3.mp3",
+            },
+          ],
         },
         romantic: {
           name: "Love Songs",
@@ -892,71 +898,169 @@
           tracks: [
             { title: "Hearts Entwined - Romance", file: "audio/romantic.mp3" },
             { title: "Sweet Serenade - Intimate", file: "audio/romantic2.mp3" },
-            { title: "Moonlight Dance - Tender", file: "audio/romantic3.mp3" }
-          ]
+            { title: "Moonlight Dance - Tender", file: "audio/romantic3.mp3" },
+          ],
         },
         focused: {
           name: "Focus Zone",
           color: [150, 200, 255],
           energy: 0.5,
           tracks: [
-            { title: "Concentration Zone - Deep Focus", file: "audio/focused.mp3" },
+            {
+              title: "Concentration Zone - Deep Focus",
+              file: "audio/focused.mp3",
+            },
             { title: "Mind Flow - Productivity", file: "audio/focused2.mp3" },
-            { title: "Study Session - Ambient Work", file: "audio/focused3.mp3" }
-          ]
+            {
+              title: "Study Session - Ambient Work",
+              file: "audio/focused3.mp3",
+            },
+          ],
         },
       };
 
       // AI Chat System
       const moodKeywords = {
         happy: {
-          keywords: ["happy", "joy", "excited", "great", "awesome", "wonderful", "amazing", "fantastic", "good", "cheerful", "bright", "celebrate", "thrilled", "upbeat", "positive"],
+          keywords: [
+            "happy",
+            "joy",
+            "excited",
+            "great",
+            "awesome",
+            "wonderful",
+            "amazing",
+            "fantastic",
+            "good",
+            "cheerful",
+            "bright",
+            "celebrate",
+            "thrilled",
+            "upbeat",
+            "positive",
+          ],
           responses: [
             "That's wonderful to hear! Your positive energy is contagious. Let me set up some upbeat music to match your mood.",
             "I love that enthusiasm! Happy vibes deserve happy music. Getting some sunshine sounds ready for you.",
-            "What a great mood you're in! Time for some energetic tunes to keep those good feelings flowing."
-          ]
+            "What a great mood you're in! Time for some energetic tunes to keep those good feelings flowing.",
+          ],
         },
         sad: {
-          keywords: ["sad", "down", "depressed", "blue", "upset", "hurt", "cry", "tears", "lonely", "empty", "disappointed", "heartbroken", "grief", "loss", "melancholy"],
+          keywords: [
+            "sad",
+            "down",
+            "depressed",
+            "blue",
+            "upset",
+            "hurt",
+            "cry",
+            "tears",
+            "lonely",
+            "empty",
+            "disappointed",
+            "heartbroken",
+            "grief",
+            "loss",
+            "melancholy",
+          ],
           responses: [
             "I understand you're going through a tough time. Sometimes melancholic music can be comforting and help process these feelings.",
             "It's okay to feel sad sometimes. Let me find some gentle, contemplative music that might resonate with your current state.",
-            "Sadness is a valid emotion. Would some soothing, reflective music help you work through what you're feeling?"
-          ]
+            "Sadness is a valid emotion. Would some soothing, reflective music help you work through what you're feeling?",
+          ],
         },
         calm: {
-          keywords: ["calm", "peaceful", "relaxed", "zen", "tranquil", "serene", "quiet", "still", "centered", "meditative", "chill", "mellow", "restful", "soothing"],
+          keywords: [
+            "calm",
+            "peaceful",
+            "relaxed",
+            "zen",
+            "tranquil",
+            "serene",
+            "quiet",
+            "still",
+            "centered",
+            "meditative",
+            "chill",
+            "mellow",
+            "restful",
+            "soothing",
+          ],
           responses: [
             "A peaceful state of mind is beautiful. Let me create a tranquil soundscape to enhance your sense of calm.",
             "Zen vibes detected! Time for some ambient, flowing music to complement your inner peace.",
-            "That sounds wonderfully serene. I'll set up some meditative tunes to maintain that peaceful energy."
-          ]
+            "That sounds wonderfully serene. I'll set up some meditative tunes to maintain that peaceful energy.",
+          ],
         },
         energetic: {
-          keywords: ["energy", "pumped", "hyped", "active", "dynamic", "powerful", "intense", "charged", "electric", "motivated", "driven", "fired up", "amped", "vigorous"],
+          keywords: [
+            "energy",
+            "pumped",
+            "hyped",
+            "active",
+            "dynamic",
+            "powerful",
+            "intense",
+            "charged",
+            "electric",
+            "motivated",
+            "driven",
+            "fired up",
+            "amped",
+            "vigorous",
+          ],
           responses: [
             "I can feel that energy! Time to channel it with some high-octane music that matches your intensity.",
             "You're charged up and ready to go! Let me find some powerful beats to fuel that momentum.",
-            "That's the spirit! High-energy music coming right up to match your dynamic mood."
-          ]
+            "That's the spirit! High-energy music coming right up to match your dynamic mood.",
+          ],
         },
         romantic: {
-          keywords: ["love", "romance", "heart", "romantic", "intimate", "passion", "sweet", "tender", "affection", "relationship", "partner", "date", "valentine", "crush"],
+          keywords: [
+            "love",
+            "romance",
+            "heart",
+            "romantic",
+            "intimate",
+            "passion",
+            "sweet",
+            "tender",
+            "affection",
+            "relationship",
+            "partner",
+            "date",
+            "valentine",
+            "crush",
+          ],
           responses: [
             "Love is in the air! Let me set a romantic atmosphere with some beautiful, heartfelt melodies.",
             "Aww, that's sweet! Time for some tender, romantic music to complement those lovely feelings.",
-            "Romance calls for special music. I'll create the perfect soundtrack for your heart's desires."
-          ]
+            "Romance calls for special music. I'll create the perfect soundtrack for your heart's desires.",
+          ],
         },
         focused: {
-          keywords: ["focus", "concentrate", "work", "study", "productive", "clear", "sharp", "determined", "mindful", "task", "project", "deadline", "learning", "analysis"],
+          keywords: [
+            "focus",
+            "concentrate",
+            "work",
+            "study",
+            "productive",
+            "clear",
+            "sharp",
+            "determined",
+            "mindful",
+            "task",
+            "project",
+            "deadline",
+            "learning",
+            "analysis",
+          ],
           responses: [
             "Time to get in the zone! I'll set up some focused, concentration-enhancing music for maximum productivity.",
             "Perfect mindset for deep work. Let me create an audio environment that supports your concentration.",
-            "That focused energy is powerful. Here's some music designed to enhance cognitive performance and maintain attention."
-          ]
-        }
+            "That focused energy is powerful. Here's some music designed to enhance cognitive performance and maintain attention.",
+          ],
+        },
       };
 
       const conversationStarters = [
@@ -964,21 +1068,39 @@
         "Tell me about something that's been on your mind lately.",
         "How would you describe your energy level right now?",
         "What kind of atmosphere would make you feel most comfortable?",
-        "Are there any particular emotions you've been experiencing today?"
+        "Are there any particular emotions you've been experiencing today?",
       ];
 
       const followUpQuestions = {
-        happy: ["What's making you feel so positive today?", "How would you like to celebrate this mood?"],
-        sad: ["Would you like to talk about what's troubling you?", "Sometimes music helps - shall we find something soothing?"],
-        calm: ["What helps you maintain this peaceful state?", "Are you looking to stay relaxed or perhaps energize yourself?"],
-        energetic: ["What's fueling this amazing energy?", "Ready to channel this into something creative or active?"],
-        romantic: ["Is there someone special you're thinking about?", "What kind of romantic atmosphere appeals to you?"],
-        focused: ["What are you working on that requires this concentration?", "How can I best support your productive mindset?"]
+        happy: [
+          "What's making you feel so positive today?",
+          "How would you like to celebrate this mood?",
+        ],
+        sad: [
+          "Would you like to talk about what's troubling you?",
+          "Sometimes music helps - shall we find something soothing?",
+        ],
+        calm: [
+          "What helps you maintain this peaceful state?",
+          "Are you looking to stay relaxed or perhaps energize yourself?",
+        ],
+        energetic: [
+          "What's fueling this amazing energy?",
+          "Ready to channel this into something creative or active?",
+        ],
+        romantic: [
+          "Is there someone special you're thinking about?",
+          "What kind of romantic atmosphere appeals to you?",
+        ],
+        focused: [
+          "What are you working on that requires this concentration?",
+          "How can I best support your productive mindset?",
+        ],
       };
 
       // Playlist Functions
       function generateShuffleOrder(playlistLength) {
-        const order = Array.from({length: playlistLength}, (_, i) => i);
+        const order = Array.from({ length: playlistLength }, (_, i) => i);
         for (let i = order.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [order[i], order[j]] = [order[j], order[i]];
@@ -988,14 +1110,15 @@
 
       function getNextTrackIndex() {
         if (!currentPlaylist.length) return 0;
-        
+
         if (isShuffleMode) {
           if (shuffleOrder.length === 0) {
             shuffleOrder = generateShuffleOrder(currentPlaylist.length);
           }
-          
+
           const currentShuffleIndex = shuffleOrder.indexOf(currentTrackIndex);
-          const nextShuffleIndex = (currentShuffleIndex + 1) % shuffleOrder.length;
+          const nextShuffleIndex =
+            (currentShuffleIndex + 1) % shuffleOrder.length;
           return shuffleOrder[nextShuffleIndex];
         } else {
           return (currentTrackIndex + 1) % currentPlaylist.length;
@@ -1004,35 +1127,40 @@
 
       function getPreviousTrackIndex() {
         if (!currentPlaylist.length) return 0;
-        
+
         if (isShuffleMode) {
           if (shuffleOrder.length === 0) {
             shuffleOrder = generateShuffleOrder(currentPlaylist.length);
           }
-          
+
           const currentShuffleIndex = shuffleOrder.indexOf(currentTrackIndex);
-          const prevShuffleIndex = currentShuffleIndex === 0 
-            ? shuffleOrder.length - 1 
-            : currentShuffleIndex - 1;
+          const prevShuffleIndex =
+            currentShuffleIndex === 0
+              ? shuffleOrder.length - 1
+              : currentShuffleIndex - 1;
           return shuffleOrder[prevShuffleIndex];
         } else {
-          return currentTrackIndex === 0 
-            ? currentPlaylist.length - 1 
+          return currentTrackIndex === 0
+            ? currentPlaylist.length - 1
             : currentTrackIndex - 1;
         }
       }
 
       function playTrack(trackIndex) {
-        if (!currentPlaylist.length || trackIndex < 0 || trackIndex >= currentPlaylist.length) {
+        if (
+          !currentPlaylist.length ||
+          trackIndex < 0 ||
+          trackIndex >= currentPlaylist.length
+        ) {
           return;
         }
-        
+
         currentTrackIndex = trackIndex;
         const track = currentPlaylist[currentTrackIndex];
-        
+
         updateTrackInfo();
         loadAudioForTrack(track);
-        
+
         if (userInteracted) {
           autoPlayMood();
         }
@@ -1050,21 +1178,22 @@
 
       function updateTrackInfo() {
         if (!currentPlaylist.length) return;
-        
+
         const track = currentPlaylist[currentTrackIndex];
         const moodData = moodPlaylists[currentMood];
-        
+
         document.getElementById("song-title").textContent = track.title;
-        document.getElementById("track-info").textContent = 
-          `Track ${currentTrackIndex + 1} of ${currentPlaylist.length} • ${moodData.name}`;
+        document.getElementById("track-info").textContent = `Track ${
+          currentTrackIndex + 1
+        } of ${currentPlaylist.length} • ${moodData.name}`;
       }
 
       function togglePlaybackMode() {
         isShuffleMode = !isShuffleMode;
-        
+
         const shuffleBtn = document.getElementById("shuffle-btn");
         const sequentialBtn = document.getElementById("sequential-btn");
-        
+
         if (isShuffleMode) {
           shuffleBtn.classList.add("active");
           sequentialBtn.classList.remove("active");
@@ -1077,7 +1206,12 @@
       }
 
       // AI Chat Functions
-      function addMessage(content, isUser = false, hasSuggestion = false, suggestedMood = null) {
+      function addMessage(
+        content,
+        isUser = false,
+        hasSuggestion = false,
+        suggestedMood = null
+      ) {
         const messagesContainer = document.getElementById("chat-messages");
         const messageDiv = document.createElement("div");
         messageDiv.className = `message ${isUser ? "user" : "ai"}`;
@@ -1100,7 +1234,9 @@
 
           const suggestionText = document.createElement("div");
           suggestionText.className = "mood-suggestion-text";
-          suggestionText.textContent = `🎵 Switch to ${suggestedMood.charAt(0).toUpperCase() + suggestedMood.slice(1)} mood`;
+          suggestionText.textContent = `🎵 Switch to ${
+            suggestedMood.charAt(0).toUpperCase() + suggestedMood.slice(1)
+          } mood`;
 
           suggestionDiv.appendChild(suggestionText);
           messageDiv.appendChild(suggestionDiv);
@@ -1138,8 +1274,20 @@
         let maxScore = 0;
         let matchedKeywords = [];
 
-        const musicTerms = ["music", "song", "track", "tune", "sound", "audio", "play", "listen", "hear"];
-        const hasMusicRequest = musicTerms.some((term) => lowerText.includes(term));
+        const musicTerms = [
+          "music",
+          "song",
+          "track",
+          "tune",
+          "sound",
+          "audio",
+          "play",
+          "listen",
+          "hear",
+        ];
+        const hasMusicRequest = musicTerms.some((term) =>
+          lowerText.includes(term)
+        );
 
         Object.entries(moodKeywords).forEach(([mood, data]) => {
           const score = data.keywords.reduce((count, keyword) => {
@@ -1176,15 +1324,30 @@
 
         if (analysis.confidence > confidenceThreshold && analysis.mood) {
           const moodData = moodKeywords[analysis.mood];
-          response = moodData.responses[Math.floor(Math.random() * moodData.responses.length)];
+          response =
+            moodData.responses[
+              Math.floor(Math.random() * moodData.responses.length)
+            ];
           suggestedMood = analysis.mood;
         } else if (analysis.confidence > 0.1 && analysis.mood) {
-          response = `I'm picking up on some ${analysis.mood} vibes from what you're saying. ${followUpQuestions[analysis.mood][Math.floor(Math.random() * followUpQuestions[analysis.mood].length)]}`;
+          response = `I'm picking up on some ${
+            analysis.mood
+          } vibes from what you're saying. ${
+            followUpQuestions[analysis.mood][
+              Math.floor(
+                Math.random() * followUpQuestions[analysis.mood].length
+              )
+            ]
+          }`;
         } else if (analysis.hasMusicRequest) {
-          response = "I can tell you're looking for some music! To give you the perfect soundtrack, could you tell me more about your current mood or what kind of atmosphere you're going for?";
+          response =
+            "I can tell you're looking for some music! To give you the perfect soundtrack, could you tell me more about your current mood or what kind of atmosphere you're going for?";
         } else {
           const responses = [
-            "I'd love to understand your mood better. " + conversationStarters[Math.floor(Math.random() * conversationStarters.length)],
+            "I'd love to understand your mood better. " +
+              conversationStarters[
+                Math.floor(Math.random() * conversationStarters.length)
+              ],
             "Tell me more about how you're feeling. Are you looking for something upbeat, calming, or perhaps energizing?",
             "I'm here to help you find the perfect music for your state of mind. What's your emotional landscape like right now?",
             "Every mood deserves the right soundtrack. Help me understand what you're going through so I can curate something special for you.",
@@ -1210,7 +1373,12 @@
         setTimeout(() => {
           hideTypingIndicator();
           const aiResponse = generateAIResponse(message);
-          addMessage(aiResponse.response, false, aiResponse.suggestedMood !== null, aiResponse.suggestedMood);
+          addMessage(
+            aiResponse.response,
+            false,
+            aiResponse.suggestedMood !== null,
+            aiResponse.suggestedMood
+          );
         }, 1000 + Math.random() * 1000);
       }
 
@@ -1225,18 +1393,38 @@
           }, 500);
         }
 
-        setTimeout(() => {
-          const confirmationMessages = instantPlay
-            ? [`🎵 Perfect! Now playing ${mood} playlist with ${currentPlaylist.length} tracks in ${isShuffleMode ? 'shuffle' : 'sequential'} mode. Enjoy!`,
-               `🎶 Excellent! Your ${mood} playlist is now live with matching visuals. Let the vibes flow!`,
-               `✨ Amazing! ${mood.charAt(0).toUpperCase() + mood.slice(1)} playlist activated with instant music playback!`]
-            : [`Perfect! I've loaded the ${mood} playlist with ${currentPlaylist.length} tracks. Click play when you're ready!`,
-               `Great choice! ${mood.charAt(0).toUpperCase() + mood.slice(1)} playlist is ready with matching visuals. Hit play to start!`,
-               `Excellent! Your ${mood} playlist is set up in ${isShuffleMode ? 'shuffle' : 'sequential'} mode. Ready when you are!`];
+        setTimeout(
+          () => {
+            const confirmationMessages = instantPlay
+              ? [
+                  `🎵 Perfect! Now playing ${mood} playlist with ${
+                    currentPlaylist.length
+                  } tracks in ${
+                    isShuffleMode ? "shuffle" : "sequential"
+                  } mode. Enjoy!`,
+                  `🎶 Excellent! Your ${mood} playlist is now live with matching visuals. Let the vibes flow!`,
+                  `✨ Amazing! ${
+                    mood.charAt(0).toUpperCase() + mood.slice(1)
+                  } playlist activated with instant music playback!`,
+                ]
+              : [
+                  `Perfect! I've loaded the ${mood} playlist with ${currentPlaylist.length} tracks. Click play when you're ready!`,
+                  `Great choice! ${
+                    mood.charAt(0).toUpperCase() + mood.slice(1)
+                  } playlist is ready with matching visuals. Hit play to start!`,
+                  `Excellent! Your ${mood} playlist is set up in ${
+                    isShuffleMode ? "shuffle" : "sequential"
+                  } mode. Ready when you are!`,
+                ];
 
-          const confirmation = confirmationMessages[Math.floor(Math.random() * confirmationMessages.length)];
-          addMessage(confirmation, false);
-        }, instantPlay ? 1000 : 500);
+            const confirmation =
+              confirmationMessages[
+                Math.floor(Math.random() * confirmationMessages.length)
+              ];
+            addMessage(confirmation, false);
+          },
+          instantPlay ? 1000 : 500
+        );
       }
 
       function autoResizeTextarea(textarea) {
@@ -1269,7 +1457,8 @@
       // Audio Functions
       function initializeAudio() {
         if (!audioContext) {
-          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          audioContext = new (window.AudioContext ||
+            window.webkitAudioContext)();
         }
       }
 
@@ -1278,7 +1467,10 @@
           currentAudio.pause();
           currentAudio.currentTime = 0;
           currentAudio.removeEventListener("loadstart", handleLoadStart);
-          currentAudio.removeEventListener("canplaythrough", handleCanPlayThrough);
+          currentAudio.removeEventListener(
+            "canplaythrough",
+            handleCanPlayThrough
+          );
           currentAudio.removeEventListener("error", handleAudioError);
           currentAudio.removeEventListener("timeupdate", updateProgressBar);
           currentAudio.removeEventListener("ended", handleTrackEnded);
@@ -1298,7 +1490,10 @@
             currentAudio.preload = "auto";
 
             currentAudio.addEventListener("loadstart", handleLoadStart);
-            currentAudio.addEventListener("canplaythrough", handleCanPlayThrough);
+            currentAudio.addEventListener(
+              "canplaythrough",
+              handleCanPlayThrough
+            );
             currentAudio.addEventListener("error", handleAudioError);
             currentAudio.addEventListener("timeupdate", updateProgressBar);
             currentAudio.addEventListener("ended", handleTrackEnded);
@@ -1365,8 +1560,13 @@
       }
 
       function updateProgressBar() {
-        if (currentAudio && currentAudio.duration && !isNaN(currentAudio.duration)) {
-          const progress = (currentAudio.currentTime / currentAudio.duration) * 100;
+        if (
+          currentAudio &&
+          currentAudio.duration &&
+          !isNaN(currentAudio.duration)
+        ) {
+          const progress =
+            (currentAudio.currentTime / currentAudio.duration) * 100;
           document.getElementById("progress-bar").style.width = `${progress}%`;
         }
       }
@@ -1387,7 +1587,9 @@
           if (currentAudio && currentAudio.readyState >= 3) {
             playAudio();
           } else if (currentAudio) {
-            currentAudio.addEventListener("canplaythrough", playAudio, { once: true });
+            currentAudio.addEventListener("canplaythrough", playAudio, {
+              once: true,
+            });
             setTimeout(() => {
               if (!isPlaying) {
                 fallbackToSimulation();
@@ -1412,12 +1614,17 @@
           audioContext.resume();
         }
 
-        currentAudio.play().then(() => {
-          console.log(`Successfully playing: ${currentPlaylist[currentTrackIndex].title}`);
-        }).catch((error) => {
-          console.error("Audio play failed:", error);
-          fallbackToSimulation();
-        });
+        currentAudio
+          .play()
+          .then(() => {
+            console.log(
+              `Successfully playing: ${currentPlaylist[currentTrackIndex].title}`
+            );
+          })
+          .catch((error) => {
+            console.error("Audio play failed:", error);
+            fallbackToSimulation();
+          });
       }
 
       // Mood Selection
@@ -1434,7 +1641,7 @@
 
         currentPlaylist = [...moodData.tracks];
         currentTrackIndex = 0;
-        
+
         if (isShuffleMode) {
           shuffleOrder = generateShuffleOrder(currentPlaylist.length);
           currentTrackIndex = shuffleOrder[0];
@@ -1445,8 +1652,11 @@
         });
         document.querySelector(`[data-mood="${mood}"]`).classList.add("active");
 
-        document.getElementById("current-mood-display").textContent = mood.charAt(0).toUpperCase() + mood.slice(1);
-        document.getElementById("mood-indicator").textContent = `Mood: ${mood.charAt(0).toUpperCase() + mood.slice(1)}`;
+        document.getElementById("current-mood-display").textContent =
+          mood.charAt(0).toUpperCase() + mood.slice(1);
+        document.getElementById("mood-indicator").textContent = `Mood: ${
+          mood.charAt(0).toUpperCase() + mood.slice(1)
+        }`;
 
         updateTrackInfo();
         initCanvas();
@@ -1499,7 +1709,9 @@
         if (currentAudio && currentAudio.readyState >= 3) {
           playAudio();
         } else if (currentAudio) {
-          currentAudio.addEventListener("canplaythrough", playAudio, { once: true });
+          currentAudio.addEventListener("canplaythrough", playAudio, {
+            once: true,
+          });
         } else {
           simulatePlayback();
         }
@@ -1507,7 +1719,9 @@
 
       // Helper functions for animations
       function hslToRgba(hslColor) {
-        const hslMatch = hslColor.match(/hsl\((\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?)%?,\s*(\d+(?:\.\d+)?)%?\)/);
+        const hslMatch = hslColor.match(
+          /hsl\((\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?)%?,\s*(\d+(?:\.\d+)?)%?\)/
+        );
         if (!hslMatch) {
           return { r: 255, g: 100, b: 200 };
         }
@@ -1553,7 +1767,10 @@
         } else if (colorStr.startsWith("rgb(")) {
           return colorStr.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
         } else if (colorStr.startsWith("rgba(")) {
-          return colorStr.replace(/rgba\(([^,]+,[^,]+,[^,]+),([^)]+)\)/, `rgba($1,${alpha})`);
+          return colorStr.replace(
+            /rgba\(([^,]+,[^,]+,[^,]+),([^)]+)\)/,
+            `rgba($1,${alpha})`
+          );
         }
         return colorStr;
       }
@@ -1631,7 +1848,13 @@
 
           ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
           ctx.beginPath();
-          ctx.arc(-this.size * 0.3, -this.size * 0.3, this.size * 0.3, 0, Math.PI * 2);
+          ctx.arc(
+            -this.size * 0.3,
+            -this.size * 0.3,
+            this.size * 0.3,
+            0,
+            Math.PI * 2
+          );
           ctx.fill();
         }
 
@@ -1663,7 +1886,14 @@
           ctx.moveTo(0, size * 0.3);
           ctx.bezierCurveTo(0, 0, -size * 0.5, 0, -size * 0.5, size * 0.3);
           ctx.bezierCurveTo(-size * 0.5, size * 0.6, 0, size, 0, size);
-          ctx.bezierCurveTo(0, size, size * 0.5, size * 0.6, size * 0.5, size * 0.3);
+          ctx.bezierCurveTo(
+            0,
+            size,
+            size * 0.5,
+            size * 0.6,
+            size * 0.5,
+            size * 0.3
+          );
           ctx.bezierCurveTo(size * 0.5, 0, 0, 0, 0, size * 0.3);
           ctx.closePath();
           ctx.fill();
@@ -1674,7 +1904,12 @@
         }
 
         drawLeaf() {
-          const gradient = ctx.createLinearGradient(0, -this.size, 0, this.size);
+          const gradient = ctx.createLinearGradient(
+            0,
+            -this.size,
+            0,
+            this.size
+          );
           gradient.addColorStop(0, adjustColorAlpha(this.color, 1));
           gradient.addColorStop(0.5, adjustColorAlpha(this.color, 0.67));
           gradient.addColorStop(1, adjustColorAlpha(this.color, 0.4));
@@ -1956,7 +2191,10 @@
 
         setInterval(() => {
           if (currentMood !== "focused") return;
-          const connection = network.connections[Math.floor(Math.random() * network.connections.length)];
+          const connection =
+            network.connections[
+              Math.floor(Math.random() * network.connections.length)
+            ];
           if (connection) {
             particles.push(
               new Particle(
@@ -2040,7 +2278,12 @@
             }
 
             ctx.save();
-            const gradient = ctx.createLinearGradient(0, element.y - 50, 0, element.y + 50);
+            const gradient = ctx.createLinearGradient(
+              0,
+              element.y - 50,
+              0,
+              element.y + 50
+            );
             element.colors.forEach((color, i) => {
               gradient.addColorStop(i / (element.colors.length - 1), color);
             });
@@ -2073,14 +2316,23 @@
             ctx.save();
             ctx.globalAlpha = element.opacity;
             const gradient = ctx.createRadialGradient(
-              element.x, element.y, element.size * 0.5,
-              element.x, element.y, element.size
+              element.x,
+              element.y,
+              element.size * 0.5,
+              element.x,
+              element.y,
+              element.size
             );
             gradient.addColorStop(0, "rgba(100, 120, 180, 0.3)");
             gradient.addColorStop(1, "rgba(100, 120, 180, 0)");
 
             ctx.fillStyle = gradient;
-            ctx.fillRect(element.x - element.size, element.y - element.size, element.size * 2, element.size * 2);
+            ctx.fillRect(
+              element.x - element.size,
+              element.y - element.size,
+              element.size * 2,
+              element.size * 2
+            );
             ctx.restore();
           }
         });
@@ -2089,10 +2341,18 @@
       function updateCalmAnimation() {
         moodElements.forEach((element) => {
           if (element.type === "meditation_orb") {
-            element.y = element.baseY + Math.sin(time * 0.01 + element.phase) * 20;
+            element.y =
+              element.baseY + Math.sin(time * 0.01 + element.phase) * 20;
 
             ctx.save();
-            const gradient = ctx.createRadialGradient(element.x, element.y, 0, element.x, element.y, element.size * 2);
+            const gradient = ctx.createRadialGradient(
+              element.x,
+              element.y,
+              0,
+              element.x,
+              element.y,
+              element.size * 2
+            );
             gradient.addColorStop(0, adjustColorAlpha(element.color, 0.8));
             gradient.addColorStop(0.5, adjustColorAlpha(element.color, 0.4));
             gradient.addColorStop(1, adjustColorAlpha(element.color, 0));
@@ -2150,13 +2410,16 @@
               const startX = Math.random() * canvas.width;
               const startY = Math.random() * canvas.height * 0.3;
               const endX = Math.random() * canvas.width;
-              const endY = canvas.height * 0.7 + Math.random() * canvas.height * 0.3;
+              const endY =
+                canvas.height * 0.7 + Math.random() * canvas.height * 0.3;
 
               const segments = 8 + Math.random() * 8;
               for (let i = 0; i <= segments; i++) {
                 const t = i / segments;
-                const x = startX + (endX - startX) * t + (Math.random() - 0.5) * 50;
-                const y = startY + (endY - startY) * t + (Math.random() - 0.5) * 30;
+                const x =
+                  startX + (endX - startX) * t + (Math.random() - 0.5) * 50;
+                const y =
+                  startY + (endY - startY) * t + (Math.random() - 0.5) * 30;
                 element.points.push({ x, y });
               }
             }
@@ -2186,7 +2449,14 @@
             const pulseSize = element.size + Math.sin(element.pulsePhase) * 20;
 
             ctx.save();
-            const gradient = ctx.createRadialGradient(element.x, element.y, 0, element.x, element.y, pulseSize);
+            const gradient = ctx.createRadialGradient(
+              element.x,
+              element.y,
+              0,
+              element.x,
+              element.y,
+              pulseSize
+            );
             gradient.addColorStop(0, "rgba(255, 100, 100, 0.8)");
             gradient.addColorStop(0.5, "rgba(255, 200, 0, 0.4)");
             gradient.addColorStop(1, "rgba(255, 100, 100, 0)");
@@ -2211,11 +2481,27 @@
 
             const rgbaColor = hslToRgba(element.color);
 
-            const gradient = ctx.createRadialGradient(element.x, element.y, 0, element.x, element.y, glowSize);
+            const gradient = ctx.createRadialGradient(
+              element.x,
+              element.y,
+              0,
+              element.x,
+              element.y,
+              glowSize
+            );
 
-            gradient.addColorStop(0, `rgba(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b}, 0.8)`);
-            gradient.addColorStop(0.5, `rgba(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b}, 0.4)`);
-            gradient.addColorStop(1, `rgba(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b}, 0)`);
+            gradient.addColorStop(
+              0,
+              `rgba(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b}, 0.8)`
+            );
+            gradient.addColorStop(
+              0.5,
+              `rgba(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b}, 0.4)`
+            );
+            gradient.addColorStop(
+              1,
+              `rgba(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b}, 0)`
+            );
 
             ctx.fillStyle = gradient;
             ctx.beginPath();
@@ -2239,7 +2525,9 @@
               const alpha = 0.3 + Math.sin(conn.pulse) * 0.2;
 
               ctx.globalAlpha = alpha * conn.strength;
-              ctx.strokeStyle = `hsl(${200 + Math.sin(conn.pulse) * 20}, 70%, 60%)`;
+              ctx.strokeStyle = `hsl(${
+                200 + Math.sin(conn.pulse) * 20
+              }, 70%, 60%)`;
               ctx.lineWidth = 1 + conn.strength * 2;
 
               ctx.beginPath();
@@ -2252,13 +2540,17 @@
               const nodeSize = node.size + Math.sin(node.pulse) * 3;
 
               ctx.globalAlpha = 0.8;
-              ctx.fillStyle = `hsl(${220 + Math.sin(node.pulse) * 10}, 80%, 70%)`;
+              ctx.fillStyle = `hsl(${
+                220 + Math.sin(node.pulse) * 10
+              }, 80%, 70%)`;
               ctx.beginPath();
               ctx.arc(node.x, node.y, nodeSize, 0, Math.PI * 2);
               ctx.fill();
 
               ctx.globalAlpha = 0.3;
-              ctx.fillStyle = `hsl(${220 + Math.sin(node.pulse) * 10}, 80%, 70%)`;
+              ctx.fillStyle = `hsl(${
+                220 + Math.sin(node.pulse) * 10
+              }, 80%, 70%)`;
               ctx.beginPath();
               ctx.arc(node.x, node.y, nodeSize * 2, 0, Math.PI * 2);
               ctx.fill();
@@ -2312,7 +2604,7 @@
 
         currentPlaylist = [...moodData.tracks];
         currentTrackIndex = 0;
-        
+
         if (isShuffleMode) {
           shuffleOrder = generateShuffleOrder(currentPlaylist.length);
           currentTrackIndex = shuffleOrder[0];
@@ -2323,8 +2615,11 @@
         });
         document.querySelector(`[data-mood="${mood}"]`).classList.add("active");
 
-        document.getElementById("current-mood-display").textContent = mood.charAt(0).toUpperCase() + mood.slice(1);
-        document.getElementById("mood-indicator").textContent = `Mood: ${mood.charAt(0).toUpperCase() + mood.slice(1)}`;
+        document.getElementById("current-mood-display").textContent =
+          mood.charAt(0).toUpperCase() + mood.slice(1);
+        document.getElementById("mood-indicator").textContent = `Mood: ${
+          mood.charAt(0).toUpperCase() + mood.slice(1)
+        }`;
 
         updateTrackInfo();
 
@@ -2357,7 +2652,9 @@
 
       // Fullscreen functionality
       function toggleFullscreen() {
-        const visualizationContainer = document.getElementById("visualization-container");
+        const visualizationContainer = document.getElementById(
+          "visualization-container"
+        );
         const fullscreenBtn = document.getElementById("fullscreen-btn");
 
         if (!isFullscreen) {
@@ -2396,7 +2693,9 @@
       }
 
       function handleFullscreenChange() {
-        const visualizationContainer = document.getElementById("visualization-container");
+        const visualizationContainer = document.getElementById(
+          "visualization-container"
+        );
         const fullscreenBtn = document.getElementById("fullscreen-btn");
 
         const isCurrentlyFullscreen = !!(
@@ -2432,8 +2731,12 @@
           });
         });
 
-        document.getElementById("analyze-btn").addEventListener("click", analyzeText);
-        document.getElementById("play-btn").addEventListener("click", togglePlayPause);
+        document
+          .getElementById("analyze-btn")
+          .addEventListener("click", analyzeText);
+        document
+          .getElementById("play-btn")
+          .addEventListener("click", togglePlayPause);
 
         document.getElementById("shuffle-btn").addEventListener("click", () => {
           if (!isShuffleMode) {
@@ -2441,49 +2744,68 @@
           }
         });
 
-        document.getElementById("sequential-btn").addEventListener("click", () => {
-          if (isShuffleMode) {
-            togglePlaybackMode();
-          }
-        });
+        document
+          .getElementById("sequential-btn")
+          .addEventListener("click", () => {
+            if (isShuffleMode) {
+              togglePlaybackMode();
+            }
+          });
 
-        document.getElementById("prev-btn").addEventListener("click", playPrevious);
+        document
+          .getElementById("prev-btn")
+          .addEventListener("click", playPrevious);
         document.getElementById("next-btn").addEventListener("click", playNext);
 
         // Fullscreen button
-        document.getElementById("fullscreen-btn").addEventListener("click", toggleFullscreen);
+        document
+          .getElementById("fullscreen-btn")
+          .addEventListener("click", toggleFullscreen);
 
         // Fullscreen change events
         document.addEventListener("fullscreenchange", handleFullscreenChange);
-        document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
-        document.addEventListener("mozfullscreenchange", handleFullscreenChange);
+        document.addEventListener(
+          "webkitfullscreenchange",
+          handleFullscreenChange
+        );
+        document.addEventListener(
+          "mozfullscreenchange",
+          handleFullscreenChange
+        );
         document.addEventListener("msfullscreenchange", handleFullscreenChange);
 
         // Progress bar click to seek
-        document.querySelector(".progress-container").addEventListener("click", (e) => {
-          if (currentAudio && currentAudio.duration) {
-            const rect = e.target.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const percentage = clickX / rect.width;
-            const newTime = percentage * currentAudio.duration;
-            currentAudio.currentTime = newTime;
-          }
-        });
+        document
+          .querySelector(".progress-container")
+          .addEventListener("click", (e) => {
+            if (currentAudio && currentAudio.duration) {
+              const rect = e.target.getBoundingClientRect();
+              const clickX = e.clientX - rect.left;
+              const percentage = clickX / rect.width;
+              const newTime = percentage * currentAudio.duration;
+              currentAudio.currentTime = newTime;
+            }
+          });
 
         // Volume control with mouse wheel on progress bar
-        document.querySelector(".progress-container").addEventListener("wheel", (e) => {
-          e.preventDefault();
-          if (currentAudio) {
-            const volumeChange = e.deltaY > 0 ? -0.1 : 0.1;
-            currentAudio.volume = Math.max(0, Math.min(1, currentAudio.volume + volumeChange));
+        document
+          .querySelector(".progress-container")
+          .addEventListener("wheel", (e) => {
+            e.preventDefault();
+            if (currentAudio) {
+              const volumeChange = e.deltaY > 0 ? -0.1 : 0.1;
+              currentAudio.volume = Math.max(
+                0,
+                Math.min(1, currentAudio.volume + volumeChange)
+              );
 
-            const progressContainer = e.target.closest(".progress-container");
-            progressContainer.style.opacity = currentAudio.volume;
-            setTimeout(() => {
-              progressContainer.style.opacity = "1";
-            }, 200);
-          }
-        });
+              const progressContainer = e.target.closest(".progress-container");
+              progressContainer.style.opacity = currentAudio.volume;
+              setTimeout(() => {
+                progressContainer.style.opacity = "1";
+              }, 200);
+            }
+          });
 
         // Keyboard shortcuts
         document.addEventListener("keydown", (e) => {
@@ -2513,7 +2835,10 @@
             case "ArrowLeft":
               e.preventDefault();
               if (currentAudio) {
-                currentAudio.currentTime = Math.max(0, currentAudio.currentTime - 10);
+                currentAudio.currentTime = Math.max(
+                  0,
+                  currentAudio.currentTime - 10
+                );
               } else {
                 playPrevious();
               }
@@ -2521,7 +2846,10 @@
             case "ArrowRight":
               e.preventDefault();
               if (currentAudio) {
-                currentAudio.currentTime = Math.min(currentAudio.duration || 0, currentAudio.currentTime + 10);
+                currentAudio.currentTime = Math.min(
+                  currentAudio.duration || 0,
+                  currentAudio.currentTime + 10
+                );
               } else {
                 playNext();
               }
@@ -2541,63 +2869,14 @@
           }
         });
 
-        document.getElementById("mood-text").addEventListener("keypress", (e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            analyzeText();
-          }
-        });
-
-        window.addEventListener("resize", resizeCanvas);
-      }
-
-      // Initialize everything when page loads
-      document.addEventListener("DOMContentLoaded", () => {
-        initCanvas();
-        initEventListeners();
-        console.log("MoodTune with full animations and playlist support initialized!");
-        console.log("Features: Multi-track playlists, Shuffle/Sequential modes, Complex mood animations");
-        console.log("Keyboard shortcuts: Space (play/pause), N (next), P (previous), S (toggle shuffle), F (fullscreen)");
-      });
-    </script>
-  </body>
-</html>
-
-      // Event Listeners
-      function initEventListeners() {
-        initChatEventListeners();
-
-        document.querySelectorAll(".mood-btn").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            const mood = btn.getAttribute("data-mood");
-            selectMood(mood);
+        document
+          .getElementById("mood-text")
+          .addEventListener("keypress", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              analyzeText();
+            }
           });
-        });
-
-        document.getElementById("analyze-btn").addEventListener("click", analyzeText);
-        document.getElementById("play-btn").addEventListener("click", togglePlayPause);
-
-        document.getElementById("shuffle-btn").addEventListener("click", () => {
-          if (!isShuffleMode) {
-            togglePlaybackMode();
-          }
-        });
-
-        document.getElementById("sequential-btn").addEventListener("click", () => {
-          if (isShuffleMode) {
-            togglePlaybackMode();
-          }
-        });
-
-        document.getElementById("prev-btn").addEventListener("click", playPrevious);
-        document.getElementById("next-btn").addEventListener("click", playNext);
-
-        document.getElementById("mood-text").addEventListener("keypress", (e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            analyzeText();
-          }
-        });
 
         window.addEventListener("resize", resizeCanvas);
       }
@@ -2606,7 +2885,15 @@
       document.addEventListener("DOMContentLoaded", () => {
         initCanvas();
         initEventListeners();
-        console.log("MoodTune with Playlist Support initialized successfully!");
+        console.log(
+          "MoodTune with full animations and playlist support initialized!"
+        );
+        console.log(
+          "Features: Multi-track playlists, Shuffle/Sequential modes, Complex mood animations"
+        );
+        console.log(
+          "Keyboard shortcuts: Space (play/pause), N (next), P (previous), S (toggle shuffle), F (fullscreen)"
+        );
       });
     </script>
   </body>
