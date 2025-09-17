@@ -128,7 +128,6 @@
         text-shadow: 0 2px 10px rgba(110, 136, 255, 0.3);
       }
 
-      /* AI Chat Styles */
       .chat-messages {
         flex: 1;
         overflow-y: auto;
@@ -241,12 +240,6 @@
         box-shadow: 0 5px 15px rgba(110, 136, 255, 0.4);
       }
 
-      .send-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: none;
-      }
-
       .typing-indicator {
         display: none;
         align-items: center;
@@ -349,26 +342,6 @@
         overflow: hidden;
       }
 
-      .mood-btn::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.2),
-          transparent
-        );
-        transition: left 0.6s;
-      }
-
-      .mood-btn:hover::before {
-        left: 100%;
-      }
-
       .mood-btn:hover {
         transform: translateY(-5px) scale(1.05);
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
@@ -447,28 +420,6 @@
         cursor: pointer;
         transition: all 0.4s ease;
         box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
-        position: relative;
-        overflow: hidden;
-      }
-
-      .analyze-btn::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.3),
-          transparent
-        );
-        transition: left 0.6s;
-      }
-
-      .analyze-btn:hover::before {
-        left: 100%;
       }
 
       .analyze-btn:hover {
@@ -530,6 +481,46 @@
       .mood-indicator {
         font-size: 1rem;
         color: #a1a8c9;
+        margin-bottom: 8px;
+      }
+
+      .track-info {
+        font-size: 0.9rem;
+        color: #ffd700;
+        text-shadow: 0 1px 5px rgba(255, 215, 0, 0.3);
+      }
+
+      .playlist-controls {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-top: 15px;
+      }
+
+      .playlist-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+        padding: 8px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .playlist-btn:hover {
+        background: rgba(110, 136, 255, 0.3);
+        border-color: #6e88ff;
+        transform: translateY(-2px);
+      }
+
+      .playlist-btn.active {
+        background: rgba(110, 136, 255, 0.5);
+        border-color: #6e88ff;
+        box-shadow: 0 4px 15px rgba(110, 136, 255, 0.3);
       }
 
       .progress-container {
@@ -642,11 +633,6 @@
         box-shadow: 0 8px 25px rgba(110, 136, 255, 0.5);
       }
 
-      .fullscreen-btn:active {
-        transform: scale(0.95);
-      }
-
-      /* Fullscreen styles */
       .visualization.fullscreen {
         position: fixed !important;
         top: 0 !important;
@@ -655,20 +641,6 @@
         height: 100vh !important;
         z-index: 9999 !important;
         border-radius: 0 !important;
-      }
-
-      .visualization.fullscreen .mood-display {
-        bottom: 40px;
-        right: 40px;
-        font-size: 1.5rem;
-      }
-
-      .visualization.fullscreen .fullscreen-btn {
-        bottom: 40px;
-        left: 40px;
-        width: 70px;
-        height: 70px;
-        font-size: 1.6rem;
       }
 
       .mood-text {
@@ -689,21 +661,14 @@
         .main-content {
           flex-direction: column;
         }
-
         .left-panel {
           flex-direction: row;
         }
-
         .ai-chat {
           min-height: 350px;
         }
-
         h1 {
           font-size: 3rem;
-        }
-
-        .container {
-          padding: 15px;
         }
       }
 
@@ -713,53 +678,16 @@
         }
       }
 
-      /* Loading animation */
-      .loading {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: #6e88ff;
-        font-size: 1.2rem;
-        z-index: 12;
-      }
-
-      .spinner {
-        width: 40px;
-        height: 40px;
-        margin: 0 auto 20px;
-        border: 3px solid rgba(110, 136, 255, 0.3);
-        border-top: 3px solid #6e88ff;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-
-      /* Custom scrollbar for chat */
       .chat-messages::-webkit-scrollbar {
         width: 6px;
       }
-
       .chat-messages::-webkit-scrollbar-track {
         background: rgba(255, 255, 255, 0.05);
         border-radius: 3px;
       }
-
       .chat-messages::-webkit-scrollbar-thumb {
         background: rgba(110, 136, 255, 0.4);
         border-radius: 3px;
-      }
-
-      .chat-messages::-webkit-scrollbar-thumb:hover {
-        background: rgba(110, 136, 255, 0.6);
       }
     </style>
   </head>
@@ -855,7 +783,17 @@
               Chat with MoodBot to start your musical journey
             </div>
             <div class="mood-indicator" id="mood-indicator">Mood: None</div>
+            <div class="track-info" id="track-info">Track 1 of 1</div>
           </div>
+        </div>
+
+        <div class="playlist-controls">
+          <button class="playlist-btn active" id="shuffle-btn">
+            🔀 Shuffle
+          </button>
+          <button class="playlist-btn" id="sequential-btn">
+            📝 Sequential
+          </button>
         </div>
 
         <div class="progress-container">
@@ -864,9 +802,9 @@
 
         <div class="controls">
           <button class="control-btn">🔁</button>
-          <button class="control-btn">⏮</button>
+          <button class="control-btn" id="prev-btn">⏮</button>
           <button class="play-btn control-btn" id="play-btn">▶</button>
-          <button class="control-btn">⏭</button>
+          <button class="control-btn" id="next-btn">⏭</button>
           <button class="control-btn">🔀</button>
         </div>
       </div>
@@ -888,6 +826,12 @@
       let chatHistory = [];
       let isTyping = false;
 
+      // Playlist variables
+      let currentPlaylist = [];
+      let currentTrackIndex = 0;
+      let isShuffleMode = true;
+      let shuffleOrder = [];
+
       // Canvas variables
       let canvas, ctx;
       let animationFrame;
@@ -899,188 +843,120 @@
       let romanticParticleInterval;
       let romanticHeartInterval;
 
-      // Mood to music mapping
-      const moodMusic = {
+      // Mood to music playlists mapping
+      const moodPlaylists = {
         happy: {
-          title: "Upbeat Pop - 'Sunshine Day'",
+          name: "Happy Vibes",
           color: [255, 223, 100],
           energy: 0.8,
-          audioFile: "audio/happy.mp3",
+          tracks: [
+            { title: "Sunshine Day - Upbeat Pop", file: "audio/happy.mp3" },
+            { title: "Good Vibes Only - Feel Good", file: "audio/happy2.mp3" },
+            { title: "Dancing Colors - Joyful Beat", file: "audio/happy3.mp3" }
+          ]
         },
         sad: {
-          title: "Melancholic Melodies - 'Rainy Nights'",
+          name: "Melancholic Moods",
           color: [100, 150, 255],
           energy: 0.3,
-          audioFile: "audio/sad.mp3",
+          tracks: [
+            { title: "Rainy Nights - Melancholic", file: "audio/sad.mp3" },
+            { title: "Gentle Tears - Emotional", file: "audio/sad2.mp3" },
+            { title: "Blue Reflections - Contemplative", file: "audio/sad3.mp3" }
+          ]
         },
         calm: {
-          title: "Ambient Relaxation - 'Tranquil Waters'",
+          name: "Peaceful Moments",
           color: [100, 220, 200],
           energy: 0.4,
-          audioFile: "audio/calm.mp3",
+          tracks: [
+            { title: "Tranquil Waters - Ambient", file: "audio/calm.mp3" },
+            { title: "Serene Forest - Nature Sounds", file: "audio/calm2.mp3" },
+            { title: "Zen Garden - Meditation", file: "audio/calm3.mp3" }
+          ]
         },
         energetic: {
-          title: "High Energy Dance - 'Electric Pulse'",
+          name: "High Energy",
           color: [255, 100, 100],
           energy: 0.9,
-          audioFile: "audio/energetic.mp3",
+          tracks: [
+            { title: "Electric Pulse - Dance", file: "audio/energetic.mp3" },
+            { title: "Power Drive - Electronic", file: "audio/energetic2.mp3" },
+            { title: "Adrenaline Rush - Intense", file: "audio/energetic3.mp3" }
+          ]
         },
         romantic: {
-          title: "Romantic Instrumentals - 'Hearts Entwined'",
+          name: "Love Songs",
           color: [255, 100, 200],
           energy: 0.6,
-          audioFile: "audio/romantic.mp3",
+          tracks: [
+            { title: "Hearts Entwined - Romance", file: "audio/romantic.mp3" },
+            { title: "Sweet Serenade - Intimate", file: "audio/romantic2.mp3" },
+            { title: "Moonlight Dance - Tender", file: "audio/romantic3.mp3" }
+          ]
         },
         focused: {
-          title: "Deep Focus - 'Concentration Zone'",
+          name: "Focus Zone",
           color: [150, 200, 255],
           energy: 0.5,
-          audioFile: "audio/focused.mp3",
+          tracks: [
+            { title: "Concentration Zone - Deep Focus", file: "audio/focused.mp3" },
+            { title: "Mind Flow - Productivity", file: "audio/focused2.mp3" },
+            { title: "Study Session - Ambient Work", file: "audio/focused3.mp3" }
+          ]
         },
       };
 
       // AI Chat System
       const moodKeywords = {
         happy: {
-          keywords: [
-            "happy",
-            "joy",
-            "excited",
-            "great",
-            "awesome",
-            "wonderful",
-            "amazing",
-            "fantastic",
-            "good",
-            "cheerful",
-            "bright",
-            "celebrate",
-            "thrilled",
-            "upbeat",
-            "positive",
-          ],
+          keywords: ["happy", "joy", "excited", "great", "awesome", "wonderful", "amazing", "fantastic", "good", "cheerful", "bright", "celebrate", "thrilled", "upbeat", "positive"],
           responses: [
             "That's wonderful to hear! Your positive energy is contagious. Let me set up some upbeat music to match your mood.",
             "I love that enthusiasm! Happy vibes deserve happy music. Getting some sunshine sounds ready for you.",
-            "What a great mood you're in! Time for some energetic tunes to keep those good feelings flowing.",
-          ],
+            "What a great mood you're in! Time for some energetic tunes to keep those good feelings flowing."
+          ]
         },
         sad: {
-          keywords: [
-            "sad",
-            "down",
-            "depressed",
-            "blue",
-            "upset",
-            "hurt",
-            "cry",
-            "tears",
-            "lonely",
-            "empty",
-            "disappointed",
-            "heartbroken",
-            "grief",
-            "loss",
-            "melancholy",
-          ],
+          keywords: ["sad", "down", "depressed", "blue", "upset", "hurt", "cry", "tears", "lonely", "empty", "disappointed", "heartbroken", "grief", "loss", "melancholy"],
           responses: [
             "I understand you're going through a tough time. Sometimes melancholic music can be comforting and help process these feelings.",
             "It's okay to feel sad sometimes. Let me find some gentle, contemplative music that might resonate with your current state.",
-            "Sadness is a valid emotion. Would some soothing, reflective music help you work through what you're feeling?",
-          ],
+            "Sadness is a valid emotion. Would some soothing, reflective music help you work through what you're feeling?"
+          ]
         },
         calm: {
-          keywords: [
-            "calm",
-            "peaceful",
-            "relaxed",
-            "zen",
-            "tranquil",
-            "serene",
-            "quiet",
-            "still",
-            "centered",
-            "meditative",
-            "chill",
-            "mellow",
-            "restful",
-            "soothing",
-          ],
+          keywords: ["calm", "peaceful", "relaxed", "zen", "tranquil", "serene", "quiet", "still", "centered", "meditative", "chill", "mellow", "restful", "soothing"],
           responses: [
             "A peaceful state of mind is beautiful. Let me create a tranquil soundscape to enhance your sense of calm.",
             "Zen vibes detected! Time for some ambient, flowing music to complement your inner peace.",
-            "That sounds wonderfully serene. I'll set up some meditative tunes to maintain that peaceful energy.",
-          ],
+            "That sounds wonderfully serene. I'll set up some meditative tunes to maintain that peaceful energy."
+          ]
         },
         energetic: {
-          keywords: [
-            "energy",
-            "pumped",
-            "hyped",
-            "active",
-            "dynamic",
-            "powerful",
-            "intense",
-            "charged",
-            "electric",
-            "motivated",
-            "driven",
-            "fired up",
-            "amped",
-            "vigorous",
-          ],
+          keywords: ["energy", "pumped", "hyped", "active", "dynamic", "powerful", "intense", "charged", "electric", "motivated", "driven", "fired up", "amped", "vigorous"],
           responses: [
             "I can feel that energy! Time to channel it with some high-octane music that matches your intensity.",
             "You're charged up and ready to go! Let me find some powerful beats to fuel that momentum.",
-            "That's the spirit! High-energy music coming right up to match your dynamic mood.",
-          ],
+            "That's the spirit! High-energy music coming right up to match your dynamic mood."
+          ]
         },
         romantic: {
-          keywords: [
-            "love",
-            "romance",
-            "heart",
-            "romantic",
-            "intimate",
-            "passion",
-            "sweet",
-            "tender",
-            "affection",
-            "relationship",
-            "partner",
-            "date",
-            "valentine",
-            "crush",
-          ],
+          keywords: ["love", "romance", "heart", "romantic", "intimate", "passion", "sweet", "tender", "affection", "relationship", "partner", "date", "valentine", "crush"],
           responses: [
             "Love is in the air! Let me set a romantic atmosphere with some beautiful, heartfelt melodies.",
             "Aww, that's sweet! Time for some tender, romantic music to complement those lovely feelings.",
-            "Romance calls for special music. I'll create the perfect soundtrack for your heart's desires.",
-          ],
+            "Romance calls for special music. I'll create the perfect soundtrack for your heart's desires."
+          ]
         },
         focused: {
-          keywords: [
-            "focus",
-            "concentrate",
-            "work",
-            "study",
-            "productive",
-            "clear",
-            "sharp",
-            "determined",
-            "mindful",
-            "task",
-            "project",
-            "deadline",
-            "learning",
-            "analysis",
-          ],
+          keywords: ["focus", "concentrate", "work", "study", "productive", "clear", "sharp", "determined", "mindful", "task", "project", "deadline", "learning", "analysis"],
           responses: [
             "Time to get in the zone! I'll set up some focused, concentration-enhancing music for maximum productivity.",
             "Perfect mindset for deep work. Let me create an audio environment that supports your concentration.",
-            "That focused energy is powerful. Here's some music designed to enhance cognitive performance and maintain attention.",
-          ],
-        },
+            "That focused energy is powerful. Here's some music designed to enhance cognitive performance and maintain attention."
+          ]
+        }
       };
 
       const conversationStarters = [
@@ -1088,43 +964,120 @@
         "Tell me about something that's been on your mind lately.",
         "How would you describe your energy level right now?",
         "What kind of atmosphere would make you feel most comfortable?",
-        "Are there any particular emotions you've been experiencing today?",
+        "Are there any particular emotions you've been experiencing today?"
       ];
 
       const followUpQuestions = {
-        happy: [
-          "What's making you feel so positive today?",
-          "How would you like to celebrate this mood?",
-        ],
-        sad: [
-          "Would you like to talk about what's troubling you?",
-          "Sometimes music helps - shall we find something soothing?",
-        ],
-        calm: [
-          "What helps you maintain this peaceful state?",
-          "Are you looking to stay relaxed or perhaps energize yourself?",
-        ],
-        energetic: [
-          "What's fueling this amazing energy?",
-          "Ready to channel this into something creative or active?",
-        ],
-        romantic: [
-          "Is there someone special you're thinking about?",
-          "What kind of romantic atmosphere appeals to you?",
-        ],
-        focused: [
-          "What are you working on that requires this concentration?",
-          "How can I best support your productive mindset?",
-        ],
+        happy: ["What's making you feel so positive today?", "How would you like to celebrate this mood?"],
+        sad: ["Would you like to talk about what's troubling you?", "Sometimes music helps - shall we find something soothing?"],
+        calm: ["What helps you maintain this peaceful state?", "Are you looking to stay relaxed or perhaps energize yourself?"],
+        energetic: ["What's fueling this amazing energy?", "Ready to channel this into something creative or active?"],
+        romantic: ["Is there someone special you're thinking about?", "What kind of romantic atmosphere appeals to you?"],
+        focused: ["What are you working on that requires this concentration?", "How can I best support your productive mindset?"]
       };
 
+      // Playlist Functions
+      function generateShuffleOrder(playlistLength) {
+        const order = Array.from({length: playlistLength}, (_, i) => i);
+        for (let i = order.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [order[i], order[j]] = [order[j], order[i]];
+        }
+        return order;
+      }
+
+      function getNextTrackIndex() {
+        if (!currentPlaylist.length) return 0;
+        
+        if (isShuffleMode) {
+          if (shuffleOrder.length === 0) {
+            shuffleOrder = generateShuffleOrder(currentPlaylist.length);
+          }
+          
+          const currentShuffleIndex = shuffleOrder.indexOf(currentTrackIndex);
+          const nextShuffleIndex = (currentShuffleIndex + 1) % shuffleOrder.length;
+          return shuffleOrder[nextShuffleIndex];
+        } else {
+          return (currentTrackIndex + 1) % currentPlaylist.length;
+        }
+      }
+
+      function getPreviousTrackIndex() {
+        if (!currentPlaylist.length) return 0;
+        
+        if (isShuffleMode) {
+          if (shuffleOrder.length === 0) {
+            shuffleOrder = generateShuffleOrder(currentPlaylist.length);
+          }
+          
+          const currentShuffleIndex = shuffleOrder.indexOf(currentTrackIndex);
+          const prevShuffleIndex = currentShuffleIndex === 0 
+            ? shuffleOrder.length - 1 
+            : currentShuffleIndex - 1;
+          return shuffleOrder[prevShuffleIndex];
+        } else {
+          return currentTrackIndex === 0 
+            ? currentPlaylist.length - 1 
+            : currentTrackIndex - 1;
+        }
+      }
+
+      function playTrack(trackIndex) {
+        if (!currentPlaylist.length || trackIndex < 0 || trackIndex >= currentPlaylist.length) {
+          return;
+        }
+        
+        currentTrackIndex = trackIndex;
+        const track = currentPlaylist[currentTrackIndex];
+        
+        updateTrackInfo();
+        loadAudioForTrack(track);
+        
+        if (userInteracted) {
+          autoPlayMood();
+        }
+      }
+
+      function playNext() {
+        const nextIndex = getNextTrackIndex();
+        playTrack(nextIndex);
+      }
+
+      function playPrevious() {
+        const prevIndex = getPreviousTrackIndex();
+        playTrack(prevIndex);
+      }
+
+      function updateTrackInfo() {
+        if (!currentPlaylist.length) return;
+        
+        const track = currentPlaylist[currentTrackIndex];
+        const moodData = moodPlaylists[currentMood];
+        
+        document.getElementById("song-title").textContent = track.title;
+        document.getElementById("track-info").textContent = 
+          `Track ${currentTrackIndex + 1} of ${currentPlaylist.length} • ${moodData.name}`;
+      }
+
+      function togglePlaybackMode() {
+        isShuffleMode = !isShuffleMode;
+        
+        const shuffleBtn = document.getElementById("shuffle-btn");
+        const sequentialBtn = document.getElementById("sequential-btn");
+        
+        if (isShuffleMode) {
+          shuffleBtn.classList.add("active");
+          sequentialBtn.classList.remove("active");
+          shuffleOrder = generateShuffleOrder(currentPlaylist.length);
+        } else {
+          shuffleBtn.classList.remove("active");
+          sequentialBtn.classList.add("active");
+          shuffleOrder = [];
+        }
+      }
+
       // AI Chat Functions
-      function addMessage(
-        content,
-        isUser = false,
-        hasSuggestion = false,
-        suggestedMood = null
-      ) {
+      function addMessage(content, isUser = false, hasSuggestion = false, suggestedMood = null) {
         const messagesContainer = document.getElementById("chat-messages");
         const messageDiv = document.createElement("div");
         messageDiv.className = `message ${isUser ? "user" : "ai"}`;
@@ -1147,9 +1100,7 @@
 
           const suggestionText = document.createElement("div");
           suggestionText.className = "mood-suggestion-text";
-          suggestionText.textContent = `🎵 Switch to ${
-            suggestedMood.charAt(0).toUpperCase() + suggestedMood.slice(1)
-          } mood`;
+          suggestionText.textContent = `🎵 Switch to ${suggestedMood.charAt(0).toUpperCase() + suggestedMood.slice(1)} mood`;
 
           suggestionDiv.appendChild(suggestionText);
           messageDiv.appendChild(suggestionDiv);
@@ -1158,7 +1109,6 @@
         messagesContainer.appendChild(messageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-        // Store in chat history
         chatHistory.push({
           content: content,
           isUser: isUser,
@@ -1188,21 +1138,8 @@
         let maxScore = 0;
         let matchedKeywords = [];
 
-        // Check for explicit music requests first
-        const musicTerms = [
-          "music",
-          "song",
-          "track",
-          "tune",
-          "sound",
-          "audio",
-          "play",
-          "listen",
-          "hear",
-        ];
-        const hasMusicRequest = musicTerms.some((term) =>
-          lowerText.includes(term)
-        );
+        const musicTerms = ["music", "song", "track", "tune", "sound", "audio", "play", "listen", "hear"];
+        const hasMusicRequest = musicTerms.some((term) => lowerText.includes(term));
 
         Object.entries(moodKeywords).forEach(([mood, data]) => {
           const score = data.keywords.reduce((count, keyword) => {
@@ -1219,7 +1156,6 @@
           }
         });
 
-        // Lower the confidence threshold if user explicitly mentions music
         const confidenceMultiplier = hasMusicRequest ? 1.5 : 1;
         const adjustedScore = maxScore * confidenceMultiplier;
 
@@ -1236,39 +1172,19 @@
         let response = "";
         let suggestedMood = null;
 
-        // Lower threshold for music requests
         const confidenceThreshold = analysis.hasMusicRequest ? 0.2 : 0.3;
 
         if (analysis.confidence > confidenceThreshold && analysis.mood) {
-          // High confidence mood detection
           const moodData = moodKeywords[analysis.mood];
-          response =
-            moodData.responses[
-              Math.floor(Math.random() * moodData.responses.length)
-            ];
+          response = moodData.responses[Math.floor(Math.random() * moodData.responses.length)];
           suggestedMood = analysis.mood;
         } else if (analysis.confidence > 0.1 && analysis.mood) {
-          // Low confidence - ask follow-up questions
-          response = `I'm picking up on some ${
-            analysis.mood
-          } vibes from what you're saying. ${
-            followUpQuestions[analysis.mood][
-              Math.floor(
-                Math.random() * followUpQuestions[analysis.mood].length
-              )
-            ]
-          }`;
+          response = `I'm picking up on some ${analysis.mood} vibes from what you're saying. ${followUpQuestions[analysis.mood][Math.floor(Math.random() * followUpQuestions[analysis.mood].length)]}`;
         } else if (analysis.hasMusicRequest) {
-          // User wants music but no clear mood detected
-          response =
-            "I can tell you're looking for some music! To give you the perfect soundtrack, could you tell me more about your current mood or what kind of atmosphere you're going for?";
+          response = "I can tell you're looking for some music! To give you the perfect soundtrack, could you tell me more about your current mood or what kind of atmosphere you're going for?";
         } else {
-          // No clear mood detected - use conversation starters
           const responses = [
-            "I'd love to understand your mood better. " +
-              conversationStarters[
-                Math.floor(Math.random() * conversationStarters.length)
-              ],
+            "I'd love to understand your mood better. " + conversationStarters[Math.floor(Math.random() * conversationStarters.length)],
             "Tell me more about how you're feeling. Are you looking for something upbeat, calming, or perhaps energizing?",
             "I'm here to help you find the perfect music for your state of mind. What's your emotional landscape like right now?",
             "Every mood deserves the right soundtrack. Help me understand what you're going through so I can curate something special for you.",
@@ -1276,10 +1192,7 @@
           response = responses[Math.floor(Math.random() * responses.length)];
         }
 
-        return {
-          response: response,
-          suggestedMood: suggestedMood,
-        };
+        return { response: response, suggestedMood: suggestedMood };
       }
 
       function sendChatMessage() {
@@ -1288,67 +1201,42 @@
 
         if (!message || isTyping) return;
 
-        // Add user message
         addMessage(message, true);
         chatInput.value = "";
         autoResizeTextarea(chatInput);
 
-        // Show typing indicator
         showTypingIndicator();
 
-        // Generate AI response after a delay
         setTimeout(() => {
           hideTypingIndicator();
-
           const aiResponse = generateAIResponse(message);
-          addMessage(
-            aiResponse.response,
-            false,
-            aiResponse.suggestedMood !== null,
-            aiResponse.suggestedMood
-          );
-        }, 1000 + Math.random() * 1000); // Random delay between 1-2 seconds
+          addMessage(aiResponse.response, false, aiResponse.suggestedMood !== null, aiResponse.suggestedMood);
+        }, 1000 + Math.random() * 1000);
       }
 
       function selectMoodFromChat(mood, instantPlay = false) {
         selectMood(mood);
 
-        // If instant play is requested, force play the music immediately
         if (instantPlay) {
           setTimeout(() => {
             if (!isPlaying) {
               togglePlayPause();
             }
-          }, 500); // Small delay to ensure mood is fully loaded
+          }, 500);
         }
 
-        // Add confirmation message
-        setTimeout(
-          () => {
-            const confirmationMessages = instantPlay
-              ? [
-                  `🎵 Perfect! Now playing ${mood} music and showing matching visuals. Enjoy the experience!`,
-                  `🎶 Excellent! Your ${mood} mood is now live with music and animations. Let the vibes flow!`,
-                  `✨ Amazing! ${
-                    mood.charAt(0).toUpperCase() + mood.slice(1)
-                  } mode activated with instant music playback!`,
-                ]
-              : [
-                  `Perfect! I've set the mood to ${mood}. Click play when you're ready to hear the music!`,
-                  `Great choice! ${
-                    mood.charAt(0).toUpperCase() + mood.slice(1)
-                  } mood is ready - just hit play to start the music.`,
-                  `Excellent! Your ${mood} mood is set up with matching visuals. Ready to play when you are!`,
-                ];
+        setTimeout(() => {
+          const confirmationMessages = instantPlay
+            ? [`🎵 Perfect! Now playing ${mood} playlist with ${currentPlaylist.length} tracks in ${isShuffleMode ? 'shuffle' : 'sequential'} mode. Enjoy!`,
+               `🎶 Excellent! Your ${mood} playlist is now live with matching visuals. Let the vibes flow!`,
+               `✨ Amazing! ${mood.charAt(0).toUpperCase() + mood.slice(1)} playlist activated with instant music playback!`]
+            : [`Perfect! I've loaded the ${mood} playlist with ${currentPlaylist.length} tracks. Click play when you're ready!`,
+               `Great choice! ${mood.charAt(0).toUpperCase() + mood.slice(1)} playlist is ready with matching visuals. Hit play to start!`,
+               `Excellent! Your ${mood} playlist is set up in ${isShuffleMode ? 'shuffle' : 'sequential'} mode. Ready when you are!`];
 
-            const confirmation =
-              confirmationMessages[
-                Math.floor(Math.random() * confirmationMessages.length)
-              ];
-            addMessage(confirmation, false);
-          },
-          instantPlay ? 1000 : 500
-        );
+          const confirmation = confirmationMessages[Math.floor(Math.random() * confirmationMessages.length)];
+          addMessage(confirmation, false);
+        }, instantPlay ? 1000 : 500);
       }
 
       function autoResizeTextarea(textarea) {
@@ -1356,20 +1244,16 @@
         textarea.style.height = Math.min(textarea.scrollHeight, 100) + "px";
       }
 
-      // Initialize chat functionality
       function initChatEventListeners() {
         const chatInput = document.getElementById("chat-input");
         const sendBtn = document.getElementById("send-btn");
 
-        // Auto-resize textarea
         chatInput.addEventListener("input", (e) => {
           autoResizeTextarea(e.target);
         });
 
-        // Send message on button click
         sendBtn.addEventListener("click", sendChatMessage);
 
-        // Send message on Enter key (but allow Shift+Enter for new lines)
         chatInput.addEventListener("keypress", (e) => {
           if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
@@ -1377,17 +1261,253 @@
           }
         });
 
-        // Disable send button when typing
         chatInput.addEventListener("input", () => {
           sendBtn.disabled = isTyping;
         });
       }
 
-      // Helper function to convert HSL to RGBA
+      // Audio Functions
+      function initializeAudio() {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+      }
+
+      function loadAudioForTrack(track) {
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+          currentAudio.removeEventListener("loadstart", handleLoadStart);
+          currentAudio.removeEventListener("canplaythrough", handleCanPlayThrough);
+          currentAudio.removeEventListener("error", handleAudioError);
+          currentAudio.removeEventListener("timeupdate", updateProgressBar);
+          currentAudio.removeEventListener("ended", handleTrackEnded);
+          currentAudio = null;
+        }
+
+        if (progressInterval) {
+          clearInterval(progressInterval);
+          progressInterval = null;
+        }
+
+        if (track.file) {
+          try {
+            currentAudio = new Audio(track.file);
+            currentAudio.loop = false;
+            currentAudio.volume = 0.7;
+            currentAudio.preload = "auto";
+
+            currentAudio.addEventListener("loadstart", handleLoadStart);
+            currentAudio.addEventListener("canplaythrough", handleCanPlayThrough);
+            currentAudio.addEventListener("error", handleAudioError);
+            currentAudio.addEventListener("timeupdate", updateProgressBar);
+            currentAudio.addEventListener("ended", handleTrackEnded);
+
+            currentAudio.load();
+          } catch (error) {
+            console.error(`Failed to create audio for ${track.title}:`, error);
+            fallbackToSimulation();
+          }
+        } else {
+          fallbackToSimulation();
+        }
+      }
+
+      function handleLoadStart() {
+        document.getElementById("song-title").style.color = "#a1a8c9";
+      }
+
+      function handleCanPlayThrough() {
+        document.getElementById("song-title").style.color = "#fff";
+      }
+
+      function handleAudioError(e) {
+        console.error("Audio loading error:", e);
+        fallbackToSimulation();
+      }
+
+      function handleTrackEnded() {
+        console.log("Track ended, playing next...");
+        playNext();
+      }
+
+      function fallbackToSimulation() {
+        simulatePlayback();
+      }
+
+      function simulatePlayback() {
+        isPlaying = true;
+        document.getElementById("play-btn").textContent = "⏸";
+
+        let progress = 0;
+        const trackDuration = 180;
+        const increment = 100 / (trackDuration * 10);
+
+        progressInterval = setInterval(() => {
+          if (!isPlaying) {
+            clearInterval(progressInterval);
+            progressInterval = null;
+            return;
+          }
+
+          progress += increment;
+          if (progress >= 100) {
+            progress = 100;
+            setTimeout(() => {
+              if (isPlaying) {
+                playNext();
+              }
+            }, 500);
+          }
+
+          document.getElementById("progress-bar").style.width = `${progress}%`;
+        }, 100);
+      }
+
+      function updateProgressBar() {
+        if (currentAudio && currentAudio.duration && !isNaN(currentAudio.duration)) {
+          const progress = (currentAudio.currentTime / currentAudio.duration) * 100;
+          document.getElementById("progress-bar").style.width = `${progress}%`;
+        }
+      }
+
+      function autoPlayMood() {
+        if (!userInteracted) {
+          return;
+        }
+
+        initializeAudio();
+
+        if (!currentAudio) {
+          simulatePlayback();
+          return;
+        }
+
+        setTimeout(() => {
+          if (currentAudio && currentAudio.readyState >= 3) {
+            playAudio();
+          } else if (currentAudio) {
+            currentAudio.addEventListener("canplaythrough", playAudio, { once: true });
+            setTimeout(() => {
+              if (!isPlaying) {
+                fallbackToSimulation();
+              }
+            }, 3000);
+          } else {
+            fallbackToSimulation();
+          }
+        }, 100);
+      }
+
+      function playAudio() {
+        if (!currentAudio) {
+          fallbackToSimulation();
+          return;
+        }
+
+        isPlaying = true;
+        document.getElementById("play-btn").textContent = "⏸";
+
+        if (audioContext && audioContext.state === "suspended") {
+          audioContext.resume();
+        }
+
+        currentAudio.play().then(() => {
+          console.log(`Successfully playing: ${currentPlaylist[currentTrackIndex].title}`);
+        }).catch((error) => {
+          console.error("Audio play failed:", error);
+          fallbackToSimulation();
+        });
+      }
+
+      // Mood Selection
+      function selectMood(mood) {
+        userInteracted = true;
+
+        if (currentMood) {
+          particles = [];
+          moodElements = [];
+        }
+
+        currentMood = mood;
+        const moodData = moodPlaylists[mood];
+
+        currentPlaylist = [...moodData.tracks];
+        currentTrackIndex = 0;
+        
+        if (isShuffleMode) {
+          shuffleOrder = generateShuffleOrder(currentPlaylist.length);
+          currentTrackIndex = shuffleOrder[0];
+        }
+
+        document.querySelectorAll(".mood-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        document.querySelector(`[data-mood="${mood}"]`).classList.add("active");
+
+        document.getElementById("current-mood-display").textContent = mood.charAt(0).toUpperCase() + mood.slice(1);
+        document.getElementById("mood-indicator").textContent = `Mood: ${mood.charAt(0).toUpperCase() + mood.slice(1)}`;
+
+        updateTrackInfo();
+        initCanvas();
+
+        const firstTrack = currentPlaylist[currentTrackIndex];
+        loadAudioForTrack(firstTrack);
+        autoPlayMood();
+      }
+
+      function analyzeText() {
+        const text = document.getElementById("mood-text").value.trim();
+        if (!text) return;
+
+        userInteracted = true;
+        const analysis = analyzeMoodFromText(text);
+        let detectedMood = analysis.mood || "calm";
+        selectMood(detectedMood);
+      }
+
+      function togglePlayPause() {
+        userInteracted = true;
+
+        if (!currentMood) {
+          selectMood("happy");
+          return;
+        }
+
+        if (isPlaying) {
+          pauseAudio();
+        } else {
+          resumeAudio();
+        }
+      }
+
+      function pauseAudio() {
+        isPlaying = false;
+        document.getElementById("play-btn").textContent = "▶";
+
+        if (progressInterval) {
+          clearInterval(progressInterval);
+          progressInterval = null;
+        }
+
+        if (currentAudio) {
+          currentAudio.pause();
+        }
+      }
+
+      function resumeAudio() {
+        if (currentAudio && currentAudio.readyState >= 3) {
+          playAudio();
+        } else if (currentAudio) {
+          currentAudio.addEventListener("canplaythrough", playAudio, { once: true });
+        } else {
+          simulatePlayback();
+        }
+      }
+
+      // Helper functions for animations
       function hslToRgba(hslColor) {
-        const hslMatch = hslColor.match(
-          /hsl\((\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?)%?,\s*(\d+(?:\.\d+)?)%?\)/
-        );
+        const hslMatch = hslColor.match(/hsl\((\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?)%?,\s*(\d+(?:\.\d+)?)%?\)/);
         if (!hslMatch) {
           return { r: 255, g: 100, b: 200 };
         }
@@ -1423,22 +1543,17 @@
         };
       }
 
-      // Helper function to convert HSL to HSLA
       function hslToHsla(hslColor, alpha) {
         return hslColor.replace("hsl(", "hsla(").replace(")", `, ${alpha})`);
       }
 
-      // Helper function to adjust color alpha
       function adjustColorAlpha(colorStr, alpha) {
         if (colorStr.startsWith("hsl(")) {
           return hslToHsla(colorStr, alpha);
         } else if (colorStr.startsWith("rgb(")) {
           return colorStr.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
         } else if (colorStr.startsWith("rgba(")) {
-          return colorStr.replace(
-            /rgba\(([^,]+,[^,]+,[^,]+),([^)]+)\)/,
-            `rgba($1,${alpha})`
-          );
+          return colorStr.replace(/rgba\(([^,]+,[^,]+,[^,]+),([^)]+)\)/, `rgba($1,${alpha})`);
         }
         return colorStr;
       }
@@ -1516,13 +1631,7 @@
 
           ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
           ctx.beginPath();
-          ctx.arc(
-            -this.size * 0.3,
-            -this.size * 0.3,
-            this.size * 0.3,
-            0,
-            Math.PI * 2
-          );
+          ctx.arc(-this.size * 0.3, -this.size * 0.3, this.size * 0.3, 0, Math.PI * 2);
           ctx.fill();
         }
 
@@ -1554,14 +1663,7 @@
           ctx.moveTo(0, size * 0.3);
           ctx.bezierCurveTo(0, 0, -size * 0.5, 0, -size * 0.5, size * 0.3);
           ctx.bezierCurveTo(-size * 0.5, size * 0.6, 0, size, 0, size);
-          ctx.bezierCurveTo(
-            0,
-            size,
-            size * 0.5,
-            size * 0.6,
-            size * 0.5,
-            size * 0.3
-          );
+          ctx.bezierCurveTo(0, size, size * 0.5, size * 0.6, size * 0.5, size * 0.3);
           ctx.bezierCurveTo(size * 0.5, 0, 0, 0, 0, size * 0.3);
           ctx.closePath();
           ctx.fill();
@@ -1572,12 +1674,7 @@
         }
 
         drawLeaf() {
-          const gradient = ctx.createLinearGradient(
-            0,
-            -this.size,
-            0,
-            this.size
-          );
+          const gradient = ctx.createLinearGradient(0, -this.size, 0, this.size);
           gradient.addColorStop(0, adjustColorAlpha(this.color, 1));
           gradient.addColorStop(0.5, adjustColorAlpha(this.color, 0.67));
           gradient.addColorStop(1, adjustColorAlpha(this.color, 0.4));
@@ -1859,10 +1956,7 @@
 
         setInterval(() => {
           if (currentMood !== "focused") return;
-          const connection =
-            network.connections[
-              Math.floor(Math.random() * network.connections.length)
-            ];
+          const connection = network.connections[Math.floor(Math.random() * network.connections.length)];
           if (connection) {
             particles.push(
               new Particle(
@@ -1880,12 +1974,14 @@
         }, 100);
       }
 
-      // Canvas initialization
+      // Canvas Functions
       function initCanvas() {
         canvas = document.getElementById("visual-canvas");
         ctx = canvas.getContext("2d");
         resizeCanvas();
-        animate();
+        if (!animationFrame) {
+          animate();
+        }
       }
 
       function resizeCanvas() {
@@ -1895,7 +1991,6 @@
         canvas.height = rect.height;
       }
 
-      // Main animation loop
       function animate() {
         animationFrame = requestAnimationFrame(animate);
         time++;
@@ -1945,12 +2040,7 @@
             }
 
             ctx.save();
-            const gradient = ctx.createLinearGradient(
-              0,
-              element.y - 50,
-              0,
-              element.y + 50
-            );
+            const gradient = ctx.createLinearGradient(0, element.y - 50, 0, element.y + 50);
             element.colors.forEach((color, i) => {
               gradient.addColorStop(i / (element.colors.length - 1), color);
             });
@@ -1983,23 +2073,14 @@
             ctx.save();
             ctx.globalAlpha = element.opacity;
             const gradient = ctx.createRadialGradient(
-              element.x,
-              element.y,
-              element.size * 0.5,
-              element.x,
-              element.y,
-              element.size
+              element.x, element.y, element.size * 0.5,
+              element.x, element.y, element.size
             );
             gradient.addColorStop(0, "rgba(100, 120, 180, 0.3)");
             gradient.addColorStop(1, "rgba(100, 120, 180, 0)");
 
             ctx.fillStyle = gradient;
-            ctx.fillRect(
-              element.x - element.size,
-              element.y - element.size,
-              element.size * 2,
-              element.size * 2
-            );
+            ctx.fillRect(element.x - element.size, element.y - element.size, element.size * 2, element.size * 2);
             ctx.restore();
           }
         });
@@ -2008,18 +2089,10 @@
       function updateCalmAnimation() {
         moodElements.forEach((element) => {
           if (element.type === "meditation_orb") {
-            element.y =
-              element.baseY + Math.sin(time * 0.01 + element.phase) * 20;
+            element.y = element.baseY + Math.sin(time * 0.01 + element.phase) * 20;
 
             ctx.save();
-            const gradient = ctx.createRadialGradient(
-              element.x,
-              element.y,
-              0,
-              element.x,
-              element.y,
-              element.size * 2
-            );
+            const gradient = ctx.createRadialGradient(element.x, element.y, 0, element.x, element.y, element.size * 2);
             gradient.addColorStop(0, adjustColorAlpha(element.color, 0.8));
             gradient.addColorStop(0.5, adjustColorAlpha(element.color, 0.4));
             gradient.addColorStop(1, adjustColorAlpha(element.color, 0));
@@ -2077,16 +2150,13 @@
               const startX = Math.random() * canvas.width;
               const startY = Math.random() * canvas.height * 0.3;
               const endX = Math.random() * canvas.width;
-              const endY =
-                canvas.height * 0.7 + Math.random() * canvas.height * 0.3;
+              const endY = canvas.height * 0.7 + Math.random() * canvas.height * 0.3;
 
               const segments = 8 + Math.random() * 8;
               for (let i = 0; i <= segments; i++) {
                 const t = i / segments;
-                const x =
-                  startX + (endX - startX) * t + (Math.random() - 0.5) * 50;
-                const y =
-                  startY + (endY - startY) * t + (Math.random() - 0.5) * 30;
+                const x = startX + (endX - startX) * t + (Math.random() - 0.5) * 50;
+                const y = startY + (endY - startY) * t + (Math.random() - 0.5) * 30;
                 element.points.push({ x, y });
               }
             }
@@ -2116,14 +2186,7 @@
             const pulseSize = element.size + Math.sin(element.pulsePhase) * 20;
 
             ctx.save();
-            const gradient = ctx.createRadialGradient(
-              element.x,
-              element.y,
-              0,
-              element.x,
-              element.y,
-              pulseSize
-            );
+            const gradient = ctx.createRadialGradient(element.x, element.y, 0, element.x, element.y, pulseSize);
             gradient.addColorStop(0, "rgba(255, 100, 100, 0.8)");
             gradient.addColorStop(0.5, "rgba(255, 200, 0, 0.4)");
             gradient.addColorStop(1, "rgba(255, 100, 100, 0)");
@@ -2148,27 +2211,11 @@
 
             const rgbaColor = hslToRgba(element.color);
 
-            const gradient = ctx.createRadialGradient(
-              element.x,
-              element.y,
-              0,
-              element.x,
-              element.y,
-              glowSize
-            );
+            const gradient = ctx.createRadialGradient(element.x, element.y, 0, element.x, element.y, glowSize);
 
-            gradient.addColorStop(
-              0,
-              `rgba(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b}, 0.8)`
-            );
-            gradient.addColorStop(
-              0.5,
-              `rgba(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b}, 0.4)`
-            );
-            gradient.addColorStop(
-              1,
-              `rgba(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b}, 0)`
-            );
+            gradient.addColorStop(0, `rgba(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b}, 0.8)`);
+            gradient.addColorStop(0.5, `rgba(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b}, 0.4)`);
+            gradient.addColorStop(1, `rgba(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b}, 0)`);
 
             ctx.fillStyle = gradient;
             ctx.beginPath();
@@ -2192,9 +2239,7 @@
               const alpha = 0.3 + Math.sin(conn.pulse) * 0.2;
 
               ctx.globalAlpha = alpha * conn.strength;
-              ctx.strokeStyle = `hsl(${
-                200 + Math.sin(conn.pulse) * 20
-              }, 70%, 60%)`;
+              ctx.strokeStyle = `hsl(${200 + Math.sin(conn.pulse) * 20}, 70%, 60%)`;
               ctx.lineWidth = 1 + conn.strength * 2;
 
               ctx.beginPath();
@@ -2207,17 +2252,13 @@
               const nodeSize = node.size + Math.sin(node.pulse) * 3;
 
               ctx.globalAlpha = 0.8;
-              ctx.fillStyle = `hsl(${
-                220 + Math.sin(node.pulse) * 10
-              }, 80%, 70%)`;
+              ctx.fillStyle = `hsl(${220 + Math.sin(node.pulse) * 10}, 80%, 70%)`;
               ctx.beginPath();
               ctx.arc(node.x, node.y, nodeSize, 0, Math.PI * 2);
               ctx.fill();
 
               ctx.globalAlpha = 0.3;
-              ctx.fillStyle = `hsl(${
-                220 + Math.sin(node.pulse) * 10
-              }, 80%, 70%)`;
+              ctx.fillStyle = `hsl(${220 + Math.sin(node.pulse) * 10}, 80%, 70%)`;
               ctx.beginPath();
               ctx.arc(node.x, node.y, nodeSize * 2, 0, Math.PI * 2);
               ctx.fill();
@@ -2256,218 +2297,10 @@
         ctx.restore();
       }
 
-      // Audio functions
-      function initializeAudio() {
-        if (!audioContext) {
-          audioContext = new (window.AudioContext ||
-            window.webkitAudioContext)();
-        }
-      }
-
-      function loadAudioForMood(mood) {
-        const moodData = moodMusic[mood];
-
-        // Stop and clean up previous audio
-        if (currentAudio) {
-          currentAudio.pause();
-          currentAudio.currentTime = 0;
-          currentAudio.removeEventListener("loadstart", handleLoadStart);
-          currentAudio.removeEventListener(
-            "canplaythrough",
-            handleCanPlayThrough
-          );
-          currentAudio.removeEventListener("error", handleAudioError);
-          currentAudio.removeEventListener("timeupdate", updateProgressBar);
-          currentAudio.removeEventListener("ended", handleAudioEnded);
-          currentAudio = null;
-        }
-
-        // Clear any existing progress interval
-        if (progressInterval) {
-          clearInterval(progressInterval);
-          progressInterval = null;
-        }
-
-        // Create new audio instance
-        if (moodData.audioFile) {
-          try {
-            currentAudio = new Audio(moodData.audioFile);
-            currentAudio.loop = true;
-            currentAudio.volume = 0.7;
-            currentAudio.preload = "auto";
-
-            // Add event listeners
-            currentAudio.addEventListener("loadstart", handleLoadStart);
-            currentAudio.addEventListener(
-              "canplaythrough",
-              handleCanPlayThrough
-            );
-            currentAudio.addEventListener("error", handleAudioError);
-            currentAudio.addEventListener("timeupdate", updateProgressBar);
-            currentAudio.addEventListener("ended", handleAudioEnded);
-
-            console.log(`Loading audio: ${moodData.audioFile}`);
-
-            // Load the audio
-            currentAudio.load();
-          } catch (error) {
-            console.error(`Failed to create audio for ${mood}:`, error);
-            showAudioError(mood);
-            fallbackToSimulation();
-          }
-        } else {
-          console.log(`No audio file specified for ${mood} mood`);
-          fallbackToSimulation();
-        }
-      }
-
-      // Audio event handlers
-      function handleLoadStart() {
-        console.log("Audio loading started...");
-        document.getElementById("song-title").style.color = "#a1a8c9";
-      }
-
-      function handleCanPlayThrough() {
-        console.log("Audio ready to play");
-        document.getElementById("song-title").style.color = "#fff";
-      }
-
-      function handleAudioError(e) {
-        console.error("Audio loading error:", e);
-        console.error("Error details:", {
-          error: currentAudio ? currentAudio.error : "Unknown",
-          networkState: currentAudio ? currentAudio.networkState : "Unknown",
-          readyState: currentAudio ? currentAudio.readyState : "Unknown",
-        });
-
-        showAudioError(currentMood);
-        fallbackToSimulation();
-      }
-
-      function handleAudioEnded() {
-        if (isPlaying) {
-          currentAudio.currentTime = 0;
-          currentAudio.play().catch(handlePlayError);
-        }
-      }
-
-      function handlePlayError(error) {
-        console.error("Play error:", error);
-        showAudioError(currentMood);
-        fallbackToSimulation();
-      }
-
-      function showAudioError(mood) {
-        const songTitle = document.getElementById("song-title");
-        songTitle.textContent = `${moodMusic[mood].title} (Audio unavailable - check file path)`;
-        songTitle.style.color = "#ff6b6b";
-
-        setTimeout(() => {
-          songTitle.style.color = "#fff";
-        }, 4000);
-      }
-
-      function fallbackToSimulation() {
-        console.log("Falling back to simulation mode");
-        simulatePlayback();
-      }
-
-      function simulatePlayback() {
-        isPlaying = true;
-        document.getElementById("play-btn").textContent = "⏸";
-
-        let progress = 0;
-        progressInterval = setInterval(() => {
-          if (!isPlaying) {
-            clearInterval(progressInterval);
-            progressInterval = null;
-            return;
-          }
-
-          progress += 0.3;
-          if (progress >= 100) {
-            progress = 0;
-          }
-
-          document.getElementById("progress-bar").style.width = `${progress}%`;
-        }, 100);
-      }
-
-      function updateProgressBar() {
-        if (
-          currentAudio &&
-          currentAudio.duration &&
-          !isNaN(currentAudio.duration)
-        ) {
-          const progress =
-            (currentAudio.currentTime / currentAudio.duration) * 100;
-          document.getElementById("progress-bar").style.width = `${progress}%`;
-        }
-      }
-
-      function autoPlayMood() {
-        if (!userInteracted) {
-          console.log("Cannot autoplay - no user interaction yet");
-          return;
-        }
-
-        initializeAudio();
-
-        if (!currentAudio) {
-          console.log("No audio file loaded, using simulation mode");
-          simulatePlayback();
-          return;
-        }
-
-        setTimeout(() => {
-          if (currentAudio && currentAudio.readyState >= 3) {
-            playAudio();
-          } else if (currentAudio) {
-            currentAudio.addEventListener("canplaythrough", playAudio, {
-              once: true,
-            });
-
-            setTimeout(() => {
-              if (!isPlaying) {
-                console.log("Audio load timeout, falling back to simulation");
-                fallbackToSimulation();
-              }
-            }, 3000);
-          } else {
-            fallbackToSimulation();
-          }
-        }, 100);
-      }
-
-      function playAudio() {
-        if (!currentAudio) {
-          fallbackToSimulation();
-          return;
-        }
-
-        isPlaying = true;
-        document.getElementById("play-btn").textContent = "⏸";
-
-        if (audioContext && audioContext.state === "suspended") {
-          audioContext.resume();
-        }
-
-        currentAudio
-          .play()
-          .then(() => {
-            console.log(`Successfully playing audio for ${currentMood}`);
-          })
-          .catch((error) => {
-            console.error("Audio play failed:", error);
-            handlePlayError(error);
-          });
-      }
-
-      // Mood selection function
+      // Mood Selection with proper animation initialization
       function selectMood(mood) {
         userInteracted = true;
 
-        // Clear previous mood
         if (currentMood) {
           clearRomanticIntervals();
           particles = [];
@@ -2475,22 +2308,27 @@
         }
 
         currentMood = mood;
-        const moodData = moodMusic[mood];
+        const moodData = moodPlaylists[mood];
 
-        // Update UI
+        currentPlaylist = [...moodData.tracks];
+        currentTrackIndex = 0;
+        
+        if (isShuffleMode) {
+          shuffleOrder = generateShuffleOrder(currentPlaylist.length);
+          currentTrackIndex = shuffleOrder[0];
+        }
+
         document.querySelectorAll(".mood-btn").forEach((btn) => {
           btn.classList.remove("active");
         });
         document.querySelector(`[data-mood="${mood}"]`).classList.add("active");
 
-        document.getElementById("current-mood-display").textContent =
-          mood.charAt(0).toUpperCase() + mood.slice(1);
-        document.getElementById("song-title").textContent = moodData.title;
-        document.getElementById("mood-indicator").textContent = `Mood: ${
-          mood.charAt(0).toUpperCase() + mood.slice(1)
-        }`;
+        document.getElementById("current-mood-display").textContent = mood.charAt(0).toUpperCase() + mood.slice(1);
+        document.getElementById("mood-indicator").textContent = `Mood: ${mood.charAt(0).toUpperCase() + mood.slice(1)}`;
 
-        // Start animation
+        updateTrackInfo();
+
+        // Start mood-specific animation
         switch (mood) {
           case "happy":
             createHappyAnimation();
@@ -2512,70 +2350,14 @@
             break;
         }
 
-        loadAudioForMood(mood);
+        const firstTrack = currentPlaylist[currentTrackIndex];
+        loadAudioForTrack(firstTrack);
         autoPlayMood();
-      }
-
-      // Text analysis function
-      function analyzeText() {
-        const text = document.getElementById("mood-text").value.trim();
-        if (!text) return;
-
-        userInteracted = true;
-
-        const analysis = analyzeMoodFromText(text);
-        let detectedMood = analysis.mood || "calm";
-
-        selectMood(detectedMood);
-      }
-
-      // Play/pause toggle
-      function togglePlayPause() {
-        userInteracted = true;
-
-        if (!currentMood) {
-          selectMood("happy");
-          return;
-        }
-
-        if (isPlaying) {
-          pauseAudio();
-        } else {
-          resumeAudio();
-        }
-      }
-
-      function pauseAudio() {
-        isPlaying = false;
-        document.getElementById("play-btn").textContent = "▶";
-
-        if (progressInterval) {
-          clearInterval(progressInterval);
-          progressInterval = null;
-        }
-
-        if (currentAudio) {
-          currentAudio.pause();
-        }
-      }
-
-      function resumeAudio() {
-        if (currentAudio && currentAudio.readyState >= 3) {
-          playAudio();
-        } else if (currentAudio) {
-          currentAudio.addEventListener("canplaythrough", playAudio, {
-            once: true,
-          });
-        } else {
-          simulatePlayback();
-        }
       }
 
       // Fullscreen functionality
       function toggleFullscreen() {
-        const visualizationContainer = document.getElementById(
-          "visualization-container"
-        );
+        const visualizationContainer = document.getElementById("visualization-container");
         const fullscreenBtn = document.getElementById("fullscreen-btn");
 
         if (!isFullscreen) {
@@ -2614,9 +2396,7 @@
       }
 
       function handleFullscreenChange() {
-        const visualizationContainer = document.getElementById(
-          "visualization-container"
-        );
+        const visualizationContainer = document.getElementById("visualization-container");
         const fullscreenBtn = document.getElementById("fullscreen-btn");
 
         const isCurrentlyFullscreen = !!(
@@ -2641,34 +2421,10 @@
         }
       }
 
-      // Event listeners
+      // Event Listeners
       function initEventListeners() {
-        // Initialize chat functionality
         initChatEventListeners();
 
-        // Mood boost modal event listeners
-        const moodBoostYes = document.getElementById("mood-boost-yes");
-        const moodBoostNo = document.getElementById("mood-boost-no");
-        const moodBoostOverlay = document.getElementById("mood-boost-overlay");
-
-        if (moodBoostYes) {
-          moodBoostYes.addEventListener("click", handleMoodBoostYes);
-        }
-
-        if (moodBoostNo) {
-          moodBoostNo.addEventListener("click", handleMoodBoostNo);
-        }
-
-        // Close modal when clicking outside (optional)
-        if (moodBoostOverlay) {
-          moodBoostOverlay.addEventListener("click", (e) => {
-            if (e.target === e.currentTarget) {
-              handleMoodBoostNo(); // Treat clicking outside as "no"
-            }
-          });
-        }
-
-        // Mood buttons
         document.querySelectorAll(".mood-btn").forEach((btn) => {
           btn.addEventListener("click", () => {
             const mood = btn.getAttribute("data-mood");
@@ -2676,66 +2432,58 @@
           });
         });
 
-        // Text analysis
-        document
-          .getElementById("analyze-btn")
-          .addEventListener("click", analyzeText);
+        document.getElementById("analyze-btn").addEventListener("click", analyzeText);
+        document.getElementById("play-btn").addEventListener("click", togglePlayPause);
 
-        // Play/pause button
-        document
-          .getElementById("play-btn")
-          .addEventListener("click", togglePlayPause);
+        document.getElementById("shuffle-btn").addEventListener("click", () => {
+          if (!isShuffleMode) {
+            togglePlaybackMode();
+          }
+        });
+
+        document.getElementById("sequential-btn").addEventListener("click", () => {
+          if (isShuffleMode) {
+            togglePlaybackMode();
+          }
+        });
+
+        document.getElementById("prev-btn").addEventListener("click", playPrevious);
+        document.getElementById("next-btn").addEventListener("click", playNext);
 
         // Fullscreen button
-        document
-          .getElementById("fullscreen-btn")
-          .addEventListener("click", toggleFullscreen);
+        document.getElementById("fullscreen-btn").addEventListener("click", toggleFullscreen);
 
         // Fullscreen change events
         document.addEventListener("fullscreenchange", handleFullscreenChange);
-        document.addEventListener(
-          "webkitfullscreenchange",
-          handleFullscreenChange
-        );
-        document.addEventListener(
-          "mozfullscreenchange",
-          handleFullscreenChange
-        );
+        document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+        document.addEventListener("mozfullscreenchange", handleFullscreenChange);
         document.addEventListener("msfullscreenchange", handleFullscreenChange);
 
         // Progress bar click to seek
-        document
-          .querySelector(".progress-container")
-          .addEventListener("click", (e) => {
-            if (currentAudio && currentAudio.duration) {
-              const rect = e.target.getBoundingClientRect();
-              const clickX = e.clientX - rect.left;
-              const percentage = clickX / rect.width;
-              const newTime = percentage * currentAudio.duration;
-              currentAudio.currentTime = newTime;
-            }
-          });
+        document.querySelector(".progress-container").addEventListener("click", (e) => {
+          if (currentAudio && currentAudio.duration) {
+            const rect = e.target.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const percentage = clickX / rect.width;
+            const newTime = percentage * currentAudio.duration;
+            currentAudio.currentTime = newTime;
+          }
+        });
 
         // Volume control with mouse wheel on progress bar
-        document
-          .querySelector(".progress-container")
-          .addEventListener("wheel", (e) => {
-            e.preventDefault();
-            if (currentAudio) {
-              const volumeChange = e.deltaY > 0 ? -0.1 : 0.1;
-              currentAudio.volume = Math.max(
-                0,
-                Math.min(1, currentAudio.volume + volumeChange)
-              );
+        document.querySelector(".progress-container").addEventListener("wheel", (e) => {
+          e.preventDefault();
+          if (currentAudio) {
+            const volumeChange = e.deltaY > 0 ? -0.1 : 0.1;
+            currentAudio.volume = Math.max(0, Math.min(1, currentAudio.volume + volumeChange));
 
-              // Visual feedback for volume change
-              const progressContainer = e.target.closest(".progress-container");
-              progressContainer.style.opacity = currentAudio.volume;
-              setTimeout(() => {
-                progressContainer.style.opacity = "1";
-              }, 200);
-            }
-          });
+            const progressContainer = e.target.closest(".progress-container");
+            progressContainer.style.opacity = currentAudio.volume;
+            setTimeout(() => {
+              progressContainer.style.opacity = "1";
+            }, 200);
+          }
+        });
 
         // Keyboard shortcuts
         document.addEventListener("keydown", (e) => {
@@ -2765,73 +2513,100 @@
             case "ArrowLeft":
               e.preventDefault();
               if (currentAudio) {
-                currentAudio.currentTime = Math.max(
-                  0,
-                  currentAudio.currentTime - 10
-                );
+                currentAudio.currentTime = Math.max(0, currentAudio.currentTime - 10);
+              } else {
+                playPrevious();
               }
               break;
             case "ArrowRight":
               e.preventDefault();
               if (currentAudio) {
-                currentAudio.currentTime = Math.min(
-                  currentAudio.duration || 0,
-                  currentAudio.currentTime + 10
-                );
+                currentAudio.currentTime = Math.min(currentAudio.duration || 0, currentAudio.currentTime + 10);
+              } else {
+                playNext();
               }
               break;
-            case "Escape":
-              // Close mood boost modal with Escape key
-              if (
-                document
-                  .getElementById("mood-boost-overlay")
-                  .classList.contains("show")
-              ) {
-                e.preventDefault();
-                handleMoodBoostNo();
-              }
-              break;
-          }
-        });
-
-        // Window resize
-        window.addEventListener("resize", () => {
-          if (!isFullscreen) {
-            resizeCanvas();
-          }
-        });
-
-        // Enter key for text analysis
-        document
-          .getElementById("mood-text")
-          .addEventListener("keypress", (e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
+            case "KeyN":
               e.preventDefault();
-              analyzeText();
-            }
-          });
+              playNext();
+              break;
+            case "KeyP":
+              e.preventDefault();
+              playPrevious();
+              break;
+            case "KeyS":
+              e.preventDefault();
+              togglePlaybackMode();
+              break;
+          }
+        });
+
+        document.getElementById("mood-text").addEventListener("keypress", (e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            analyzeText();
+          }
+        });
+
+        window.addEventListener("resize", resizeCanvas);
       }
 
       // Initialize everything when page loads
       document.addEventListener("DOMContentLoaded", () => {
         initCanvas();
         initEventListeners();
-        console.log("MoodTune with AI Agent initialized successfully!");
+        console.log("MoodTune with full animations and playlist support initialized!");
+        console.log("Features: Multi-track playlists, Shuffle/Sequential modes, Complex mood animations");
+        console.log("Keyboard shortcuts: Space (play/pause), N (next), P (previous), S (toggle shuffle), F (fullscreen)");
+      });
+    </script>
+  </body>
+</html>
 
-        // Simple test - add a debug message to confirm everything is loaded
-        setTimeout(() => {
-          console.log("Page fully loaded. You can now:");
-          console.log(
-            "1. Type 'testMoodBoostModal()' in console to test modal directly"
-          );
-          console.log(
-            "2. Click Sad mood and wait 6 seconds for automatic popup"
-          );
-          console.log(
-            "3. Check if modal HTML element exists:",
-            !!document.getElementById("mood-boost-overlay")
-          );
-        }, 1000);
+      // Event Listeners
+      function initEventListeners() {
+        initChatEventListeners();
+
+        document.querySelectorAll(".mood-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const mood = btn.getAttribute("data-mood");
+            selectMood(mood);
+          });
+        });
+
+        document.getElementById("analyze-btn").addEventListener("click", analyzeText);
+        document.getElementById("play-btn").addEventListener("click", togglePlayPause);
+
+        document.getElementById("shuffle-btn").addEventListener("click", () => {
+          if (!isShuffleMode) {
+            togglePlaybackMode();
+          }
+        });
+
+        document.getElementById("sequential-btn").addEventListener("click", () => {
+          if (isShuffleMode) {
+            togglePlaybackMode();
+          }
+        });
+
+        document.getElementById("prev-btn").addEventListener("click", playPrevious);
+        document.getElementById("next-btn").addEventListener("click", playNext);
+
+        document.getElementById("mood-text").addEventListener("keypress", (e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            analyzeText();
+          }
+        });
+
+        window.addEventListener("resize", resizeCanvas);
+      }
+
+      // Initialize everything when page loads
+      document.addEventListener("DOMContentLoaded", () => {
+        initCanvas();
+        initEventListeners();
+        console.log("MoodTune with Playlist Support initialized successfully!");
       });
     </script>
   </body>
