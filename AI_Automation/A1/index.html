@@ -491,39 +491,6 @@
         text-shadow: 0 1px 5px rgba(255, 215, 0, 0.3);
       }
 
-      .playlist-controls {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        margin-top: 15px;
-      }
-
-      .playlist-btn {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: #fff;
-        padding: 8px 16px;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .playlist-btn:hover {
-        background: rgba(110, 136, 255, 0.3);
-        border-color: #6e88ff;
-        transform: translateY(-2px);
-      }
-
-      .playlist-btn.active {
-        background: rgba(110, 136, 255, 0.5);
-        border-color: #6e88ff;
-        box-shadow: 0 4px 15px rgba(110, 136, 255, 0.3);
-      }
-
       .progress-container {
         width: 100%;
         height: 8px;
@@ -584,6 +551,33 @@
       .play-btn:hover {
         transform: scale(1.1);
         box-shadow: 0 12px 40px rgba(110, 136, 255, 0.6);
+      }
+
+      /* New styles for shuffle and sequential buttons */
+      .mode-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+        padding: 10px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .mode-btn:hover {
+        background: rgba(110, 136, 255, 0.3);
+        border-color: #6e88ff;
+        transform: translateY(-2px);
+      }
+
+      .mode-btn.active {
+        background: rgba(110, 136, 255, 0.5);
+        border-color: #6e88ff;
+        box-shadow: 0 4px 15px rgba(110, 136, 255, 0.3);
       }
 
       #three-canvas {
@@ -677,6 +671,15 @@
         .left-panel {
           flex-direction: column;
         }
+        .controls {
+          flex-wrap: wrap;
+          gap: 10px;
+          justify-content: center;
+        }
+        .mode-btn {
+          font-size: 0.8rem;
+          padding: 8px 12px;
+        }
       }
 
       .chat-messages::-webkit-scrollbar {
@@ -748,7 +751,7 @@
             </div>
 
             <div class="text-input">
-              <h2 class="section-title">Tell me what do you feel?</h2>
+              <h2 class="section-title">Text Analysis</h2>
               <textarea
                 id="mood-text"
                 placeholder="Type how you're feeling today..."
@@ -784,17 +787,8 @@
               Chat with MoodBot to start your musical journey
             </div>
             <div class="mood-indicator" id="mood-indicator">Mood: None</div>
-            <div class="track-info" id="track-info">Track 1 of 1</div>
+            <div class="track-info" id="track-info">Track 1 of 5</div>
           </div>
-        </div>
-
-        <div class="playlist-controls">
-          <button class="playlist-btn active" id="shuffle-btn">
-            🔀 Shuffle
-          </button>
-          <button class="playlist-btn" id="sequential-btn">
-            📝 Sequential
-          </button>
         </div>
 
         <div class="progress-container">
@@ -802,11 +796,11 @@
         </div>
 
         <div class="controls">
-          <button class="control-btn">🔁</button>
+          <button class="mode-btn active" id="shuffle-btn">🔀</button>
           <button class="control-btn" id="prev-btn">⏮</button>
           <button class="play-btn control-btn" id="play-btn">▶</button>
           <button class="control-btn" id="next-btn">⏭</button>
-          <button class="control-btn">🔀</button>
+          <button class="mode-btn" id="sequential-btn">🔁</button>
         </div>
       </div>
 
@@ -840,7 +834,7 @@
       let time = 0;
       let particleSystems = [];
 
-      // Mood to music playlists mapping
+      // Mood to music playlists mapping - UPDATED TO 5 SONGS PER MOOD
       const moodPlaylists = {
         happy: {
           name: "Happy Vibes",
@@ -2776,6 +2770,7 @@
           .getElementById("play-btn")
           .addEventListener("click", togglePlayPause);
 
+        // Shuffle and Sequential buttons
         document.getElementById("shuffle-btn").addEventListener("click", () => {
           if (!isShuffleMode) {
             togglePlaybackMode();
