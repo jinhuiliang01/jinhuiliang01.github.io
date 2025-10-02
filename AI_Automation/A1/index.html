@@ -6,6 +6,7 @@
     <title>MoodTune - Emotion-Based Music Player</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sentiment/5.0.2/sentiment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
       * {
         margin: 0;
@@ -585,7 +586,7 @@
         box-shadow: 0 12px 40px rgba(110, 136, 255, 0.6);
       }
 
-      .visual-canvas {
+      #three-canvas {
         position: absolute;
         top: 0;
         left: 0;
@@ -747,7 +748,7 @@
             </div>
 
             <div class="text-input">
-              <h2 class="section-title">Text Analysis</h2>
+              <h2 class="section-title">Tell me what do you feel?</h2>
               <textarea
                 id="mood-text"
                 placeholder="Type how you're feeling today..."
@@ -760,7 +761,7 @@
         </div>
 
         <div class="visualization" id="visualization-container">
-          <canvas id="visual-canvas" class="visual-canvas"></canvas>
+          <canvas id="three-canvas"></canvas>
           <div class="mood-display">
             Current Mood:
             <span class="mood-text" id="current-mood-display">None</span>
@@ -832,16 +833,12 @@
       let isShuffleMode = true;
       let shuffleOrder = [];
 
-      // Canvas variables
-      let canvas, ctx;
+      // Three.js variables
+      let scene, camera, renderer;
       let animationFrame;
+      let moodObjects = [];
       let time = 0;
-      let particles = [];
-      let moodElements = [];
-
-      // Romantic mood specific intervals
-      let romanticParticleInterval;
-      let romanticHeartInterval;
+      let particleSystems = [];
 
       // Mood to music playlists mapping
       const moodPlaylists = {
@@ -853,6 +850,14 @@
             { title: "Sunshine Day - Upbeat Pop", file: "audio/happy.mp3" },
             { title: "Good Vibes Only - Feel Good", file: "audio/happy2.mp3" },
             { title: "Dancing Colors - Joyful Beat", file: "audio/happy3.mp3" },
+            {
+              title: "Morning Joy - Bright Melodies",
+              file: "audio/happy4.mp3",
+            },
+            {
+              title: "Positive Energy - Happy Rhythms",
+              file: "audio/happy5.mp3",
+            },
           ],
         },
         sad: {
@@ -866,6 +871,8 @@
               title: "Blue Reflections - Contemplative",
               file: "audio/sad3.mp3",
             },
+            { title: "Lonely Echoes - Deep Thoughts", file: "audio/sad4.mp3" },
+            { title: "Fading Memories - Nostalgic", file: "audio/sad5.mp3" },
           ],
         },
         calm: {
@@ -876,6 +883,8 @@
             { title: "Tranquil Waters - Ambient", file: "audio/calm.mp3" },
             { title: "Serene Forest - Nature Sounds", file: "audio/calm2.mp3" },
             { title: "Zen Garden - Meditation", file: "audio/calm3.mp3" },
+            { title: "Peaceful Mind - Gentle Flow", file: "audio/calm4.mp3" },
+            { title: "Still Moments - Quiet Harmony", file: "audio/calm5.mp3" },
           ],
         },
         energetic: {
@@ -889,6 +898,14 @@
               title: "Adrenaline Rush - Intense",
               file: "audio/energetic3.mp3",
             },
+            {
+              title: "Thunder Storm - Powerful Beats",
+              file: "audio/energetic4.mp3",
+            },
+            {
+              title: "Fire Energy - Explosive Rhythms",
+              file: "audio/energetic5.mp3",
+            },
           ],
         },
         romantic: {
@@ -899,6 +916,11 @@
             { title: "Hearts Entwined - Romance", file: "audio/romantic.mp3" },
             { title: "Sweet Serenade - Intimate", file: "audio/romantic2.mp3" },
             { title: "Moonlight Dance - Tender", file: "audio/romantic3.mp3" },
+            { title: "Eternal Love - Passionate", file: "audio/romantic4.mp3" },
+            {
+              title: "Whispered Promises - Gentle",
+              file: "audio/romantic5.mp3",
+            },
           ],
         },
         focused: {
@@ -915,6 +937,11 @@
               title: "Study Session - Ambient Work",
               file: "audio/focused3.mp3",
             },
+            {
+              title: "Mental Clarity - Cognitive Boost",
+              file: "audio/focused4.mp3",
+            },
+            { title: "Deep Work - Intense Focus", file: "audio/focused5.mp3" },
           ],
         },
       };
@@ -1097,6 +1124,917 @@
           "How can I best support your productive mindset?",
         ],
       };
+
+      // Three.js Initialization
+      function initThree() {
+        const container = document.getElementById("visualization-container");
+        const canvas = document.getElementById("three-canvas");
+
+        scene = new THREE.Scene();
+        scene.fog = new THREE.Fog(0x0a0a15, 10, 100);
+
+        camera = new THREE.PerspectiveCamera(
+          75,
+          container.clientWidth / container.clientHeight,
+          0.1,
+          1000
+        );
+        camera.position.z = 30;
+
+        renderer = new THREE.WebGLRenderer({
+          canvas: canvas,
+          antialias: true,
+          alpha: true,
+        });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        const ambientLight = new THREE.AmbientLight(0x404040);
+        scene.add(ambientLight);
+
+        animate3D();
+      }
+
+      function clearMoodObjects() {
+        moodObjects.forEach((obj) => {
+          if (obj.geometry) obj.geometry.dispose();
+          if (obj.material) {
+            if (Array.isArray(obj.material)) {
+              obj.material.forEach((mat) => mat.dispose());
+            } else {
+              obj.material.dispose();
+            }
+          }
+          scene.remove(obj);
+        });
+        moodObjects = [];
+
+        // Clear particle systems
+        particleSystems.forEach((system) => {
+          scene.remove(system);
+          if (system.geometry) system.geometry.dispose();
+          if (system.material) system.material.dispose();
+        });
+        particleSystems = [];
+      }
+
+      // Enhanced Mood-specific 3D animations
+      function createHappyAnimation3D() {
+        clearMoodObjects();
+
+        // Create a central sun-like object
+        const sunGeometry = new THREE.SphereGeometry(3, 32, 32);
+        const sunMaterial = new THREE.MeshBasicMaterial({
+          color: 0xffd700,
+          emissive: 0xffd700,
+          emissiveIntensity: 0.8,
+        });
+        const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+        scene.add(sun);
+        moodObjects.push(sun);
+
+        // Create orbiting planets with different colors and sizes
+        for (let i = 0; i < 6; i++) {
+          const size = Math.random() * 0.8 + 0.5;
+          const geometry = new THREE.SphereGeometry(size, 16, 16);
+          const material = new THREE.MeshPhongMaterial({
+            color: new THREE.Color(`hsl(${Math.random() * 60 + 30}, 90%, 70%)`),
+            emissive: new THREE.Color(
+              `hsl(${Math.random() * 60 + 30}, 90%, 30%)`
+            ),
+          });
+
+          const planet = new THREE.Mesh(geometry, material);
+          const orbitRadius = 10 + i * 2;
+          const orbitSpeed = 0.005 + Math.random() * 0.005;
+
+          planet.position.set(
+            Math.cos(i) * orbitRadius,
+            (Math.sin(i) * orbitRadius) / 2,
+            (Math.sin(i) * orbitRadius) / 3
+          );
+
+          planet.userData = {
+            orbitRadius: orbitRadius,
+            orbitSpeed: orbitSpeed,
+            angle: (i * Math.PI) / 3,
+          };
+
+          scene.add(planet);
+          moodObjects.push(planet);
+        }
+
+        // Create a particle system for confetti
+        const particleCount = 300;
+        const particles = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const colors = new Float32Array(particleCount * 3);
+
+        for (let i = 0; i < particleCount * 3; i += 3) {
+          positions[i] = (Math.random() - 0.5) * 40;
+          positions[i + 1] = (Math.random() - 0.5) * 40;
+          positions[i + 2] = (Math.random() - 0.5) * 40;
+
+          colors[i] = Math.random();
+          colors[i + 1] = Math.random();
+          colors[i + 2] = Math.random();
+        }
+
+        particles.setAttribute(
+          "position",
+          new THREE.BufferAttribute(positions, 3)
+        );
+        particles.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+        const particleMaterial = new THREE.PointsMaterial({
+          size: 0.3,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.8,
+        });
+
+        const particleSystem = new THREE.Points(particles, particleMaterial);
+        scene.add(particleSystem);
+        particleSystems.push(particleSystem);
+
+        // Add dynamic lighting
+        const pointLight = new THREE.PointLight(0xffd700, 2, 50);
+        pointLight.position.set(10, 10, 10);
+        scene.add(pointLight);
+        moodObjects.push(pointLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(5, 10, 7);
+        scene.add(directionalLight);
+        moodObjects.push(directionalLight);
+      }
+
+      function createSadAnimation3D() {
+        clearMoodObjects();
+
+        // Create a dark, stormy scene
+        const cloudGeometry = new THREE.SphereGeometry(8, 7, 7);
+        const cloudMaterial = new THREE.MeshPhongMaterial({
+          color: 0x2c3e50,
+          emissive: 0x2c3e50,
+          emissiveIntensity: 0.1,
+          transparent: true,
+          opacity: 0.7,
+        });
+
+        const clouds = [];
+        for (let i = 0; i < 5; i++) {
+          const cloud = new THREE.Mesh(cloudGeometry, cloudMaterial);
+          cloud.position.set(
+            (Math.random() - 0.5) * 30,
+            5 + Math.random() * 10,
+            (Math.random() - 0.5) * 20
+          );
+          cloud.scale.set(
+            1 + Math.random() * 0.5,
+            0.5 + Math.random() * 0.3,
+            1 + Math.random() * 0.5
+          );
+          cloud.userData = {
+            driftSpeed: 0.01 + Math.random() * 0.01,
+          };
+          scene.add(cloud);
+          clouds.push(cloud);
+          moodObjects.push(cloud);
+        }
+
+        // Enhanced rain particles
+        const rainCount = 1500;
+        const rainGeometry = new THREE.BufferGeometry();
+        const rainPositions = new Float32Array(rainCount * 3);
+        const rainVelocities = new Float32Array(rainCount);
+
+        for (let i = 0; i < rainCount * 3; i += 3) {
+          rainPositions[i] = (Math.random() - 0.5) * 50;
+          rainPositions[i + 1] = Math.random() * 40;
+          rainPositions[i + 2] = (Math.random() - 0.5) * 50;
+          rainVelocities[i / 3] = 0.2 + Math.random() * 0.3;
+        }
+
+        rainGeometry.setAttribute(
+          "position",
+          new THREE.BufferAttribute(rainPositions, 3)
+        );
+        rainGeometry.userData = { velocities: rainVelocities };
+
+        const rainMaterial = new THREE.PointsMaterial({
+          color: 0x6495ed,
+          size: 0.2,
+          transparent: true,
+          opacity: 0.7,
+        });
+
+        const rain = new THREE.Points(rainGeometry, rainMaterial);
+        scene.add(rain);
+        moodObjects.push(rain);
+
+        // Add occasional lightning
+        const lightningGeometry = new THREE.BufferGeometry();
+        const lightningMaterial = new THREE.LineBasicMaterial({
+          color: 0xffffff,
+          transparent: true,
+          opacity: 0,
+        });
+
+        const lightning = new THREE.Line(lightningGeometry, lightningMaterial);
+        scene.add(lightning);
+        moodObjects.push(lightning);
+
+        // Add dim, blue-tinted lighting
+        const ambientLight = new THREE.AmbientLight(0x4169e1, 0.3);
+        scene.add(ambientLight);
+        moodObjects.push(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0x6495ed, 0.5);
+        directionalLight.position.set(0, 10, 0);
+        scene.add(directionalLight);
+        moodObjects.push(directionalLight);
+      }
+
+      function createCalmAnimation3D() {
+        clearMoodObjects();
+
+        // Create an underwater scene with coral and bubbles
+        const waterGeometry = new THREE.BoxGeometry(60, 40, 60);
+        const waterMaterial = new THREE.MeshPhongMaterial({
+          color: 0x1e90ff,
+          transparent: true,
+          opacity: 0.1,
+          side: THREE.BackSide,
+        });
+
+        const water = new THREE.Mesh(waterGeometry, waterMaterial);
+        scene.add(water);
+        moodObjects.push(water);
+
+        // Create coral formations
+        for (let i = 0; i < 15; i++) {
+          const coralGeometry = new THREE.ConeGeometry(
+            0.5 + Math.random() * 1.5,
+            3 + Math.random() * 5,
+            4 + Math.floor(Math.random() * 4)
+          );
+          const coralMaterial = new THREE.MeshPhongMaterial({
+            color: new THREE.Color(
+              `hsl(${Math.random() * 30 + 330}, 70%, 60%)`
+            ),
+            emissive: new THREE.Color(
+              `hsl(${Math.random() * 30 + 330}, 70%, 20%)`
+            ),
+          });
+
+          const coral = new THREE.Mesh(coralGeometry, coralMaterial);
+          coral.position.set(
+            (Math.random() - 0.5) * 40,
+            -15 + Math.random() * 5,
+            (Math.random() - 0.5) * 40
+          );
+          coral.rotation.x = Math.random() * Math.PI;
+          coral.rotation.z = Math.random() * Math.PI;
+
+          scene.add(coral);
+          moodObjects.push(coral);
+        }
+
+        // Create bubble particle system
+        const bubbleCount = 100;
+        const bubbleGeometry = new THREE.BufferGeometry();
+        const bubblePositions = new Float32Array(bubbleCount * 3);
+        const bubbleSizes = new Float32Array(bubbleCount);
+
+        for (let i = 0; i < bubbleCount * 3; i += 3) {
+          bubblePositions[i] = (Math.random() - 0.5) * 40;
+          bubblePositions[i + 1] = -20 + Math.random() * 10;
+          bubblePositions[i + 2] = (Math.random() - 0.5) * 40;
+          bubbleSizes[i / 3] = 0.2 + Math.random() * 0.5;
+        }
+
+        bubbleGeometry.setAttribute(
+          "position",
+          new THREE.BufferAttribute(bubblePositions, 3)
+        );
+        bubbleGeometry.userData = { sizes: bubbleSizes };
+
+        const bubbleMaterial = new THREE.PointsMaterial({
+          color: 0x87ceeb,
+          size: 0.5,
+          transparent: true,
+          opacity: 0.7,
+          blending: THREE.AdditiveBlending,
+        });
+
+        const bubbles = new THREE.Points(bubbleGeometry, bubbleMaterial);
+        scene.add(bubbles);
+        moodObjects.push(bubbles);
+
+        // Add caustic lighting effect
+        const directionalLight = new THREE.DirectionalLight(0x87ceeb, 0.8);
+        directionalLight.position.set(10, 20, 10);
+        scene.add(directionalLight);
+        moodObjects.push(directionalLight);
+
+        const pointLight = new THREE.PointLight(0x40e0d0, 0.5, 30);
+        pointLight.position.set(0, 10, 0);
+        scene.add(pointLight);
+        moodObjects.push(pointLight);
+      }
+
+      function createEnergeticAnimation3D() {
+        clearMoodObjects();
+
+        // Create a pulsating energy core
+        const coreGeometry = new THREE.IcosahedronGeometry(4, 2);
+        const coreMaterial = new THREE.MeshPhongMaterial({
+          color: 0xff4500,
+          emissive: 0xff4500,
+          emissiveIntensity: 0.8,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.9,
+        });
+
+        const core = new THREE.Mesh(coreGeometry, coreMaterial);
+        scene.add(core);
+        moodObjects.push(core);
+
+        // Create energy beams
+        const beamCount = 12;
+        for (let i = 0; i < beamCount; i++) {
+          const beamGeometry = new THREE.CylinderGeometry(0.1, 0.5, 15, 8);
+          const beamMaterial = new THREE.MeshPhongMaterial({
+            color: 0xffa500,
+            emissive: 0xffa500,
+            emissiveIntensity: 0.7,
+            transparent: true,
+            opacity: 0.8,
+          });
+
+          const beam = new THREE.Mesh(beamGeometry, beamMaterial);
+          const angle = (i / beamCount) * Math.PI * 2;
+          beam.position.set(Math.cos(angle) * 8, Math.sin(angle) * 8, 0);
+          beam.rotation.z = angle + Math.PI / 2;
+
+          beam.userData = {
+            angle: angle,
+            pulsePhase: Math.random() * Math.PI * 2,
+          };
+
+          scene.add(beam);
+          moodObjects.push(beam);
+        }
+
+        // Create orbiting particles
+        const particleCount = 200;
+        const particles = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const velocities = new Float32Array(particleCount * 3);
+
+        for (let i = 0; i < particleCount * 3; i += 3) {
+          const radius = 10 + Math.random() * 15;
+          const angle = Math.random() * Math.PI * 2;
+
+          positions[i] = Math.cos(angle) * radius;
+          positions[i + 1] = (Math.random() - 0.5) * 10;
+          positions[i + 2] = Math.sin(angle) * radius;
+
+          velocities[i] = (Math.random() - 0.5) * 0.1;
+          velocities[i + 1] = (Math.random() - 0.5) * 0.1;
+          velocities[i + 2] = (Math.random() - 0.5) * 0.1;
+        }
+
+        particles.setAttribute(
+          "position",
+          new THREE.BufferAttribute(positions, 3)
+        );
+        particles.userData = { velocities: velocities };
+
+        const particleMaterial = new THREE.PointsMaterial({
+          color: 0xff6b6b,
+          size: 0.3,
+          transparent: true,
+          opacity: 0.8,
+          blending: THREE.AdditiveBlending,
+        });
+
+        const particleSystem = new THREE.Points(particles, particleMaterial);
+        scene.add(particleSystem);
+        particleSystems.push(particleSystem);
+
+        // Add dynamic lighting
+        const pointLight = new THREE.PointLight(0xff4500, 2, 50);
+        pointLight.position.set(0, 0, 0);
+        scene.add(pointLight);
+        moodObjects.push(pointLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffa500, 0.5);
+        directionalLight.position.set(10, 10, 10);
+        scene.add(directionalLight);
+        moodObjects.push(directionalLight);
+      }
+
+      function createRomanticAnimation3D() {
+        clearMoodObjects();
+
+        // Create a central heart shape
+        const heartShape = new THREE.Shape();
+        heartShape.moveTo(0, 0);
+        heartShape.bezierCurveTo(2, 2, 4, 0, 0, -3);
+        heartShape.bezierCurveTo(-4, 0, -2, 2, 0, 0);
+
+        const heartGeometry = new THREE.ExtrudeGeometry(heartShape, {
+          depth: 0.5,
+          bevelEnabled: true,
+          bevelThickness: 0.1,
+          bevelSize: 0.1,
+          bevelSegments: 5,
+        });
+
+        const heartMaterial = new THREE.MeshPhongMaterial({
+          color: 0xff1493,
+          emissive: 0xff1493,
+          emissiveIntensity: 0.3,
+        });
+
+        const heart = new THREE.Mesh(heartGeometry, heartMaterial);
+        heart.scale.set(1.5, 1.5, 1.5);
+        scene.add(heart);
+        moodObjects.push(heart);
+
+        // Create floating rose petals
+        const petalCount = 50;
+        const petalGeometry = new THREE.PlaneGeometry(0.8, 0.5);
+        const petalMaterial = new THREE.MeshPhongMaterial({
+          color: 0xff69b4,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.7,
+        });
+
+        for (let i = 0; i < petalCount; i++) {
+          const petal = new THREE.Mesh(petalGeometry, petalMaterial);
+          petal.position.set(
+            (Math.random() - 0.5) * 30,
+            (Math.random() - 0.5) * 20,
+            (Math.random() - 0.5) * 20
+          );
+          petal.rotation.x = Math.random() * Math.PI;
+          petal.rotation.y = Math.random() * Math.PI;
+          petal.rotation.z = Math.random() * Math.PI;
+
+          petal.userData = {
+            floatSpeed: 0.005 + Math.random() * 0.005,
+            rotationSpeed: (Math.random() - 0.5) * 0.02,
+            floatOffset: Math.random() * Math.PI * 2,
+          };
+
+          scene.add(petal);
+          moodObjects.push(petal);
+        }
+
+        // Create glowing particles
+        const particleCount = 100;
+        const particles = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const colors = new Float32Array(particleCount * 3);
+
+        for (let i = 0; i < particleCount * 3; i += 3) {
+          positions[i] = (Math.random() - 0.5) * 25;
+          positions[i + 1] = (Math.random() - 0.5) * 15;
+          positions[i + 2] = (Math.random() - 0.5) * 15;
+
+          colors[i] = 0.9 + Math.random() * 0.1; // Red
+          colors[i + 1] = 0.4 + Math.random() * 0.2; // Green
+          colors[i + 2] = 0.5 + Math.random() * 0.3; // Blue
+        }
+
+        particles.setAttribute(
+          "position",
+          new THREE.BufferAttribute(positions, 3)
+        );
+        particles.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+        const particleMaterial = new THREE.PointsMaterial({
+          size: 0.2,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.8,
+          blending: THREE.AdditiveBlending,
+        });
+
+        const particleSystem = new THREE.Points(particles, particleMaterial);
+        scene.add(particleSystem);
+        particleSystems.push(particleSystem);
+
+        // Add romantic lighting
+        const pointLight1 = new THREE.PointLight(0xff1493, 1.5, 30);
+        pointLight1.position.set(10, 10, 10);
+        scene.add(pointLight1);
+        moodObjects.push(pointLight1);
+
+        const pointLight2 = new THREE.PointLight(0xff69b4, 1, 25);
+        pointLight2.position.set(-10, 5, -10);
+        scene.add(pointLight2);
+        moodObjects.push(pointLight2);
+
+        const ambientLight = new THREE.AmbientLight(0x8b008b, 0.3);
+        scene.add(ambientLight);
+        moodObjects.push(ambientLight);
+      }
+
+      function createFocusedAnimation3D() {
+        clearMoodObjects();
+
+        // Create a neural network-like structure
+        const nodeCount = 30;
+        const nodes = [];
+        const connections = [];
+
+        // Create nodes
+        for (let i = 0; i < nodeCount; i++) {
+          const geometry = new THREE.SphereGeometry(0.5, 8, 8);
+          const material = new THREE.MeshPhongMaterial({
+            color: 0x00bfff,
+            emissive: 0x00bfff,
+            emissiveIntensity: 0.5,
+          });
+
+          const node = new THREE.Mesh(geometry, material);
+          node.position.set(
+            (Math.random() - 0.5) * 25,
+            (Math.random() - 0.5) * 15,
+            (Math.random() - 0.5) * 15
+          );
+
+          node.userData = {
+            pulsePhase: Math.random() * Math.PI * 2,
+            pulseSpeed: 0.02 + Math.random() * 0.02,
+            originalPosition: node.position.clone(),
+          };
+
+          scene.add(node);
+          nodes.push(node);
+          moodObjects.push(node);
+        }
+
+        // Create connections between nodes
+        for (let i = 0; i < nodeCount; i++) {
+          for (let j = i + 1; j < nodeCount; j++) {
+            if (Math.random() < 0.1) {
+              // 10% chance to connect
+              const distance = nodes[i].position.distanceTo(nodes[j].position);
+              if (distance < 15) {
+                const connectionGeometry = new THREE.BufferGeometry();
+                const positions = new Float32Array(6);
+                positions[0] = nodes[i].position.x;
+                positions[1] = nodes[i].position.y;
+                positions[2] = nodes[i].position.z;
+                positions[3] = nodes[j].position.x;
+                positions[4] = nodes[j].position.y;
+                positions[5] = nodes[j].position.z;
+
+                connectionGeometry.setAttribute(
+                  "position",
+                  new THREE.BufferAttribute(positions, 3)
+                );
+
+                const connectionMaterial = new THREE.LineBasicMaterial({
+                  color: 0x1e90ff,
+                  transparent: true,
+                  opacity: 0.5,
+                });
+
+                const connection = new THREE.Line(
+                  connectionGeometry,
+                  connectionMaterial
+                );
+                scene.add(connection);
+                connections.push(connection);
+                moodObjects.push(connection);
+              }
+            }
+          }
+        }
+
+        // Create data flow particles
+        const particleCount = 50;
+        const particles = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const targets = new Float32Array(particleCount * 3);
+        const progress = new Float32Array(particleCount);
+
+        for (let i = 0; i < particleCount; i++) {
+          const startNode = nodes[Math.floor(Math.random() * nodes.length)];
+          const endNode = nodes[Math.floor(Math.random() * nodes.length)];
+
+          positions[i * 3] = startNode.position.x;
+          positions[i * 3 + 1] = startNode.position.y;
+          positions[i * 3 + 2] = startNode.position.z;
+
+          targets[i * 3] = endNode.position.x;
+          targets[i * 3 + 1] = endNode.position.y;
+          targets[i * 3 + 2] = endNode.position.z;
+
+          progress[i] = 0;
+        }
+
+        particles.setAttribute(
+          "position",
+          new THREE.BufferAttribute(positions, 3)
+        );
+        particles.userData = { targets: targets, progress: progress };
+
+        const particleMaterial = new THREE.PointsMaterial({
+          color: 0x00ffff,
+          size: 0.2,
+          transparent: true,
+          opacity: 0.8,
+          blending: THREE.AdditiveBlending,
+        });
+
+        const particleSystem = new THREE.Points(particles, particleMaterial);
+        scene.add(particleSystem);
+        particleSystems.push(particleSystem);
+
+        // Add focused lighting
+        const directionalLight = new THREE.DirectionalLight(0x1e90ff, 1);
+        directionalLight.position.set(0, 10, 10);
+        scene.add(directionalLight);
+        moodObjects.push(directionalLight);
+
+        const ambientLight = new THREE.AmbientLight(0x0000ff, 0.2);
+        scene.add(ambientLight);
+        moodObjects.push(ambientLight);
+      }
+
+      // Update animations
+      function updateMoodAnimation3D() {
+        if (!currentMood) return;
+
+        time++;
+
+        // Update mood-specific animations
+        moodObjects.forEach((obj, index) => {
+          if (currentMood === "happy") {
+            if (
+              obj.geometry &&
+              obj.geometry.type === "SphereGeometry" &&
+              obj !== moodObjects[0]
+            ) {
+              // Update orbiting planets
+              obj.userData.angle += obj.userData.orbitSpeed;
+              obj.position.x =
+                Math.cos(obj.userData.angle) * obj.userData.orbitRadius;
+              obj.position.z =
+                Math.sin(obj.userData.angle) * obj.userData.orbitRadius;
+              obj.rotation.y += 0.01;
+            }
+
+            if (obj === moodObjects[0]) {
+              // Pulsate the sun
+              obj.scale.set(
+                1 + Math.sin(time * 0.05) * 0.1,
+                1 + Math.sin(time * 0.05) * 0.1,
+                1 + Math.sin(time * 0.05) * 0.1
+              );
+            }
+          }
+
+          if (currentMood === "sad") {
+            if (obj.type === "Points" && obj.geometry.attributes.position) {
+              // Update rain particles
+              const positions = obj.geometry.attributes.position.array;
+              const velocities = obj.geometry.userData.velocities;
+
+              for (let i = 0; i < positions.length; i += 3) {
+                positions[i + 1] -= velocities[i / 3];
+                if (positions[i + 1] < -20) {
+                  positions[i + 1] = 20;
+                  positions[i] = (Math.random() - 0.5) * 50;
+                  positions[i + 2] = (Math.random() - 0.5) * 50;
+                }
+              }
+
+              obj.geometry.attributes.position.needsUpdate = true;
+            }
+
+            if (obj.geometry && obj.geometry.type === "SphereGeometry") {
+              // Drift clouds
+              obj.position.x += obj.userData.driftSpeed;
+              if (obj.position.x > 25) obj.position.x = -25;
+            }
+
+            // Occasional lightning
+            if (
+              obj.material &&
+              obj.material.type === "LineBasicMaterial" &&
+              Math.random() < 0.005
+            ) {
+              obj.material.opacity = 1;
+              setTimeout(() => {
+                obj.material.opacity = 0;
+              }, 100);
+            }
+          }
+
+          if (currentMood === "calm") {
+            if (obj.type === "Points" && obj.geometry.attributes.position) {
+              // Update bubble particles
+              const positions = obj.geometry.attributes.position.array;
+              const sizes = obj.geometry.userData.sizes;
+
+              for (let i = 0; i < positions.length; i += 3) {
+                positions[i + 1] += 0.05 + sizes[i / 3] * 0.05;
+                if (positions[i + 1] > 20) {
+                  positions[i + 1] = -20;
+                  positions[i] = (Math.random() - 0.5) * 40;
+                  positions[i + 2] = (Math.random() - 0.5) * 40;
+                }
+              }
+
+              obj.geometry.attributes.position.needsUpdate = true;
+            }
+          }
+
+          if (currentMood === "energetic") {
+            if (obj.geometry && obj.geometry.type === "IcosahedronGeometry") {
+              // Rotate and pulsate the core
+              obj.rotation.x += 0.02;
+              obj.rotation.y += 0.03;
+              obj.scale.set(
+                1 + Math.sin(time * 0.1) * 0.2,
+                1 + Math.sin(time * 0.1) * 0.2,
+                1 + Math.sin(time * 0.1) * 0.2
+              );
+            }
+
+            if (obj.geometry && obj.geometry.type === "CylinderGeometry") {
+              // Pulsate energy beams
+              obj.userData.pulsePhase += 0.1;
+              const scale = 1 + Math.sin(obj.userData.pulsePhase) * 0.3;
+              obj.scale.y = scale;
+            }
+
+            if (obj.type === "Points" && obj.geometry.attributes.position) {
+              // Update orbiting particles
+              const positions = obj.geometry.attributes.position.array;
+              const velocities = obj.geometry.userData.velocities;
+
+              for (let i = 0; i < positions.length; i += 3) {
+                // Move particles
+                positions[i] += velocities[i];
+                positions[i + 1] += velocities[i + 1];
+                positions[i + 2] += velocities[i + 2];
+
+                // Bounce off imaginary boundaries
+                if (Math.abs(positions[i]) > 25) velocities[i] *= -1;
+                if (Math.abs(positions[i + 1]) > 15) velocities[i + 1] *= -1;
+                if (Math.abs(positions[i + 2]) > 25) velocities[i + 2] *= -1;
+              }
+
+              obj.geometry.attributes.position.needsUpdate = true;
+            }
+          }
+
+          if (currentMood === "romantic") {
+            if (obj.geometry && obj.geometry.type === "ExtrudeGeometry") {
+              // Rotate and float the heart
+              obj.rotation.y += 0.01;
+              obj.position.y = Math.sin(time * 0.02) * 0.5;
+            }
+
+            if (obj.geometry && obj.geometry.type === "PlaneGeometry") {
+              // Float and rotate rose petals
+              obj.userData.floatOffset += obj.userData.floatSpeed;
+              obj.position.y += Math.sin(obj.userData.floatOffset) * 0.02;
+              obj.rotation.z += obj.userData.rotationSpeed;
+
+              // Reset if out of bounds
+              if (obj.position.y > 15) obj.position.y = -15;
+            }
+          }
+
+          if (currentMood === "focused") {
+            if (obj.geometry && obj.geometry.type === "SphereGeometry") {
+              // Pulsate nodes
+              obj.userData.pulsePhase += obj.userData.pulseSpeed;
+              const scale = 1 + Math.sin(obj.userData.pulsePhase) * 0.2;
+              obj.scale.set(scale, scale, scale);
+
+              // Slight movement around original position
+              obj.position.x =
+                obj.userData.originalPosition.x +
+                Math.sin(time * 0.01 + index) * 0.5;
+              obj.position.y =
+                obj.userData.originalPosition.y +
+                Math.cos(time * 0.01 + index) * 0.3;
+            }
+
+            if (obj.type === "Points" && obj.geometry.attributes.position) {
+              // Move data flow particles
+              const positions = obj.geometry.attributes.position.array;
+              const targets = obj.geometry.userData.targets;
+              const progress = obj.geometry.userData.progress;
+
+              for (let i = 0; i < positions.length; i += 3) {
+                progress[i / 3] += 0.01;
+
+                if (progress[i / 3] >= 1) {
+                  progress[i / 3] = 0;
+                  // Reset to new random target
+                  const startNode = moodObjects[Math.floor(Math.random() * 30)]; // Assuming first 30 are nodes
+                  const endNode = moodObjects[Math.floor(Math.random() * 30)];
+
+                  if (startNode && endNode) {
+                    positions[i] = startNode.position.x;
+                    positions[i + 1] = startNode.position.y;
+                    positions[i + 2] = startNode.position.z;
+
+                    targets[i] = endNode.position.x;
+                    targets[i + 1] = endNode.position.y;
+                    targets[i + 2] = endNode.position.z;
+                  }
+                } else {
+                  // Interpolate between start and target
+                  positions[i] =
+                    positions[i] + (targets[i] - positions[i]) * 0.05;
+                  positions[i + 1] =
+                    positions[i + 1] +
+                    (targets[i + 1] - positions[i + 1]) * 0.05;
+                  positions[i + 2] =
+                    positions[i + 2] +
+                    (targets[i + 2] - positions[i + 2]) * 0.05;
+                }
+              }
+
+              obj.geometry.attributes.position.needsUpdate = true;
+            }
+          }
+        });
+
+        // Update particle systems
+        particleSystems.forEach((system) => {
+          if (system.geometry.attributes.position) {
+            system.geometry.attributes.position.needsUpdate = true;
+          }
+        });
+      }
+
+      function animate3D() {
+        animationFrame = requestAnimationFrame(animate3D);
+
+        updateMoodAnimation3D();
+
+        if (!currentMood) {
+          // Default camera movement when no mood is selected
+          camera.position.x = Math.sin(time * 0.005) * 10;
+          camera.position.y = Math.cos(time * 0.005) * 5;
+          camera.position.z = 30 + Math.sin(time * 0.003) * 5;
+        } else {
+          // Mood-specific camera movements
+          switch (currentMood) {
+            case "happy":
+              camera.position.x = Math.sin(time * 0.01) * 15;
+              camera.position.y = 5 + Math.cos(time * 0.005) * 3;
+              camera.position.z = 25 + Math.sin(time * 0.007) * 5;
+              break;
+            case "sad":
+              camera.position.x = Math.sin(time * 0.005) * 10;
+              camera.position.y = 0 + Math.cos(time * 0.003) * 2;
+              camera.position.z = 20 + Math.sin(time * 0.004) * 3;
+              break;
+            case "calm":
+              camera.position.x = Math.sin(time * 0.003) * 8;
+              camera.position.y = -5 + Math.cos(time * 0.002) * 2;
+              camera.position.z = 25 + Math.sin(time * 0.002) * 3;
+              break;
+            case "energetic":
+              camera.position.x = Math.sin(time * 0.02) * 8;
+              camera.position.y = Math.cos(time * 0.015) * 5;
+              camera.position.z = 20 + Math.sin(time * 0.01) * 5;
+              break;
+            case "romantic":
+              camera.position.x = Math.sin(time * 0.005) * 12;
+              camera.position.y = 3 + Math.cos(time * 0.003) * 2;
+              camera.position.z = 18 + Math.sin(time * 0.004) * 3;
+              break;
+            case "focused":
+              camera.position.x = Math.sin(time * 0.003) * 10;
+              camera.position.y = 0 + Math.cos(time * 0.002) * 2;
+              camera.position.z = 22 + Math.sin(time * 0.002) * 3;
+              break;
+          }
+        }
+
+        camera.lookAt(0, 0, 0);
+        renderer.render(scene, camera);
+
+        time++;
+      }
 
       // Playlist Functions
       function generateShuffleOrder(playlistLength) {
@@ -1632,8 +2570,7 @@
         userInteracted = true;
 
         if (currentMood) {
-          particles = [];
-          moodElements = [];
+          clearMoodObjects();
         }
 
         currentMood = mood;
@@ -1659,7 +2596,28 @@
         }`;
 
         updateTrackInfo();
-        initCanvas();
+
+        // Create 3D animation for selected mood
+        switch (mood) {
+          case "happy":
+            createHappyAnimation3D();
+            break;
+          case "sad":
+            createSadAnimation3D();
+            break;
+          case "calm":
+            createCalmAnimation3D();
+            break;
+          case "energetic":
+            createEnergeticAnimation3D();
+            break;
+          case "romantic":
+            createRomanticAnimation3D();
+            break;
+          case "focused":
+            createFocusedAnimation3D();
+            break;
+        }
 
         const firstTrack = currentPlaylist[currentTrackIndex];
         loadAudioForTrack(firstTrack);
@@ -1717,939 +2675,6 @@
         }
       }
 
-      // Helper functions for animations
-      function hslToRgba(hslColor) {
-        const hslMatch = hslColor.match(
-          /hsl\((\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?)%?,\s*(\d+(?:\.\d+)?)%?\)/
-        );
-        if (!hslMatch) {
-          return { r: 255, g: 100, b: 200 };
-        }
-
-        const h = parseFloat(hslMatch[1]) / 360;
-        const s = parseFloat(hslMatch[2]) / 100;
-        const l = parseFloat(hslMatch[3]) / 100;
-
-        const hue2rgb = (p, q, t) => {
-          if (t < 0) t += 1;
-          if (t > 1) t -= 1;
-          if (t < 1 / 6) return p + (q - p) * 6 * t;
-          if (t < 1 / 2) return q;
-          if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-          return p;
-        };
-
-        let r, g, b;
-        if (s === 0) {
-          r = g = b = l;
-        } else {
-          const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-          const p = 2 * l - q;
-          r = hue2rgb(p, q, h + 1 / 3);
-          g = hue2rgb(p, q, h);
-          b = hue2rgb(p, q, h - 1 / 3);
-        }
-
-        return {
-          r: Math.round(r * 255),
-          g: Math.round(g * 255),
-          b: Math.round(b * 255),
-        };
-      }
-
-      function hslToHsla(hslColor, alpha) {
-        return hslColor.replace("hsl(", "hsla(").replace(")", `, ${alpha})`);
-      }
-
-      function adjustColorAlpha(colorStr, alpha) {
-        if (colorStr.startsWith("hsl(")) {
-          return hslToHsla(colorStr, alpha);
-        } else if (colorStr.startsWith("rgb(")) {
-          return colorStr.replace("rgb(", "rgba(").replace(")", `, ${alpha})`);
-        } else if (colorStr.startsWith("rgba(")) {
-          return colorStr.replace(
-            /rgba\(([^,]+,[^,]+,[^,]+),([^)]+)\)/,
-            `rgba($1,${alpha})`
-          );
-        }
-        return colorStr;
-      }
-
-      // Particle class
-      class Particle {
-        constructor(x, y, vx, vy, color, size, life, type = "normal") {
-          this.x = x;
-          this.y = y;
-          this.vx = vx;
-          this.vy = vy;
-          this.color = color;
-          this.size = size;
-          this.life = life;
-          this.maxLife = life;
-          this.type = type;
-          this.alpha = 1;
-          this.rotation = 0;
-          this.rotationSpeed = (Math.random() - 0.5) * 0.1;
-        }
-
-        update() {
-          this.x += this.vx;
-          this.y += this.vy;
-          this.life--;
-          this.alpha = this.life / this.maxLife;
-          this.rotation += this.rotationSpeed;
-
-          if (this.type === "leaf" || this.type === "heart") {
-            this.vx += Math.sin(time * 0.01 + this.x * 0.01) * 0.1;
-          }
-        }
-
-        draw() {
-          if (this.life <= 0) return;
-
-          ctx.save();
-          ctx.globalAlpha = this.alpha;
-          ctx.translate(this.x, this.y);
-          ctx.rotate(this.rotation);
-          ctx.fillStyle = this.color;
-
-          switch (this.type) {
-            case "bubble":
-              this.drawBubble();
-              break;
-            case "star":
-              this.drawStar();
-              break;
-            case "heart":
-              this.drawHeart();
-              break;
-            case "leaf":
-              this.drawLeaf();
-              break;
-            default:
-              ctx.beginPath();
-              ctx.arc(0, 0, this.size, 0, Math.PI * 2);
-              ctx.fill();
-          }
-
-          ctx.restore();
-        }
-
-        drawBubble() {
-          const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.size);
-          gradient.addColorStop(0, adjustColorAlpha(this.color, 1));
-          gradient.addColorStop(0.7, adjustColorAlpha(this.color, 0.5));
-          gradient.addColorStop(1, adjustColorAlpha(this.color, 0.125));
-
-          ctx.fillStyle = gradient;
-          ctx.beginPath();
-          ctx.arc(0, 0, this.size, 0, Math.PI * 2);
-          ctx.fill();
-
-          ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
-          ctx.beginPath();
-          ctx.arc(
-            -this.size * 0.3,
-            -this.size * 0.3,
-            this.size * 0.3,
-            0,
-            Math.PI * 2
-          );
-          ctx.fill();
-        }
-
-        drawStar() {
-          ctx.fillStyle = this.color;
-          const spikes = 5;
-          const outerRadius = this.size;
-          const innerRadius = this.size * 0.4;
-
-          ctx.beginPath();
-          for (let i = 0; i < spikes * 2; i++) {
-            const angle = (i / (spikes * 2)) * Math.PI * 2;
-            const radius = i % 2 === 0 ? outerRadius : innerRadius;
-            const x = Math.cos(angle) * radius;
-            const y = Math.sin(angle) * radius;
-
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-          }
-          ctx.closePath();
-          ctx.fill();
-        }
-
-        drawHeart() {
-          ctx.fillStyle = this.color;
-          const size = this.size;
-
-          ctx.beginPath();
-          ctx.moveTo(0, size * 0.3);
-          ctx.bezierCurveTo(0, 0, -size * 0.5, 0, -size * 0.5, size * 0.3);
-          ctx.bezierCurveTo(-size * 0.5, size * 0.6, 0, size, 0, size);
-          ctx.bezierCurveTo(
-            0,
-            size,
-            size * 0.5,
-            size * 0.6,
-            size * 0.5,
-            size * 0.3
-          );
-          ctx.bezierCurveTo(size * 0.5, 0, 0, 0, 0, size * 0.3);
-          ctx.closePath();
-          ctx.fill();
-
-          ctx.shadowBlur = 10;
-          ctx.shadowColor = this.color;
-          ctx.fill();
-        }
-
-        drawLeaf() {
-          const gradient = ctx.createLinearGradient(
-            0,
-            -this.size,
-            0,
-            this.size
-          );
-          gradient.addColorStop(0, adjustColorAlpha(this.color, 1));
-          gradient.addColorStop(0.5, adjustColorAlpha(this.color, 0.67));
-          gradient.addColorStop(1, adjustColorAlpha(this.color, 0.4));
-
-          ctx.fillStyle = gradient;
-          const size = this.size;
-
-          ctx.beginPath();
-          ctx.moveTo(0, -size);
-          ctx.quadraticCurveTo(size * 0.6, -size * 0.2, 0, size);
-          ctx.quadraticCurveTo(-size * 0.6, -size * 0.2, 0, -size);
-          ctx.closePath();
-          ctx.fill();
-        }
-      }
-
-      // Clear romantic intervals function
-      function clearRomanticIntervals() {
-        if (romanticParticleInterval) {
-          clearInterval(romanticParticleInterval);
-          romanticParticleInterval = null;
-        }
-        if (romanticHeartInterval) {
-          clearInterval(romanticHeartInterval);
-          romanticHeartInterval = null;
-        }
-      }
-
-      // Artistic mood animations
-      function createHappyAnimation() {
-        particles = [];
-        moodElements = [];
-
-        for (let i = 0; i < 8; i++) {
-          moodElements.push({
-            type: "rainbow_stream",
-            x: Math.random() * canvas.width,
-            y: -50,
-            wave: i * 0.5,
-            speed: 2 + Math.random() * 3,
-            width: 20 + Math.random() * 30,
-            colors: [
-              `hsl(${60 + i * 30}, 80%, 70%)`,
-              `hsl(${90 + i * 30}, 80%, 70%)`,
-              `hsl(${120 + i * 30}, 80%, 70%)`,
-            ],
-          });
-        }
-
-        setInterval(() => {
-          if (currentMood !== "happy") return;
-          for (let i = 0; i < 5; i++) {
-            particles.push(
-              new Particle(
-                Math.random() * canvas.width,
-                Math.random() * canvas.height,
-                (Math.random() - 0.5) * 2,
-                (Math.random() - 0.5) * 2,
-                `hsl(${Math.random() * 60 + 30}, 90%, 70%)`,
-                3 + Math.random() * 8,
-                60 + Math.random() * 60,
-                "star"
-              )
-            );
-          }
-        }, 100);
-      }
-
-      function createSadAnimation() {
-        particles = [];
-        moodElements = [];
-
-        moodElements.push({
-          type: "rain_system",
-          drops: [],
-        });
-
-        for (let i = 0; i < 15; i++) {
-          moodElements.push({
-            type: "mist_cloud",
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            size: 50 + Math.random() * 100,
-            drift: Math.random() * 0.5,
-            opacity: 0.1 + Math.random() * 0.3,
-          });
-        }
-
-        setInterval(() => {
-          if (currentMood !== "sad") return;
-          particles.push(
-            new Particle(
-              Math.random() * canvas.width,
-              -10,
-              Math.sin(time * 0.01) * 0.5,
-              2 + Math.random() * 3,
-              `rgba(100, 150, 255, ${0.6 + Math.random() * 0.4})`,
-              2 + Math.random() * 4,
-              200 + Math.random() * 100
-            )
-          );
-        }, 150);
-      }
-
-      function createCalmAnimation() {
-        particles = [];
-        moodElements = [];
-
-        moodElements.push({
-          type: "zen_garden",
-          ripples: [],
-        });
-
-        for (let i = 0; i < 12; i++) {
-          moodElements.push({
-            type: "meditation_orb",
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            baseY: Math.random() * canvas.height,
-            size: 15 + Math.random() * 25,
-            phase: Math.random() * Math.PI * 2,
-            color: `hsl(${180 + Math.random() * 60}, 60%, 65%)`,
-          });
-        }
-
-        setInterval(() => {
-          if (currentMood !== "calm") return;
-          particles.push(
-            new Particle(
-              canvas.width / 2 + (Math.random() - 0.5) * 200,
-              canvas.height / 2 + (Math.random() - 0.5) * 200,
-              (Math.random() - 0.5) * 0.5,
-              (Math.random() - 0.5) * 0.5,
-              `hsla(${180 + Math.random() * 60}, 70%, 70%, 0.6)`,
-              8 + Math.random() * 12,
-              120 + Math.random() * 80,
-              "bubble"
-            )
-          );
-        }, 300);
-      }
-
-      function createEnergeticAnimation() {
-        particles = [];
-        moodElements = [];
-
-        for (let i = 0; i < 6; i++) {
-          moodElements.push({
-            type: "energy_bolt",
-            points: [],
-            life: 30 + Math.random() * 20,
-            color: `hsl(${Math.random() * 60 + 300}, 90%, 70%)`,
-            width: 3 + Math.random() * 5,
-          });
-        }
-
-        moodElements.push({
-          type: "energy_core",
-          x: canvas.width / 2,
-          y: canvas.height / 2,
-          size: 50,
-          pulsePhase: 0,
-        });
-
-        setInterval(() => {
-          if (currentMood !== "energetic") return;
-          for (let i = 0; i < 8; i++) {
-            const angle = ((Math.PI * 2) / 8) * i + time * 0.02;
-            particles.push(
-              new Particle(
-                canvas.width / 2 + Math.cos(angle) * 100,
-                canvas.height / 2 + Math.sin(angle) * 100,
-                Math.cos(angle) * 5,
-                Math.sin(angle) * 5,
-                `hsl(${Math.random() * 60 + 15}, 100%, 60%)`,
-                4 + Math.random() * 6,
-                40 + Math.random() * 30,
-                "star"
-              )
-            );
-          }
-        }, 80);
-      }
-
-      function createRomanticAnimation() {
-        clearRomanticIntervals();
-        particles = [];
-        moodElements = [];
-
-        for (let i = 0; i < 20; i++) {
-          moodElements.push({
-            type: "romantic_glow",
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            size: 30 + Math.random() * 60,
-            pulse: Math.random() * Math.PI * 2,
-            color: `hsl(${320 + Math.random() * 40}, 70%, 65%)`,
-          });
-        }
-
-        romanticParticleInterval = setInterval(() => {
-          if (currentMood !== "romantic") {
-            clearRomanticIntervals();
-            return;
-          }
-
-          for (let i = 0; i < 2; i++) {
-            particles.push(
-              new Particle(
-                Math.random() * canvas.width,
-                -20,
-                (Math.random() - 0.5) * 2,
-                1 + Math.random() * 2,
-                `hsl(${340 + Math.random() * 40}, 80%, 70%)`,
-                6 + Math.random() * 8,
-                300 + Math.random() * 200,
-                "leaf"
-              )
-            );
-          }
-        }, 150);
-
-        romanticHeartInterval = setInterval(() => {
-          if (currentMood !== "romantic") {
-            clearRomanticIntervals();
-            return;
-          }
-
-          particles.push(
-            new Particle(
-              Math.random() * canvas.width,
-              canvas.height + 20,
-              (Math.random() - 0.5) * 1,
-              -1 - Math.random() * 2,
-              `hsl(${340 + Math.random() * 20}, 90%, 75%)`,
-              8 + Math.random() * 12,
-              250 + Math.random() * 150,
-              "heart"
-            )
-          );
-        }, 300);
-      }
-
-      function createFocusedAnimation() {
-        particles = [];
-        moodElements = [];
-
-        moodElements.push({
-          type: "neural_network",
-          nodes: [],
-          connections: [],
-        });
-
-        const network = moodElements[0];
-        for (let i = 0; i < 25; i++) {
-          network.nodes.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            size: 4 + Math.random() * 8,
-            pulse: Math.random() * Math.PI * 2,
-            connections: [],
-          });
-        }
-
-        network.nodes.forEach((node, i) => {
-          for (let j = i + 1; j < network.nodes.length; j++) {
-            const other = network.nodes[j];
-            const dist = Math.hypot(node.x - other.x, node.y - other.y);
-            if (dist < 150) {
-              network.connections.push({
-                from: node,
-                to: other,
-                strength: 1 - dist / 150,
-                pulse: Math.random() * Math.PI * 2,
-              });
-            }
-          }
-        });
-
-        setInterval(() => {
-          if (currentMood !== "focused") return;
-          const connection =
-            network.connections[
-              Math.floor(Math.random() * network.connections.length)
-            ];
-          if (connection) {
-            particles.push(
-              new Particle(
-                connection.from.x,
-                connection.from.y,
-                (connection.to.x - connection.from.x) / 50,
-                (connection.to.y - connection.from.y) / 50,
-                `hsl(${200 + Math.random() * 40}, 80%, 70%)`,
-                3 + Math.random() * 4,
-                50,
-                "normal"
-              )
-            );
-          }
-        }, 100);
-      }
-
-      // Canvas Functions
-      function initCanvas() {
-        canvas = document.getElementById("visual-canvas");
-        ctx = canvas.getContext("2d");
-        resizeCanvas();
-        if (!animationFrame) {
-          animate();
-        }
-      }
-
-      function resizeCanvas() {
-        const container = document.getElementById("visualization-container");
-        const rect = container.getBoundingClientRect();
-        canvas.width = rect.width;
-        canvas.height = rect.height;
-      }
-
-      function animate() {
-        animationFrame = requestAnimationFrame(animate);
-        time++;
-
-        ctx.fillStyle = "rgba(10, 10, 21, 0.1)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        if (currentMood) {
-          updateMoodAnimation();
-        } else {
-          drawDefaultVisualization();
-        }
-
-        updateParticles();
-      }
-
-      function updateMoodAnimation() {
-        switch (currentMood) {
-          case "happy":
-            updateHappyAnimation();
-            break;
-          case "sad":
-            updateSadAnimation();
-            break;
-          case "calm":
-            updateCalmAnimation();
-            break;
-          case "energetic":
-            updateEnergeticAnimation();
-            break;
-          case "romantic":
-            updateRomanticAnimation();
-            break;
-          case "focused":
-            updateFocusedAnimation();
-            break;
-        }
-      }
-
-      function updateHappyAnimation() {
-        moodElements.forEach((element) => {
-          if (element.type === "rainbow_stream") {
-            element.y += element.speed;
-            if (element.y > canvas.height + 50) {
-              element.y = -50;
-              element.x = Math.random() * canvas.width;
-            }
-
-            ctx.save();
-            const gradient = ctx.createLinearGradient(
-              0,
-              element.y - 50,
-              0,
-              element.y + 50
-            );
-            element.colors.forEach((color, i) => {
-              gradient.addColorStop(i / (element.colors.length - 1), color);
-            });
-
-            ctx.strokeStyle = gradient;
-            ctx.lineWidth = element.width;
-            ctx.lineCap = "round";
-
-            ctx.beginPath();
-            for (let i = 0; i < 100; i++) {
-              const x = element.x + Math.sin(element.wave + i * 0.1) * 50;
-              const y = element.y + i * 2;
-              if (i === 0) ctx.moveTo(x, y);
-              else ctx.lineTo(x, y);
-            }
-            ctx.stroke();
-            ctx.restore();
-          }
-        });
-      }
-
-      function updateSadAnimation() {
-        moodElements.forEach((element) => {
-          if (element.type === "mist_cloud") {
-            element.x += element.drift;
-            if (element.x > canvas.width + element.size) {
-              element.x = -element.size;
-            }
-
-            ctx.save();
-            ctx.globalAlpha = element.opacity;
-            const gradient = ctx.createRadialGradient(
-              element.x,
-              element.y,
-              element.size * 0.5,
-              element.x,
-              element.y,
-              element.size
-            );
-            gradient.addColorStop(0, "rgba(100, 120, 180, 0.3)");
-            gradient.addColorStop(1, "rgba(100, 120, 180, 0)");
-
-            ctx.fillStyle = gradient;
-            ctx.fillRect(
-              element.x - element.size,
-              element.y - element.size,
-              element.size * 2,
-              element.size * 2
-            );
-            ctx.restore();
-          }
-        });
-      }
-
-      function updateCalmAnimation() {
-        moodElements.forEach((element) => {
-          if (element.type === "meditation_orb") {
-            element.y =
-              element.baseY + Math.sin(time * 0.01 + element.phase) * 20;
-
-            ctx.save();
-            const gradient = ctx.createRadialGradient(
-              element.x,
-              element.y,
-              0,
-              element.x,
-              element.y,
-              element.size * 2
-            );
-            gradient.addColorStop(0, adjustColorAlpha(element.color, 0.8));
-            gradient.addColorStop(0.5, adjustColorAlpha(element.color, 0.4));
-            gradient.addColorStop(1, adjustColorAlpha(element.color, 0));
-
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(element.x, element.y, element.size * 2, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.fillStyle = adjustColorAlpha(element.color, 0.8);
-            ctx.beginPath();
-            ctx.arc(element.x, element.y, element.size * 0.5, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-          } else if (element.type === "zen_garden") {
-            if (Math.random() < 0.02) {
-              element.ripples.push({
-                x: Math.random() * canvas.width,
-                y: canvas.height * 0.7 + Math.random() * canvas.height * 0.3,
-                radius: 0,
-                maxRadius: 80 + Math.random() * 100,
-                life: 180,
-              });
-            }
-
-            element.ripples = element.ripples.filter((ripple) => {
-              ripple.radius += ripple.maxRadius / ripple.life;
-              ripple.life--;
-
-              if (ripple.life > 0) {
-                ctx.save();
-                ctx.globalAlpha = ripple.life / 180;
-                ctx.strokeStyle = "rgba(100, 220, 200, 0.6)";
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.arc(ripple.x, ripple.y, ripple.radius, 0, Math.PI * 2);
-                ctx.stroke();
-                ctx.restore();
-                return true;
-              }
-              return false;
-            });
-          }
-        });
-      }
-
-      function updateEnergeticAnimation() {
-        moodElements.forEach((element) => {
-          if (element.type === "energy_bolt") {
-            element.life--;
-            if (element.life <= 0 || element.points.length === 0) {
-              element.points = [];
-              element.life = 30 + Math.random() * 20;
-
-              const startX = Math.random() * canvas.width;
-              const startY = Math.random() * canvas.height * 0.3;
-              const endX = Math.random() * canvas.width;
-              const endY =
-                canvas.height * 0.7 + Math.random() * canvas.height * 0.3;
-
-              const segments = 8 + Math.random() * 8;
-              for (let i = 0; i <= segments; i++) {
-                const t = i / segments;
-                const x =
-                  startX + (endX - startX) * t + (Math.random() - 0.5) * 50;
-                const y =
-                  startY + (endY - startY) * t + (Math.random() - 0.5) * 30;
-                element.points.push({ x, y });
-              }
-            }
-
-            if (element.points.length > 1) {
-              ctx.save();
-              ctx.globalAlpha = Math.random() > 0.3 ? 0.8 : 0.3;
-              ctx.strokeStyle = element.color;
-              ctx.lineWidth = element.width;
-              ctx.lineCap = "round";
-              ctx.lineJoin = "round";
-
-              ctx.beginPath();
-              element.points.forEach((point, i) => {
-                if (i === 0) ctx.moveTo(point.x, point.y);
-                else ctx.lineTo(point.x, point.y);
-              });
-              ctx.stroke();
-
-              ctx.shadowBlur = 20;
-              ctx.shadowColor = element.color;
-              ctx.stroke();
-              ctx.restore();
-            }
-          } else if (element.type === "energy_core") {
-            element.pulsePhase += 0.1;
-            const pulseSize = element.size + Math.sin(element.pulsePhase) * 20;
-
-            ctx.save();
-            const gradient = ctx.createRadialGradient(
-              element.x,
-              element.y,
-              0,
-              element.x,
-              element.y,
-              pulseSize
-            );
-            gradient.addColorStop(0, "rgba(255, 100, 100, 0.8)");
-            gradient.addColorStop(0.5, "rgba(255, 200, 0, 0.4)");
-            gradient.addColorStop(1, "rgba(255, 100, 100, 0)");
-
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(element.x, element.y, pulseSize, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-          }
-        });
-      }
-
-      function updateRomanticAnimation() {
-        moodElements.forEach((element) => {
-          if (element.type === "romantic_glow") {
-            element.pulse += 0.03;
-            const glowSize = element.size + Math.sin(element.pulse) * 15;
-
-            ctx.save();
-            ctx.globalAlpha = 0.4 + Math.sin(element.pulse) * 0.3;
-
-            const rgbaColor = hslToRgba(element.color);
-
-            const gradient = ctx.createRadialGradient(
-              element.x,
-              element.y,
-              0,
-              element.x,
-              element.y,
-              glowSize
-            );
-
-            gradient.addColorStop(
-              0,
-              `rgba(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b}, 0.8)`
-            );
-            gradient.addColorStop(
-              0.5,
-              `rgba(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b}, 0.4)`
-            );
-            gradient.addColorStop(
-              1,
-              `rgba(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b}, 0)`
-            );
-
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(element.x, element.y, glowSize, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-          }
-        });
-      }
-
-      function updateFocusedAnimation() {
-        moodElements.forEach((element) => {
-          if (element.type === "neural_network") {
-            element.nodes.forEach((node) => {
-              node.pulse += 0.05;
-            });
-
-            ctx.save();
-            element.connections.forEach((conn) => {
-              conn.pulse += 0.1;
-              const alpha = 0.3 + Math.sin(conn.pulse) * 0.2;
-
-              ctx.globalAlpha = alpha * conn.strength;
-              ctx.strokeStyle = `hsl(${
-                200 + Math.sin(conn.pulse) * 20
-              }, 70%, 60%)`;
-              ctx.lineWidth = 1 + conn.strength * 2;
-
-              ctx.beginPath();
-              ctx.moveTo(conn.from.x, conn.from.y);
-              ctx.lineTo(conn.to.x, conn.to.y);
-              ctx.stroke();
-            });
-
-            element.nodes.forEach((node) => {
-              const nodeSize = node.size + Math.sin(node.pulse) * 3;
-
-              ctx.globalAlpha = 0.8;
-              ctx.fillStyle = `hsl(${
-                220 + Math.sin(node.pulse) * 10
-              }, 80%, 70%)`;
-              ctx.beginPath();
-              ctx.arc(node.x, node.y, nodeSize, 0, Math.PI * 2);
-              ctx.fill();
-
-              ctx.globalAlpha = 0.3;
-              ctx.fillStyle = `hsl(${
-                220 + Math.sin(node.pulse) * 10
-              }, 80%, 70%)`;
-              ctx.beginPath();
-              ctx.arc(node.x, node.y, nodeSize * 2, 0, Math.PI * 2);
-              ctx.fill();
-            });
-            ctx.restore();
-          }
-        });
-      }
-
-      function updateParticles() {
-        particles = particles.filter((particle) => {
-          particle.update();
-          particle.draw();
-          return particle.life > 0;
-        });
-      }
-
-      function drawDefaultVisualization() {
-        ctx.save();
-        ctx.globalAlpha = 0.5;
-
-        for (let i = 0; i < 3; i++) {
-          const x = canvas.width / 2 + Math.sin(time * 0.01 + i) * 100;
-          const y = canvas.height / 2 + Math.cos(time * 0.015 + i) * 60;
-          const size = 30 + Math.sin(time * 0.02 + i) * 15;
-
-          const gradient = ctx.createRadialGradient(x, y, 0, x, y, size);
-          gradient.addColorStop(0, "rgba(110, 136, 255, 0.6)");
-          gradient.addColorStop(1, "rgba(110, 136, 255, 0)");
-
-          ctx.fillStyle = gradient;
-          ctx.beginPath();
-          ctx.arc(x, y, size, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        ctx.restore();
-      }
-
-      // Mood Selection with proper animation initialization
-      function selectMood(mood) {
-        userInteracted = true;
-
-        if (currentMood) {
-          clearRomanticIntervals();
-          particles = [];
-          moodElements = [];
-        }
-
-        currentMood = mood;
-        const moodData = moodPlaylists[mood];
-
-        currentPlaylist = [...moodData.tracks];
-        currentTrackIndex = 0;
-
-        if (isShuffleMode) {
-          shuffleOrder = generateShuffleOrder(currentPlaylist.length);
-          currentTrackIndex = shuffleOrder[0];
-        }
-
-        document.querySelectorAll(".mood-btn").forEach((btn) => {
-          btn.classList.remove("active");
-        });
-        document.querySelector(`[data-mood="${mood}"]`).classList.add("active");
-
-        document.getElementById("current-mood-display").textContent =
-          mood.charAt(0).toUpperCase() + mood.slice(1);
-        document.getElementById("mood-indicator").textContent = `Mood: ${
-          mood.charAt(0).toUpperCase() + mood.slice(1)
-        }`;
-
-        updateTrackInfo();
-
-        // Start mood-specific animation
-        switch (mood) {
-          case "happy":
-            createHappyAnimation();
-            break;
-          case "sad":
-            createSadAnimation();
-            break;
-          case "calm":
-            createCalmAnimation();
-            break;
-          case "energetic":
-            createEnergeticAnimation();
-            break;
-          case "romantic":
-            createRomanticAnimation();
-            break;
-          case "focused":
-            createFocusedAnimation();
-            break;
-        }
-
-        const firstTrack = currentPlaylist[currentTrackIndex];
-        loadAudioForTrack(firstTrack);
-        autoPlayMood();
-      }
-
       // Fullscreen functionality
       function toggleFullscreen() {
         const visualizationContainer = document.getElementById(
@@ -2671,7 +2696,7 @@
             isFullscreen = true;
             fullscreenBtn.innerHTML = "⛶";
             fullscreenBtn.title = "Exit Fullscreen";
-            setTimeout(() => resizeCanvas(), 100);
+            handleResize();
           }
         } else {
           if (document.exitFullscreen) {
@@ -2687,7 +2712,7 @@
             isFullscreen = false;
             fullscreenBtn.innerHTML = "⛶";
             fullscreenBtn.title = "Toggle Fullscreen";
-            setTimeout(() => resizeCanvas(), 100);
+            handleResize();
           }
         }
       }
@@ -2710,13 +2735,26 @@
           visualizationContainer.classList.add("fullscreen");
           fullscreenBtn.innerHTML = "⛷";
           fullscreenBtn.title = "Exit Fullscreen";
-          setTimeout(() => resizeCanvas(), 100);
+          handleResize();
         } else if (!isCurrentlyFullscreen && isFullscreen) {
           isFullscreen = false;
           visualizationContainer.classList.remove("fullscreen");
           fullscreenBtn.innerHTML = "⛶";
           fullscreenBtn.title = "Toggle Fullscreen";
-          setTimeout(() => resizeCanvas(), 100);
+          handleResize();
+        }
+      }
+
+      // Window resize handler
+      function handleResize() {
+        const container = document.getElementById("visualization-container");
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+
+        if (camera && renderer) {
+          camera.aspect = width / height;
+          camera.updateProjectionMatrix();
+          renderer.setSize(width, height);
         }
       }
 
@@ -2878,18 +2916,18 @@
             }
           });
 
-        window.addEventListener("resize", resizeCanvas);
+        window.addEventListener("resize", handleResize);
       }
 
       // Initialize everything when page loads
       document.addEventListener("DOMContentLoaded", () => {
-        initCanvas();
+        initThree();
         initEventListeners();
         console.log(
-          "MoodTune with full animations and playlist support initialized!"
+          "MoodTune with upgraded 3D animations and all original functionality initialized!"
         );
         console.log(
-          "Features: Multi-track playlists, Shuffle/Sequential modes, Complex mood animations"
+          "Features: Multi-track playlists, Shuffle/Sequential modes, Advanced 3D mood animations"
         );
         console.log(
           "Keyboard shortcuts: Space (play/pause), N (next), P (previous), S (toggle shuffle), F (fullscreen)"
