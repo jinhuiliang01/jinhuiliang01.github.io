@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MoodTune - AI-Powered Emotion-Based Music Player</title>
+    <title>MoodTune - Emotion-Based Music Player</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sentiment/5.0.2/sentiment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -553,7 +553,7 @@
         box-shadow: 0 12px 40px rgba(110, 136, 255, 0.6);
       }
 
-      /* Styles for shuffle and sequential buttons */
+      /* New styles for shuffle and sequential buttons */
       .mode-btn {
         background: rgba(255, 255, 255, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.2);
@@ -652,38 +652,6 @@
         z-index: 10;
       }
 
-      /* AI Status Styles */
-      .ai-status {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-top: 10px;
-        font-size: 0.9rem;
-        justify-content: center;
-      }
-
-      .status-indicator {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-      }
-
-      .status-connected {
-        background: #4caf50;
-        box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
-      }
-
-      .status-disconnected {
-        background: #f44336;
-        box-shadow: 0 0 10px rgba(244, 67, 54, 0.5);
-      }
-
-      .status-connecting {
-        background: #ffc107;
-        box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
-        animation: pulse 1.5s infinite;
-      }
-
       @media (max-width: 1200px) {
         .main-content {
           flex-direction: column;
@@ -731,25 +699,24 @@
     <div class="container">
       <header>
         <h1>MoodTune</h1>
-        <p class="tagline">AI-Powered Emotion-Based Music Experience</p>
+        <p class="tagline">Your emotion-based music experience</p>
       </header>
 
       <div class="main-content">
         <div class="left-panel">
           <div class="ai-chat">
-            <h2 class="section-title">Chat with AI MoodBot</h2>
+            <h2 class="section-title">Chat with MoodBot</h2>
             <div class="chat-messages" id="chat-messages">
               <div class="message ai">
-                <div class="message-header">AI MoodBot</div>
+                <div class="message-header">MoodBot</div>
                 <div class="message-content">
-                  Hello! I'm your AI-powered music companion. I can understand
-                  your emotions and recommend the perfect music for your mood.
-                  How are you feeling today?
+                  Hello! I'm here to help you find the perfect music for your
+                  mood. How are you feeling today? Tell me what's on your mind.
                 </div>
               </div>
             </div>
             <div class="typing-indicator" id="typing-indicator">
-              <div class="message-header">AI MoodBot is thinking...</div>
+              <div class="message-header">MoodBot is thinking...</div>
               <div class="typing-dots">
                 <div class="typing-dot"></div>
                 <div class="typing-dot"></div>
@@ -759,21 +726,10 @@
             <div class="chat-input">
               <textarea
                 id="chat-input"
-                placeholder="Tell me how you're feeling or what music you'd like..."
+                placeholder="Tell me how you're feeling..."
                 rows="1"
               ></textarea>
               <button class="send-btn" id="send-btn">➤</button>
-            </div>
-
-            <!-- AI Status Indicator -->
-            <div class="ai-status">
-              <div
-                class="status-indicator status-connected"
-                id="ai-status-indicator"
-              ></div>
-              <span id="ai-status-text"
-                >AI Connected (GPT-5 with Web Search)</span
-              >
             </div>
           </div>
 
@@ -828,7 +784,7 @@
           <div class="album-art">🎵</div>
           <div class="song-details">
             <div class="song-title" id="song-title">
-              Chat with AI MoodBot to start your musical journey
+              Chat with MoodBot to start your musical journey
             </div>
             <div class="mood-indicator" id="mood-indicator">Mood: None</div>
             <div class="track-info" id="track-info">Track 1 of 8</div>
@@ -864,12 +820,6 @@
       let userInteracted = false;
       let chatHistory = [];
       let isTyping = false;
-
-      // AI-related variables - Embedded API Key
-      const embeddedApiKey =
-        "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";
-      const embeddedModel = "gpt-5";
-      let aiEnabled = true;
 
       // Playlist variables
       let currentPlaylist = [];
@@ -1023,7 +973,7 @@
         },
       };
 
-      // AI Chat System - Updated with new Responses API
+      // AI Chat System
       const moodKeywords = {
         happy: {
           keywords: [
@@ -1201,224 +1151,6 @@
           "How can I best support your productive mindset?",
         ],
       };
-
-      // AI Integration Functions
-      function initAISettings() {
-        // Set AI as enabled by default with embedded API key
-        aiEnabled = true;
-        updateAIStatus(true, "AI Connected (GPT-5 with Web Search)");
-      }
-
-      // Update AI status display
-      function updateAIStatus(connected, message) {
-        const statusIndicator = document.getElementById("ai-status-indicator");
-        const statusText = document.getElementById("ai-status-text");
-
-        if (connected) {
-          statusIndicator.className = "status-indicator status-connected";
-          statusText.textContent = message;
-          aiEnabled = true;
-        } else {
-          statusIndicator.className = "status-indicator status-disconnected";
-          statusText.textContent = message;
-          aiEnabled = false;
-        }
-      }
-
-      // Call AI Responses API with new format
-      async function callAIChatAPI(userMessage, conversationHistory = []) {
-        if (!aiEnabled) {
-          throw new Error("AI not configured");
-        }
-
-        try {
-          // Build the conversation context
-          let fullPrompt = getSystemPrompt() + "\n\n";
-
-          // Add conversation history
-          if (conversationHistory.length > 0) {
-            fullPrompt += "Previous conversation:\n";
-            conversationHistory.forEach((msg) => {
-              fullPrompt += `${msg.isUser ? "User" : "Assistant"}: ${
-                msg.content
-              }\n`;
-            });
-            fullPrompt += "\n";
-          }
-
-          // Add current message
-          fullPrompt += `User: ${userMessage}\n\nPlease respond as a helpful music companion:`;
-
-          const response = await fetch("https://api.openai.com/v1/responses", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${embeddedApiKey}`,
-            },
-            body: JSON.stringify({
-              model: embeddedModel,
-              tools: [{ type: "web_search" }],
-              input: fullPrompt,
-            }),
-          });
-
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(
-              errorData.error?.message ||
-                `API request failed with status ${response.status}`
-            );
-          }
-
-          const data = await response.json();
-          return data.output_text;
-        } catch (error) {
-          console.error("AI API call failed:", error);
-          updateAIStatus(false, "AI Connection Failed");
-          throw error;
-        }
-      }
-
-      // Generate AI system prompt
-      function getSystemPrompt() {
-        return `You are MoodBot, an AI music companion that helps users find the perfect music for their emotions and mood.
-
-Your capabilities:
-1. Analyze the user's emotional state from their messages
-2. Recommend appropriate music moods (happy, sad, calm, energetic, romantic, focused)
-3. Engage in natural, empathetic conversation about feelings and music
-4. Suggest specific music activities or genres that might help
-5. Use web search when needed to provide current information about music or emotions
-
-Available music moods:
-- Happy: Uplifting, joyful music for positive emotions
-- Sad: Melancholic, comforting music for difficult times
-- Calm: Relaxing, peaceful music for stress relief
-- Energetic: High-energy music for motivation and activity
-- Romantic: Intimate, passionate music for love and connection
-- Focused: Concentration-enhancing music for work and study
-
-Guidelines:
-- Be empathetic, supportive, and understanding
-- Keep responses conversational but focused on music recommendations
-- When you detect a clear emotional state, suggest the appropriate mood
-- Ask follow-up questions to better understand the user's needs
-- Occasionally share interesting facts about music and emotions
-- Keep responses concise but meaningful
-- Use web search to provide up-to-date music recommendations or emotional insights when relevant
-
-Always respond in the same language the user uses.`;
-      }
-
-      // New AI chat function using Responses API
-      async function generateAIResponse(userMessage) {
-        if (!aiEnabled) {
-          // Fallback to rule-based system
-          return generateFallbackResponse(userMessage);
-        }
-
-        try {
-          // Get recent conversation history (last 5 messages)
-          const recentHistory = chatHistory.slice(-5);
-
-          // Call AI API
-          const response = await callAIChatAPI(userMessage, recentHistory);
-          return {
-            response: response,
-            suggestedMood: extractMoodFromAIResponse(response),
-          };
-        } catch (error) {
-          console.error("AI response generation failed:", error);
-          // Fallback to rule-based system
-          return generateFallbackResponse(userMessage);
-        }
-      }
-
-      // Extract mood suggestion from AI response
-      function extractMoodFromAIResponse(response) {
-        const lowerResponse = response.toLowerCase();
-        const moodKeywords = {
-          happy: ["happy", "joy", "upbeat", "positive", "celebrat", "exciting"],
-          sad: ["sad", "melancholy", "blue", "down", "heartbreak", "grief"],
-          calm: ["calm", "relax", "peace", "serene", "chill", "tranquil"],
-          energetic: [
-            "energy",
-            "energetic",
-            "pump",
-            "motivat",
-            "active",
-            "dynamic",
-          ],
-          romantic: [
-            "romantic",
-            "love",
-            "passion",
-            "intimate",
-            "affection",
-            "relationship",
-          ],
-          focused: [
-            "focus",
-            "concentrat",
-            "work",
-            "study",
-            "productiv",
-            "mental",
-          ],
-        };
-
-        for (const [mood, keywords] of Object.entries(moodKeywords)) {
-          if (keywords.some((keyword) => lowerResponse.includes(keyword))) {
-            return mood;
-          }
-        }
-
-        return null;
-      }
-
-      // Fallback response generation (original rule-based system)
-      function generateFallbackResponse(userMessage) {
-        const analysis = analyzeMoodFromText(userMessage);
-        let response = "";
-        let suggestedMood = null;
-
-        const confidenceThreshold = analysis.hasMusicRequest ? 0.2 : 0.3;
-
-        if (analysis.confidence > confidenceThreshold && analysis.mood) {
-          const moodData = moodKeywords[analysis.mood];
-          response =
-            moodData.responses[
-              Math.floor(Math.random() * moodData.responses.length)
-            ];
-          suggestedMood = analysis.mood;
-        } else if (analysis.confidence > 0.1 && analysis.mood) {
-          response = `I'm picking up on some ${
-            analysis.mood
-          } vibes from what you're saying. ${
-            followUpQuestions[analysis.mood][
-              Math.floor(
-                Math.random() * followUpQuestions[analysis.mood].length
-              )
-            ]
-          }`;
-        } else if (analysis.hasMusicRequest) {
-          response =
-            "I can tell you're looking for some music! To give you the perfect soundtrack, could you tell me more about your current mood or what kind of atmosphere you're going for?";
-        } else {
-          const responses = [
-            "I'd love to understand your mood better. " +
-              conversationStarters[
-                Math.floor(Math.random() * conversationStarters.length)
-              ],
-            "Tell me more about how you're feeling. Are you looking for something upbeat, calming, or perhaps energizing?",
-            "I'm here to help you find the perfect music for your state of mind. What's your emotional landscape like right now?",
-            "Every mood deserves the right soundtrack. Help me understand what you're going through so I can curate something special for you.",
-          ];
-          response = responses[Math.floor(Math.random() * responses.length)];
-        }
-
-        return { response: response, suggestedMood: suggestedMood };
-      }
 
       // Three.js Initialization
       function initThree() {
@@ -2451,7 +2183,7 @@ Always respond in the same language the user uses.`;
 
         const headerDiv = document.createElement("div");
         headerDiv.className = "message-header";
-        headerDiv.textContent = isUser ? "You" : "AI MoodBot";
+        headerDiv.textContent = isUser ? "You" : "MoodBot";
 
         const contentDiv = document.createElement("div");
         contentDiv.className = "message-content";
@@ -2548,8 +2280,50 @@ Always respond in the same language the user uses.`;
         };
       }
 
-      // Updated sendChatMessage function with new AI integration
-      async function sendChatMessage() {
+      function generateAIResponse(userMessage) {
+        const analysis = analyzeMoodFromText(userMessage);
+        let response = "";
+        let suggestedMood = null;
+
+        const confidenceThreshold = analysis.hasMusicRequest ? 0.2 : 0.3;
+
+        if (analysis.confidence > confidenceThreshold && analysis.mood) {
+          const moodData = moodKeywords[analysis.mood];
+          response =
+            moodData.responses[
+              Math.floor(Math.random() * moodData.responses.length)
+            ];
+          suggestedMood = analysis.mood;
+        } else if (analysis.confidence > 0.1 && analysis.mood) {
+          response = `I'm picking up on some ${
+            analysis.mood
+          } vibes from what you're saying. ${
+            followUpQuestions[analysis.mood][
+              Math.floor(
+                Math.random() * followUpQuestions[analysis.mood].length
+              )
+            ]
+          }`;
+        } else if (analysis.hasMusicRequest) {
+          response =
+            "I can tell you're looking for some music! To give you the perfect soundtrack, could you tell me more about your current mood or what kind of atmosphere you're going for?";
+        } else {
+          const responses = [
+            "I'd love to understand your mood better. " +
+              conversationStarters[
+                Math.floor(Math.random() * conversationStarters.length)
+              ],
+            "Tell me more about how you're feeling. Are you looking for something upbeat, calming, or perhaps energizing?",
+            "I'm here to help you find the perfect music for your state of mind. What's your emotional landscape like right now?",
+            "Every mood deserves the right soundtrack. Help me understand what you're going through so I can curate something special for you.",
+          ];
+          response = responses[Math.floor(Math.random() * responses.length)];
+        }
+
+        return { response: response, suggestedMood: suggestedMood };
+      }
+
+      function sendChatMessage() {
         const chatInput = document.getElementById("chat-input");
         const message = chatInput.value.trim();
 
@@ -2561,30 +2335,16 @@ Always respond in the same language the user uses.`;
 
         showTypingIndicator();
 
-        try {
-          const aiResponse = await generateAIResponse(message);
+        setTimeout(() => {
           hideTypingIndicator();
+          const aiResponse = generateAIResponse(message);
           addMessage(
             aiResponse.response,
             false,
             aiResponse.suggestedMood !== null,
             aiResponse.suggestedMood
           );
-        } catch (error) {
-          hideTypingIndicator();
-          addMessage(
-            "I'm having trouble connecting to the AI right now. Let me use my basic mood detection instead.",
-            false
-          );
-          // Use fallback system
-          const fallbackResponse = generateFallbackResponse(message);
-          addMessage(
-            fallbackResponse.response,
-            false,
-            fallbackResponse.suggestedMood !== null,
-            fallbackResponse.suggestedMood
-          );
-        }
+        }, 1000 + Math.random() * 1000);
       }
 
       function selectMoodFromChat(mood, instantPlay = false) {
@@ -3027,7 +2787,6 @@ Always respond in the same language the user uses.`;
 
       // Event Listeners
       function initEventListeners() {
-        initAISettings();
         initChatEventListeners();
 
         document.querySelectorAll(".mood-btn").forEach((btn) => {
@@ -3193,10 +2952,10 @@ Always respond in the same language the user uses.`;
         initThree();
         initEventListeners();
         console.log(
-          "AI-Powered MoodTune with upgraded 3D animations and all original functionality initialized!"
+          "MoodTune with upgraded 3D animations and all original functionality initialized!"
         );
         console.log(
-          "Features: Multi-track playlists, Shuffle/Sequential modes, Advanced 3D mood animations, AI Chat with GPT-5 and Web Search"
+          "Features: Multi-track playlists, Shuffle/Sequential modes, Advanced 3D mood animations"
         );
         console.log(
           "Keyboard shortcuts: Space (play/pause), N (next), P (previous), S (toggle shuffle), F (fullscreen)"
