@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>To 欣欣</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        overflow: hidden;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(to bottom, #ffffff 0%, #ffadce 100%);
+      }
+
+      .heart-popup {
+        position: absolute;
+        width: 100px;
+        height: 50px;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 8px;
+        box-sizing: border-box;
+        z-index: 1000;
+        animation: fadeIn 0.5s ease-in;
+        color: #333;
+        font-weight: bold;
+        font-size: 14px;
+        line-height: 1.3;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(5px);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .fade-out {
+        animation: fadeOut 0.5s ease-out forwards;
+      }
+
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+          transform: scale(1);
+        }
+        to {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      // 提示语数组
+      const tips = [
+        "一直開心",
+        "我想你了",
+        "要一直帶著笑容",
+        "每天都要充滿能量",
+        "少熬夜",
+        "記得吃水果",
+        "好好吃飯",
+        "要多喝水",
+        "每天都要開心",
+        "你的微笑很好看",
+        "一直都幸福",
+        "每一天都想你",
+        "要照顧好自己",
+        "記得想我",
+        "記得要愛我",
+        "今天也要加油",
+        "一切都會好的",
+        "愛你喔",
+        "我愛你欣欣",
+      ];
+
+      // 全局变量
+      let popups = [];
+      let animationId = null;
+      let closeTimeout = null;
+      let closeInterval = null;
+      let isClosing = false;
+
+      // 生成心形点坐标（正立版本）
+      function generateHeartPoints(numPoints) {
+        const points = [];
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        const windowWidth = 100;
+        const windowHeight = 50;
+
+        // 对于iPhone 16 Pro Max，使用更紧凑的心形
+        const centerX = screenWidth / 2;
+        const centerY = screenHeight / 2;
+
+        for (let i = 0; i < numPoints; i++) {
+          const t = (i / numPoints) * 2 * Math.PI;
+          // 心形参数方程
+          const x = 16 * Math.pow(Math.sin(t), 3);
+          // 翻转y坐标使心形正立
+          const y = -(
+            13 * Math.cos(t) -
+            5 * Math.cos(2 * t) -
+            2 * Math.cos(3 * t) -
+            Math.cos(4 * t)
+          );
+
+          // 缩放和平移 - 针对手机屏幕调整
+          const scale = Math.min(screenWidth / 30, screenHeight / 30);
+          let pointX = centerX + x * scale;
+          let pointY = centerY + y * scale;
+
+          // 确保窗口在屏幕内
+          pointX = Math.max(
+            windowWidth / 2,
+            Math.min(pointX, screenWidth - windowWidth / 2)
+          );
+          pointY = Math.max(
+            windowHeight / 2,
+            Math.min(pointY, screenHeight - windowHeight / 2)
+          );
+
+          points.push({ x: Math.round(pointX), y: Math.round(pointY) });
+        }
+
+        return points;
+      }
+
+      // 显示提示窗口
+      function showWarnTip(x, y, w, h) {
+        const popup = document.createElement("div");
+        popup.className = "heart-popup";
+        popup.style.left = `${x - w / 2}px`;
+        popup.style.top = `${y - h / 2}px`;
+        popup.style.width = `${w}px`;
+        popup.style.height = `${h}px`;
+
+        // 随机颜色（偏向粉色系，更符合心形主题）
+        const r = Math.floor(Math.random() * 56) + 200;
+        const g = Math.floor(Math.random() * 100) + 100;
+        const b = Math.floor(Math.random() * 100) + 100;
+        popup.style.backgroundColor = `rgba(${r}, ${g}, ${b}, 0.85)`;
+
+        // 随机提示语
+        const tip = tips[Math.floor(Math.random() * tips.length)];
+        popup.textContent = tip;
+
+        document.body.appendChild(popup);
+        popups.push(popup);
+
+        return popup;
+      }
+
+      // 开始显示心形弹窗
+      function startHeartPopups() {
+        // 清除现有的弹窗
+        stopHeartPopups();
+
+        const pointCount = 80; // 针对手机屏幕减少点数
+        const holdTime = 12; // 总停留时间
+
+        const points = generateHeartPoints(pointCount);
+
+        let index = 0;
+        const interval = 150; // 毫秒
+
+        function showNextPopup() {
+          if (index < points.length) {
+            const point = points[index];
+            showWarnTip(point.x, point.y, 100, 50);
+            index++;
+            animationId = setTimeout(showNextPopup, interval);
+          } else {
+            // 所有弹窗创建完成
+            // 等待一段时间后开始依次关闭
+            closeTimeout = setTimeout(() => {
+              startSequentialClose();
+            }, 1000);
+          }
+        }
+
+        showNextPopup();
+      }
+
+      // 开始依次关闭弹窗
+      function startSequentialClose() {
+        if (isClosing || popups.length === 0) return;
+
+        isClosing = true;
+
+        let closeIndex = 0;
+        const closeIntervalTime = 200; // 关闭间隔
+
+        function closeNextPopup() {
+          if (closeIndex < popups.length) {
+            const popup = popups[closeIndex];
+            if (popup.parentNode) {
+              popup.classList.add("fade-out");
+              setTimeout(() => {
+                if (popup.parentNode) {
+                  popup.parentNode.removeChild(popup);
+                }
+              }, 500);
+            }
+            closeIndex++;
+            closeInterval = setTimeout(closeNextPopup, closeIntervalTime);
+          } else {
+            // 所有弹窗关闭完成
+            isClosing = false;
+            popups = [];
+          }
+        }
+
+        closeNextPopup();
+      }
+
+      // 停止显示心形弹窗
+      function stopHeartPopups() {
+        if (animationId) {
+          clearTimeout(animationId);
+          animationId = null;
+        }
+
+        if (closeTimeout) {
+          clearTimeout(closeTimeout);
+          closeTimeout = null;
+        }
+
+        if (closeInterval) {
+          clearTimeout(closeInterval);
+          closeInterval = null;
+        }
+
+        popups.forEach((popup) => {
+          if (popup.parentNode) {
+            popup.parentNode.removeChild(popup);
+          }
+        });
+
+        popups = [];
+        isClosing = false;
+      }
+
+      // 页面加载完成后自动开始
+      window.addEventListener("load", function () {
+        // 延迟1秒开始，让页面完全加载
+        setTimeout(startHeartPopups, 1000);
+      });
+
+      // 窗口大小改变时重新计算
+      window.addEventListener("resize", () => {
+        if (popups.length > 0) {
+          stopHeartPopups();
+          setTimeout(startHeartPopups, 500);
+        }
+      });
+    </script>
+  </body>
+</html>
